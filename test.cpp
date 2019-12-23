@@ -301,27 +301,181 @@ void reset(){
 }
 
 //LD B, C  0x41, copia C a B
-void ld_b_c() { regist.B = regist.C; }
+void ld_b_c(void) { regist.B = regist.C; }
 
 //LD B, D  0x42, copia D a B
-void ld_b_d() { regist.B = regist.D; }
+void ld_b_d(void) { regist.B = regist.D; }
 
 //LD B, E  0x43, copia E a B
-void ld_b_e() { regist.B = regist.E;}
+void ld_b_e(void) { regist.B = regist.E;}
 
 //LD B, H  0x44, copia H a B
-void ld_b_e() { regist.B = regist.H;}
+void ld_b_h(void) { regist.B = regist.H;}
 
 //LD B, L  0x45, copia L a B
-void ld_b_e() { regist.B = regist.L;}
+void ld_b_l(void) { regist.B = regist.L;}
 
 //LD B, HL  0x46, copia HL a B
-//void ld_b_e() { regist.B = regist.(HL);}
+//void ld_b_hlp(void) { regist.B = regist.(HL);}
 
 //LD B, A  0x47, copia A a B
-void ld_b_e() { regist.B = regist.A;}
+void ld_b_a(void) { regist.B = regist.A;}
 
+//LD C, B  0x48, copia B a C
+void ld_c_b(void) { regist.C = regist.B;}
 
+//LD C, D  0x4a, copia D a C
+void ld_c_d(void) { regist.C = regist.D; }
+
+//LD C, E  0x4b, copia E a C
+void ld_c_e(void) { regist.C = regist.E; }
+
+// 0x4c
+void ld_c_h(void) { regist.C = regist.H; }
+
+// 0x4d
+void ld_c_l(void) { regist.C = regist.L; }
+
+// 0x4e
+//void ld_c_hlp(void) { regist.C = readByte(regist.hl); }
+
+// 0x4f
+void ld_c_a(void) { regist.C = regist.A; }
+
+// 0x50
+void ld_d_b(void) { regist.D = regist.B; }
+
+// 0x51
+void ld_d_c(void) { regist.D = regist.C; }
+
+// 0x53
+void ld_d_e(void) { regist.D = regist.E; }
+
+// 0x54
+void ld_d_h(void) { regist.D = regist.H; }
+
+// 0x55
+void ld_d_l(void) { regist.D = regist.L; }
+
+// 0x56
+//void ld_d_hlp(void) { regist.D = readByte(regist.hl); }
+
+// 0x57
+void ld_d_a(void) { regist.D = regist.A; }
+
+// 0x58
+void ld_e_b(void) { regist.E = regist.B; }
+
+// 0x59
+void ld_e_c(void) { regist.E = regist.C; }
+
+// 0x5a
+void ld_e_d(void) { regist.E = regist.D; }
+
+// 0x5c
+void ld_e_h(void) { regist.E = regist.H; }
+
+// 0x5d
+void ld_e_l(void) { regist.E = regist.L; }
+
+// 0x5e
+//void ld_e_hlp(void) { regist.E = readByte(regist.hl); }
+
+// 0x5f
+void ld_e_a(void) { regist.E = regist.A; }
+
+// 0x60
+void ld_h_b(void) { regist.H = regist.B; }
+
+// 0x61
+void ld_h_c(void) { regist.H = regist.C; }
+
+// 0x62
+void ld_h_d(void) { regist.H = regist.D; }
+
+// 0x63
+void ld_h_e(void) { regist.H = regist.E; }
+
+// 0x65
+void ld_h_l(void) { regist.H = regist.L; }
+
+// 0x66
+//void ld_h_hlp(void) { regist.H = readByte(regist.hl); }
+
+// 0x67
+void ld_h_a(void) { regist.H = regist.A; }
+
+// 0x68
+void ld_l_b(void) { regist.L = regist.B; }
+
+// 0x69
+void ld_l_c(void) { regist.L = regist.C; }
+
+// 0x6a
+void ld_l_d(void) { regist.L = regist.D; }
+
+// 0x6b
+void ld_l_e(void) { regist.L = regist.E; }
+
+// 0x6c
+void ld_l_h(void) { regist.L = regist.H; }
+
+// 0x6e
+//void ld_l_hlp(void) { regist.L = readByte(regist.hl); }
+
+// 0x6f
+//void ld_l_a(void) { regist.L = regist.A; }
+
+// 0x70
+//void ld_hlp_b(void) { writeByte(registers.hl, registers.b); }
+
+// 0x71
+//void ld_hlp_c(void) { writeByte(registers.hl, registers.c); }
+
+// 0x72
+//void ld_hlp_d(void) { writeByte(registers.hl, registers.d); }
+
+// 0x73
+//void ld_hlp_e(void) { writeByte(registers.hl, registers.e); }
+
+// 0x74
+//void ld_hlp_h(void) { writeByte(registers.hl, registers.h); }
+
+// 0x75
+//void ld_hlp_l(void) { writeByte(registers.hl, registers.l); }
+
+// 0x76
+void halt(void) {
+	//if(interrupt.master) {
+		//HALT EXECUTION UNTIL AN INTERRUPT OCCURS
+	//}
+	//else registers.pc++;
+	regist.PC++;
+}
+
+// 0x77
+//void ld_hlp_a(void) { writeByte(registers.hl, registers.a); }
+
+// 0x78
+void ld_a_b(void) { regist.A = regist.B; }
+
+// 0x79
+void ld_a_c(void) { regist.A = regist.C; }
+
+// 0x7a
+void ld_a_d(void) { regist.A = regist.D; }
+
+// 0x7b
+void ld_a_e(void) { regist.A = regist.E; }
+
+// 0x7c
+void ld_a_h(void) { regist.A = regist.H; }
+
+// 0x7d
+void ld_a_l(void) { regist.A = regist.L; }
+
+// 0x7e
+//void ld_a_hlp(void) { regist.A = readByte(regist.hl); }
 
 int main(){
 
