@@ -9,7 +9,7 @@
 #include <algorithm>
 #include "memoria.cpp"
 
-#define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
+#define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c\n"
 #define BYTE_TO_BINARY(byte)  \
   (byte & 0x80 ? '1' : '0'), \
   (byte & 0x40 ? '1' : '0'), \
@@ -78,6 +78,39 @@ void reset(){
 	regist.BC=regist.BC<<8;
 	regist.BC=regist.BC|regist.C;
 
+}
+
+void reconstruirHL(){
+	regist.HL=regist.H;
+	regist.HL=regist.HL<<8;
+	regist.HL=regist.HL|regist.L;
+}
+
+void deconstruirHL(){
+	regist.H=(unsigned char) ((regist.HL >>8) & 0xFF);
+	regist.L=(unsigned char) (regist.HL & 0xFF);
+}
+
+void reconstruirDE(){
+	regist.DE=regist.D;
+	regist.DE=regist.DE<<8;
+	regist.DE=regist.DE|regist.E;
+}
+
+void deconstruirDE(){
+	regist.D=(unsigned char) ((regist.DE >>8) & 0xFF);
+	regist.E=(unsigned char) (regist.DE & 0xFF);
+}
+
+void reconstruirBC(){
+	regist.BC=regist.B;
+	regist.BC=regist.BC<<8;
+	regist.BC=regist.BC|regist.C;
+}
+
+void deconstruirBC(){
+	regist.B=(unsigned char) ((regist.BC >>8) & 0xFF);
+	regist.C=(unsigned char) (regist.BC & 0xFF);
 }
 
 int machine_cycle=0;
@@ -519,10 +552,7 @@ void inc_d() {
 // 0x15
 void dec_d() {
 	dec(&regist.D);
-	char16_t temp=regist.D;
-	temp=temp <<8;
-	temp= temp | regist.E;
-	regist.DE=temp;	
+	reconstruirDE();	
 }
 
 
@@ -1469,7 +1499,7 @@ int main(int argc, char **argv){
 
 	char mem[2500];
     // leer file
-    long addr, value ;
+    /*long addr, value ;
 	FILE *fd = fopen("file.rom","r") ;
 	if (fd == NULL) {
     	perror("horror: ") ;
@@ -1483,11 +1513,11 @@ int main(int argc, char **argv){
 	   mem[pc] = value ;
 	   pc++;
 	   
-    }
+    }*/
 
 	int i=0;
 	reset();
-	printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.F));
+	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.F));
 	mem[0]=0x00;
 	mem[1]=0x3C;
 	//incrementar B
@@ -1499,11 +1529,24 @@ int main(int argc, char **argv){
 	//Sumar A + C
 	instructions[0x81].action();
 	cout<< "\nRegistro B: " <<endl;
-	printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
+	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
 	cout<< "\nRegistro C: " <<endl;
-	printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.C));
+	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.C));
+	
 	cout<< "\nRegistro A: " <<endl;
-	printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.A));
+	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.A));
+	cout<< "\nRegistro F: " <<endl;
+	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.F));
+	cout<< "\nRegistro D " <<endl;
+	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.D));
+	cout<< "\nRegistro E: " <<endl;
+	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.E));
+	cout<< "\nRegistro H: " <<endl;
+	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.H));
+	cout<< "\nRegistro L: " <<endl;
+	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.L));
+	
+
 	//printf(" Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
 	/*cout<< "Registro A: " <<regist.A << "\n" << "Registro B: " <<regist.B <<"\n" << "Registro F: " << regist.F <<"\n" << "Registro C: " << regist.C <<"\n" << "Registro D: " << regist.D
 		<<"\n" << "Registro E: " << regist.E  <<"\n" << "Registro H: " << regist.H  <<"\n" << "Registro L: " << regist.L  <<"\n" << "Registro HL: " << regist.HL  <<"\n" << "Registro SP: " << regist.SP
