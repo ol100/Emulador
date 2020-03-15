@@ -116,6 +116,17 @@ void deconstruirBC(){
 int machine_cycle=0;
 int clock_cycle=0;
 
+int interrrupt_enable=0;
+
+void keyboardInterrupt(int signal){
+	if(signal==SIGINT){
+		interrrupt_enable=1;
+		printf("probar señal ¿TECLADO?");
+
+	}
+
+}
+
 //funcion para indicar que ha habido acarreo
 static void acarreo(){
 	//activar flag con OR
@@ -316,7 +327,7 @@ static void suma2(char16_t *A, char16_t B){
 		regist.F= regist.F & 0xDF;
 	}
 	
-	regist.F= regist.F & & 0xBF; //desactivar el flag N
+	regist.F= regist.F &  0xBF; //desactivar el flag N
 }
 
 //funcion normalita de add suma, ahora con acarreo
@@ -610,7 +621,7 @@ void dec_c() {
 }
 
 //LD C, d8, 0x0e carga inmediata de valor de 8 bits en B
-void ld_C8(unsigned char valor){
+void ld_c8(unsigned char valor){
 	regist.C=valor;
 	reconstruirBC();
 }
@@ -637,7 +648,28 @@ void rrca(){
 
 }
 
+//STOP 0x10 para la CPU y la pantalla hasta que se presione un boton
+void stop(){
+	//clock_cycle+=4;
+	//machine_cycle++;
+	//STOPGPU();
+	while(!interrrupt_enable){
+		pause();
 
+	}
+
+}
+
+//LD DE, d16 0x11 Carga inmediata de 16 bits a DE
+void ld_de16(char16_t valor){
+	regist.DE= valor;
+	deconstruirDE();
+}
+
+//LD (DE), A, 0x12 guardar el valor de A en la direccion de DE
+void ld_dea(){
+	writeMEMB(regist.DE,regist.A);
+}
 
 // 0x13
 void inc_de() { 
@@ -658,6 +690,64 @@ void dec_d() {
 	reconstruirDE();	
 }
 
+//LD D, d8, 0x16 carga inmediata de valor de 8 bits en D
+void ld_d8(unsigned char valor){
+	regist.D=valor;
+	reconstruirDE();
+}
+
+//RLA 0x17 rotar A un bit a la izquierda, el mas significativo es el nuevo valor del flag carry y el antiguo valor es el bit menos significativo de a
+void rla(){
+	//cogemos el valor del bit de carry
+	unsigned char bit=regist.F & 0x10;
+	bit= bit >>4;
+	bit= bit & 0x01;// para poder sumar el bit, que sera 0 o 1, como vaya la cosa
+
+	//vemos si el mas significativo de A es 1 o 0
+	unsigned char u = regist.A >> 7;
+	if (regist.A != 0){
+		regist.F = regist.F | 0x10;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+	}
+
+	regist.A = regist.A << 1;
+
+	//como es una rotacion, se le mete al final lo que "salio"
+	regist.A += bit;
+
+	regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	regist.F= regist.F & 0x7F;//desactiva el flag 0
+
+}
+
+//JR r8 0x18 incrementa en un byte signed inmediato PC
+void jr_r8(unsigned char valor){
+	regist.PC += (signed char) valor; 
+}
+
+//ADD HL, DE, 0x19
+void add_hl_de(){
+	reconstruirDE();
+	reconstruirHL();
+	suma2(&regist.HL, regist.DE);
+	deconstruirHL();
+}
+
+//LD a,(DE), 0x1a
+void ld_a_de() { 
+	regist.DE=regist.D;
+	regist.DE=regist.DE<<8;
+	regist.DE=regist.DE|regist.E;
+	//unsigned char16_t temp= regist.HL << 8;
+	//unsigned char16_t temp2=0x0;
+	//temp= temp | temp2; 
+	
+	regist.A = loadMEMB(regist.DE);
+	
+}  
 
 // 0x1b
 void dec_de() { 
@@ -678,6 +768,39 @@ void dec_e() {
 	reconstruirHL();
 }
 
+//LD E, d8, 0x1e
+void ld_e8(unsigned char valor){
+	regist.E=valor;
+	reconstruirDE();
+}
+
+//RRA 0x1f, rotas A un bit a la derecha, el bit menos significativo pasa a ser el bit de carry y el antiguo valor es el mas significativo
+void rra(){
+	//cogemos el valor del bit de carry
+	unsigned char bit=regist.F & 0x10;
+	bit= bit <<3;
+	bit= bit & 0x80;// para poder sumar el bit, que sera 0 o 1, como vaya la cosa
+
+	//coges el bit menos significativo y lo dejas a la derecha, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
+	unsigned char u = regist.A & 0x01;
+	
+	if (regist.A != 0){
+		regist.F = regist.F | 0x10;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+	}
+
+	regist.A = regist.A >> 1;
+
+	//como es una rotacion, se le mete al final lo que "salio"
+	regist.A += bit;
+
+	regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	regist.F= regist.F & 0x7F;//desactiva el flag 0
+
+}
 
 // 0x23
 void inc_hl() {  
@@ -1137,28 +1260,16 @@ void ld_hl_l() {
 	writeMEMB(regist.HL, regist.L);
 }
 
-int interrrupt_enable=0;
 
-void keyboardInterrupt(int signal){
-	if(signal==SIGINT){
-		interrrupt_enable=1;
-		printf("probar señal ¿TECLADO?");
-
-	}
-
-}
-
-//HALT 0x76
+//HALT 0x76 Se para la CPU hasta que cualquier interrupcion llegue
 void halt(){
 	clock_cycle+=4;
 	machine_cycle++;
 	while(!interrrupt_enable){
 		pause();
 
-}
+	}
 
-	regist.PC++;
-	
 }
 
 //LD (HL), A  0x77, guarda en mem A en la direccion de HL

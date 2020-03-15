@@ -41,8 +41,8 @@ void rlca(void) {
 }
 
 int main(){
-    unsigned char u = 0xFF & 0x01;
-    u = u<<7;
+    unsigned char u = 0xF0 & 0x10;
+    u = u<<3;
     
     printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(u));
     rlca();
