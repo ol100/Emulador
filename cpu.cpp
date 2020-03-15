@@ -480,73 +480,55 @@ void nop(){
 
 // 0x03
 void inc_bc() { 
-	regist.BC=regist.B;
-	regist.BC=regist.BC<<8;
-	regist.BC=regist.BC|regist.C;
-	regist.BC=regist.BC + 0x01; 
+	reconstruirBC();
+	regist.BC=regist.BC + 0x01;
+	deconstruirBC(); 
 } //en estas no se comprueban flags
 
 // 0x04
 void inc_b(void) { 
 	inc(&regist.B);
-	char16_t temp=regist.B;
-	temp=temp <<8;
-	temp= temp | regist.C;
-	regist.BC=temp;
+	reconstruirBC();
 }
 
 // 0x05
 void dec_b() { 
 	dec(&regist.B);
-	char16_t temp=regist.B;
-	temp=temp <<8;
-	temp= temp | regist.C;
-	regist.BC=temp;
+	reconstruirBC();
 }
 
 // 0x0b
 void dec_bc() { 
-	regist.BC=regist.B;
-	regist.BC=regist.BC<<8;
-	regist.BC=regist.BC|regist.C;
-	regist.BC=regist.BC - 0x01; 
+	reconstruirBC();
+	regist.BC=regist.BC - 0x01;
+	deconstruirBC(); 
 } //en estas no se comprueban flags(las que trabajan con registros de 16 bits)
 
 // 0x0c
 void inc_c() { 
 	inc(&regist.C); 
-	char16_t temp=regist.B;
-	temp=temp <<8;
-	temp= temp | regist.C;
-	regist.BC=temp;	
+	reconstruirBC();	
 }
 
 // 0x0d
 void dec_c() { 
 	dec(&regist.C);
-	char16_t temp=regist.B;
-	temp=temp <<8;
-	temp= temp | regist.C;
-	regist.BC=temp;
+	reconstruirBC();
 
 }
 
 
 // 0x13
 void inc_de() { 
-	regist.DE=regist.D;
-	regist.DE=regist.DE<<8;
-	regist.DE=regist.DE|regist.E;
+	reconstruirDE();
 	regist.DE=regist.DE + 0x01; 
+	deconstruirDE();
 } //en estas no se comprueban flags(las que trabajan con registros de 16 bits)
 
 // 0x14
 void inc_d() {
 	inc(&regist.D);
-	char16_t temp=regist.D;
-	temp=temp <<8;
-	temp= temp | regist.E;
-	regist.DE=temp;
+	reconstruirDE();
 }
 
 // 0x15
@@ -558,83 +540,62 @@ void dec_d() {
 
 // 0x1b
 void dec_de() { 
-	regist.DE=regist.D;
-	regist.DE=regist.DE<<8;
-	regist.DE=regist.DE|regist.E;
+	reconstruirDE();
 	regist.DE=regist.DE - 0x01;
+	deconstruirDE();
 } //en estas no se comprueban flags(las que trabajan con registros de 16 bits)
 
 // 0x1c
 void inc_e() {
 	inc(&regist.E); 
-	char16_t temp=regist.D;
-	temp=temp <<8;
-	temp= temp | regist.E;
-	regist.DE=temp;
+	reconstruirDE();
 }
 
 // 0x1d
 void dec_e() {
 	dec(&regist.E); 
-	char16_t temp=regist.D;
-	temp=temp <<8;
-	temp= temp | regist.E;
-	regist.DE=temp;
+	reconstruirHL();
 }
 
 
 // 0x23
 void inc_hl() {  
-	regist.HL=regist.H;
-	regist.HL=regist.HL<<8;
-	regist.HL=regist.HL|regist.L;
+	reconstruirHL();
 	regist.HL=regist.HL + 0x01;
+	deconstruirHL();
 } //en estas no se comprueban flags(las que trabajan con registros de 16 bits)
 
 // 0x24
 void inc_h() { 
 	inc(&regist.H); 
-	char16_t temp=regist.H;
-	temp=temp <<8;
-	temp= temp | regist.L;
-	regist.HL=temp;
+	reconstruirHL();
 
 }
 
 // 0x25
 void dec_h() { 
 	dec(&regist.H);
-	char16_t temp=regist.H;
-	temp=temp <<8;
-	temp= temp | regist.L;
-	regist.HL=temp; 
+	reconstruirHL();
 }
 
 
 // 0x2b
 void dec_hl() { 
-	regist.HL=regist.H;
-	regist.HL=regist.HL<<8;
-	regist.HL=regist.HL|regist.L;
-	regist.HL=regist.HL - 0x01; 
+	reconstruirHL();
+	regist.HL=regist.HL - 0x01;
+	deconstruirHL(); 
 } //en estas no se comprueban flags(las que trabajan con registros de 16 bits)
 
 // 0x2c
 void inc_l() { 
 	inc(&regist.L); 
-	char16_t temp=regist.H;
-	temp=temp <<8;
-	temp= temp | regist.L;
-	regist.HL=temp;
+	reconstruirHL();
 }
 
 // 0x2d
 void dec_l() { 
 	dec(&regist.L); 
-	char16_t temp=regist.H;
-	temp=temp <<8;
-	temp= temp | regist.L;
-	regist.HL=temp;
+	reconstruirHL();
 }
 
 
