@@ -186,7 +186,7 @@ static void inc(unsigned char *A) {
 	regist.F= regist.F & 0xBF; //Flag N
 }
 
-//incrementar de lo que coges de memoria
+//incrementar de lo que coges de memoria y soy muy vago para cambiar lo que recibe la otra funcion
 static unsigned char inc2(unsigned char A) {
 	if((A & (unsigned char )0x0F) == 0x0F){ //Flag half carry
 		regist.F= regist.F | 0x20;
@@ -290,6 +290,33 @@ static void suma(unsigned char *A, unsigned char B){
 	}
 	regist.F= regist.F & 0xBF;
 
+}
+
+//suma para registros de 16bits, ahora electric boogaloo
+static void suma2(char16_t *A, char16_t B){
+	char32_t carry= *A + B;
+
+	//para comprobar el half
+	char16_t half1=*A & 0xFF;
+	char16_t half2=B & 0xFF;
+	char16_t half3=half1 + half2;
+
+	*A=(char16_t) (carry & 0xFFFF);
+
+	if((carry >> 16) > 0x01){
+		regist.F= regist.F | 0x10;
+	}else{
+		regist.F= regist.F & 0xEF;//desactivar carry
+	}
+
+	//MUY POTENTE FALLO AQUI
+	if((half3>>8) >=0x01){ //comprobar half
+		regist.F= regist.F | 0x20;
+	}else{
+		regist.F= regist.F & 0xDF;
+	}
+	
+	regist.F= regist.F & & 0xBF; //desactivar el flag N
 }
 
 //funcion normalita de add suma, ahora con acarreo
@@ -430,7 +457,7 @@ static void oro(unsigned char *A){
 	
 	regist.F= regist.F & 0xBF;//pone el flag de restar a 0;
 	regist.F= regist.F & 0xEF;// flag carry
-	regist.F= regist.F & 0xDF;//activa el half
+	regist.F= regist.F & 0xDF;//desactiva el half
 }
 
 
@@ -447,7 +474,7 @@ static void xoro(unsigned char *A){
 	
 	regist.F= regist.F & 0xBF;//pone el flag de restar a 0;
 	regist.F= regist.F & 0xEF;// flag carry
-	regist.F= regist.F & 0xDF;//activa el half
+	regist.F= regist.F & 0xDF;//desactiva el half
 }
 
 //el CP, altera los flags
@@ -478,6 +505,17 @@ void nop(){
 	machine_cycle++;
 }
 
+//LD BC, d16 0x01 Carga inmediata de 16 bits a BC
+void ld_bc16(char16_t valor){
+	regist.BC= valor;
+	deconstruirBC();
+}
+
+//LD (BC), A, 0x02 guardar el valor de A en la direccion de BC
+void ld_bca(){
+	writeMEMB(regist.BC,regist.A);
+}
+
 // 0x03
 void inc_bc() { 
 	reconstruirBC();
@@ -496,6 +534,60 @@ void dec_b() {
 	dec(&regist.B);
 	reconstruirBC();
 }
+
+//LD B, d8, 0x06 carga inmediata de valor de 8 bits en B
+void ld_b8(unsigned char valor){
+	regist.B=valor;
+	reconstruirBC();
+}
+
+//RLCA 0x07 rota A un bit a la izquierda, y si el bit mas significativo es 1 activas el flag de carry
+void rlca(){
+	//coges el bit mas significativo y lo dejas a la izquierda, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
+	unsigned char u = regist.A >> 7;
+	if (regist.A != 0){
+		regist.F = regist.F | 0x10;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+	}
+
+	regist.A= regist.A << 1;
+	//como es una rotacion, se le mete al final lo que "salio"
+	regist.A += u;
+
+	regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	regist.F= regist.F & 0x7F;//desactiva el flag 0
+
+}
+
+//LD (a16), SP, 0x08 Guarda el valor de SP en la direccion inmediata de 16bits
+void LD_a16_sp(char16_t direccion){
+	writeMEM16(direccion, regist.SP);
+}
+
+//ADD HL, BC, 0x09 suma dos valores de 16 bits y lo guarda en HL
+void add_hl_bc(){
+	reconstruirBC();
+	reconstruirHL();
+	suma2(&regist.HL, regist.BC);
+	deconstruirHL();
+}
+
+//LD a,(BC), 0x0a carga el valor de BC y lo mete en A
+void ld_a_bc() { 
+	//hacer esto en la futura funcion loadMEM
+	regist.BC=regist.B;
+	regist.BC=regist.BC<<8;
+	regist.BC=regist.BC|regist.C;
+	//unsigned char16_t temp= regist.HL << 8;
+	//unsigned char16_t temp2=0x0;
+	//temp= temp | temp2; 
+	
+	regist.A = loadMEMB(regist.BC);
+	
+}  
 
 // 0x0b
 void dec_bc() { 
@@ -516,6 +608,35 @@ void dec_c() {
 	reconstruirBC();
 
 }
+
+//LD C, d8, 0x0e carga inmediata de valor de 8 bits en B
+void ld_C8(unsigned char valor){
+	regist.C=valor;
+	reconstruirBC();
+}
+
+//RRCA, 0x0F rota A un bit a la derecha, y si el bit menos significativo es 1 activas el flag de carry
+void rrca(){
+	//coges el bit menos significativo y lo dejas a la derecha, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
+	unsigned char u = regist.A & 0x01;
+	
+	if (regist.A != 0){
+		regist.F = regist.F | 0x10;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+	}
+
+	regist.A= regist.A >> 1;
+	//como es una rotacion, se le mete por el otro lado lo que salio
+	regist.A += u << 7;
+
+	regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	regist.F= regist.F & 0x7F;//desactiva el flag 0
+
+}
+
 
 
 // 0x13
@@ -604,6 +725,7 @@ void inc_sp() { regist.SP++; }
 
 // 0x34
 void inc_hlm() {
+	reconstruirHL();
 	char16_t patata=regist.HL;
 	unsigned char temp=inc2(loadMEMB(regist.HL));
 
@@ -612,6 +734,7 @@ void inc_hlm() {
 
 // 0x35
 void dec_hlm() {
+	reconstruirHL();
 	char16_t patata=regist.HL;
 	unsigned char temp=dec2(loadMEMB(regist.HL));
 
@@ -632,25 +755,39 @@ void dec_a() { dec(&regist.A); }
 //LD B, C  0x40, copia B a B
 void ld_b_b() { 
 	regist.B = regist.B;
+	reconstruirBC();
 	
 }
 
 //LD B, C  0x41, copia C a B
-void ld_b_c() { regist.B = regist.C;
+void ld_b_c() { 
+	regist.B = regist.C;
+	reconstruirBC();
 }
 
 //LD B, D  0x42, copia D a B
-void ld_b_d() { regist.B = regist.D;
+void ld_b_d() { 
+	regist.B = regist.D;
+	reconstruirBC();
 }
 
 //LD B, E  0x43, copia E a B
-void ld_b_e() { regist.B = regist.E;}
+void ld_b_e() { 
+	regist.B = regist.E;
+	reconstruirBC();	
+}
 
 //LD B, H  0x44, copia H a B
-void ld_b_h() { regist.B = regist.H;}
+void ld_b_h() { 
+	regist.B = regist.H;
+	reconstruirBC();	
+}
 
 //LD B, L  0x45, copia L a B
-void ld_b_l() { regist.B = regist.L;}
+void ld_b_l() { 
+	regist.B = regist.L;
+	reconstruirBC();	
+}
 
 //LD B, HL  0x46, carga HL a B
 void ld_b_hl() { 
@@ -663,28 +800,50 @@ void ld_b_hl() {
 	//temp= temp | temp2; 
 	
 	regist.B = loadMEMB(regist.HL);
+	reconstruirBC();
 	}
 
 //LD B, A  0x47, copia A a B
-void ld_b_a() { regist.B = regist.A;}
+void ld_b_a() { 
+	regist.B = regist.A;
+	reconstruirBC();
+}
 
 //LD C, B 0x48, copia B a C
-void ld_c_b() {regist.C = regist.B;}
+void ld_c_b() {
+	regist.C = regist.B;
+	reconstruirBC();
+}
 
 //LD C, C 0x49, copia C a C
-void ld_c_c() {regist.C = regist.C;}
+void ld_c_c() {
+	regist.C = regist.C;
+	reconstruirBC();
+}
 
 //LD C, D 0x4a, copia D a C
-void ld_c_d() {regist.C = regist.D;}
+void ld_c_d() {
+	regist.C = regist.D;
+	reconstruirBC();
+}
 
 //LD C, e 0x4b, copia E a C
-void ld_c_e() {regist.C = regist.E;}
+void ld_c_e() {
+	regist.C = regist.E;
+	reconstruirBC();
+}
 
 //LD C, B 0x4c, copia H a C
-void ld_c_h() {regist.C = regist.H;}
+void ld_c_h() {
+	regist.C = regist.H;
+	reconstruirBC();
+}
 
 //LD C, B 0x4d, copia L a C
-void ld_c_l() {regist.C = regist.L;}
+void ld_c_l() {
+	regist.C = regist.L;
+	reconstruirBC();
+}
 
 //LD C, HL  0x4e, carga HL a C
 void ld_c_hl() { 
@@ -697,28 +856,50 @@ void ld_c_hl() {
 	//temp= temp | temp2; 
 	
 	regist.C = loadMEMB(regist.HL);
-	}
+	reconstruirBC();
+}
 
 //LD C, A  0x4f, copia A a C
-void ld_c_a() {regist.C = regist.A;}
+void ld_c_a() {
+	regist.C = regist.A;
+	reconstruirBC();
+}
 
 //LD D, B 0x50, copia B a D
-void ld_d_b() {regist.D = regist.B;}
+void ld_d_b() {
+	regist.D = regist.B;
+	reconstruirDE();
+}
 
 //LD D, C 0x51, copia C a D
-void ld_d_c() {regist.D = regist.C;}
+void ld_d_c() {
+	regist.D = regist.C;
+	reconstruirDE();
+}
 
 //LD D, D 0x52, copia D a D
-void ld_d_d() {regist.D = regist.D;}
+void ld_d_d() {
+	regist.D = regist.D;
+	reconstruirDE();
+}
 
 //LD D, e 0x53, copia E a D
-void ld_d_e() {regist.D = regist.E;}
+void ld_d_e() {
+	regist.D = regist.E;
+	reconstruirDE();
+}
 
 //LD D, B 0x54, copia H a D
-void ld_d_h() {regist.D = regist.H;}
+void ld_d_h() {
+	regist.D = regist.H;
+	reconstruirDE();
+}
 
 //LD D, B 0x55, copia L a D
-void ld_d_l() {regist.D = regist.L;}
+void ld_d_l() {
+	regist.D = regist.L;
+	reconstruirDE();
+}
 
 //LD D, HL  0x56, carga HL a D
 void ld_d_hl() { 
@@ -731,28 +912,50 @@ void ld_d_hl() {
 	//temp= temp | temp2; 
 	
 	regist.D = loadMEMB(regist.HL);
+	reconstruirDE();
 	}
 
 //LD E, A  0x57, copia A a E
-void ld_d_a() {regist.D = regist.A;}
+void ld_d_a() {
+	regist.D = regist.A;
+	reconstruirDE();
+}
 
 //LD E, B 0x58, copia B a E
-void ld_e_b() {regist.E = regist.B;}
+void ld_e_b() {
+	regist.E = regist.B;
+	reconstruirDE();
+}
 
 //LD E, C 0x59, copia C a E
-void ld_e_c() {regist.E = regist.C;}
+void ld_e_c() {
+	regist.E = regist.C;
+	reconstruirDE();
+}
 
 //LD E, D 0x5a, copia D a E
-void ld_e_d() {regist.E = regist.D;}
+void ld_e_d() {
+	regist.E = regist.D;
+	reconstruirDE();
+}
 
 //LD E, e 0x5b, copia E a E
-void ld_e_e() {regist.E = regist.E;}
+void ld_e_e() {
+	regist.E = regist.E;
+	reconstruirDE();
+}
 
 //LD E, B 0x5c, copia H a E
-void ld_e_h() {regist.E = regist.H;}
+void ld_e_h() {
+	regist.E = regist.H;
+	reconstruirDE();
+}
 
 //LD E, B 0x5d, copia L a E
-void ld_e_l() {regist.E = regist.L;}
+void ld_e_l() {
+	regist.E = regist.L;
+	reconstruirDE();
+}
 
 //LD E, HL  0x5e, carga HL a E
 void ld_e_hl() { 
@@ -765,28 +968,50 @@ void ld_e_hl() {
 	//temp= temp | temp2; 
 	
 	regist.E = loadMEMB(regist.HL);
-	}
+	reconstruirDE();
+}
 
 //LD E, A  0x5f, copia A a E
-void ld_e_a() {regist.E = regist.A;}
+void ld_e_a() {
+	regist.E = regist.A;
+	reconstruirDE();
+}
 
 //LD H, B 0x60, copia B a H
-void ld_h_b() {regist.H = regist.B;}
+void ld_h_b() {
+	regist.H = regist.B;
+	reconstruirHL();
+	}
 
 //LD H, C 0x61, copia C a H
-void ld_h_c() {regist.H = regist.C;}
+void ld_h_c() {
+	regist.H = regist.C;
+	reconstruirHL();
+}
 
 //LD H, D 0x62, copia D a H
-void ld_h_d() {regist.H = regist.D;}
+void ld_h_d() {
+	regist.H = regist.D;
+	reconstruirHL();
+}
 
 //LD H, e 0x63, copia E a H
-void ld_h_e() {regist.H = regist.E;}
+void ld_h_e() {
+	regist.H = regist.E;
+	reconstruirHL();
+}
 
 //LD H, B 0x64, copia H a H
-void ld_h_h() {regist.H = regist.H;}
+void ld_h_h() {
+	regist.H = regist.H;
+	reconstruirHL();
+}
 
 //LD H, B 0x65, copia L a H
-void ld_h_l() {regist.H = regist.L;}
+void ld_h_l() {
+	regist.H = regist.L;
+	reconstruirHL();
+}
 
 //LD H, HL  0x66, carga HL a H
 void ld_h_hl() { 
@@ -799,28 +1024,50 @@ void ld_h_hl() {
 	//temp= temp | temp2; 
 	
 	regist.H = loadMEMB(regist.HL);
+	reconstruirHL();
 	}
 
 //LD H, A  0x67, copia A a H
-void ld_h_a() {regist.H = regist.A;}
+void ld_h_a() {
+	regist.H = regist.A;
+	reconstruirHL();
+}
 
 //LD L, B 0x68, copia B a L
-void ld_l_b() {regist.L = regist.B;}
+void ld_l_b() {
+	regist.L = regist.B;
+	reconstruirHL();
+}
 
 //LD L, C 0x69, copia C a L
-void ld_l_c() {regist.L = regist.C;}
+void ld_l_c() {
+	regist.L = regist.C;
+	reconstruirHL();
+}
 
 //LD L, D 0x6a, copia D a L
-void ld_l_d() {regist.L = regist.D;}
+void ld_l_d() {
+	regist.L = regist.D;
+	reconstruirHL();
+}
 
 //LD L, e 0x6b, copia E a L
-void ld_l_e() {regist.L = regist.E;}
+void ld_l_e() {
+	regist.L = regist.E;
+	reconstruirHL();
+}
 
 //LD L, B 0x6c, copia H a L
-void ld_l_h() {regist.L = regist.H;}
+void ld_l_h() {
+	regist.L = regist.H;
+	reconstruirHL();
+}
 
 //LD L, B 0x6d, copia L a L
-void ld_l_l() {regist.L = regist.L;}
+void ld_l_l() {
+	regist.L = regist.L;
+	reconstruirHL();
+}
 
 //LD L, HL  0x6e, carga HL a L
 void ld_l_hl() { 
@@ -833,10 +1080,14 @@ void ld_l_hl() {
 	//temp= temp | temp2; 
 	
 	regist.L = loadMEMB(regist.HL);
-	}
+	reconstruirHL();
+}
 
 //LD L, A  0x6f, copia A a L
-void ld_l_a() {regist.L = regist.A;}
+void ld_l_a() {
+	regist.L = regist.A;
+	reconstruirHL();
+}
 
 //LD (HL), B  0x70, guarda en mem B en la direccion de HL
 void ld_hl_b() {
