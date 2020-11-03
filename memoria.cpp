@@ -36,9 +36,20 @@ unsigned char loadMEMB(char16_t dir){
     return SRAM[dir];
 }
 
-char16_t loadMEM16(char16_t dir){
+char16_t loadMEM16(char16_t dir){ //porque llamaria a estas variables patata, ahora el javi del futuro no sabe que hacia la funcion
     char16_t patata= loadMEMB(dir);
     patata= patata<<8;
     patata= loadMEMB(dir + 1)<<8 | patata; //es little endian
     return patata;
+}
+
+char16_t loadMEM16pila(unsigned short *puntero){
+    char16_t cargado= loadMEM16(*puntero);
+    *puntero+=2;
+    return cargado;
+}
+
+void writeMEM16pila(char16_t valor, unsigned short *puntero){
+    *puntero-=2;
+    writeMEM16((char16_t) *puntero, valor);
 }

@@ -46,6 +46,7 @@ struct registros{
 	char16_t HL;
 	char16_t BC;
 	char16_t DE;
+	char16_t AF;
     unsigned short SP;
     unsigned short PC;
     unsigned char flags;
@@ -724,7 +725,7 @@ void rla(){
 }
 
 //JR r8 0x18 incrementa en un byte signed inmediato PC
-void jr_r8(unsigned char valor){
+void jr_r8(char valor){
 	regist.PC += (signed char) valor; 
 }
 
@@ -802,6 +803,30 @@ void rra(){
 
 }
 
+//JR NZ,r8, 0x20 branch si no es ZERO y le suma un signed byte a PC
+void jr_nr8(char valor){
+	unsigned char u = regist.F >> 7;
+	if(u== 1){
+		machine_cycle+=8;
+	}else{
+		regist.PC+= (signed char) valor;
+		
+		machine_cycle=+12;
+	}
+}
+
+//LD HL, d16, 0x21
+void ld_hl16(char16_t valor){
+	regist.HL= valor;
+	deconstruirHL();
+}
+
+//LD (HL+), A, 0x22
+void ld_hla(){
+	reconstruirDE();
+	writeMEMB((regist.DE + 0x01),regist.A);
+}
+
 // 0x23
 void inc_hl() {  
 	reconstruirHL();
@@ -822,6 +847,85 @@ void dec_h() {
 	reconstruirHL();
 }
 
+//LD H, d8, 0x26
+void ld_h8(unsigned char valor){
+	regist.H=valor;
+	reconstruirHL();
+}
+
+//DAA, 0x27
+void DAA(){
+	unsigned short carry= regist.A;
+	//esta operacion se hace justo despues de una suma o resta, y como siempre se cambia el flag N al hace una u otra (coge el valor 0 al sumar y 1 al restar)
+	unsigned char flagN= (regist.F >> 6) & 0x01;
+	unsigned char flagH= (regist.F >> 5) & 0x01;
+	unsigned char flagC= (regist.F >> 4) & 0x01;
+	if(flagN== 0){
+		if((regist.A & 0x0F) > 0x09  || flagH == 1){
+			carry += 0x06; 
+		}
+		if(flagC ==1 || regist.A > 0x99){
+			carry+=0x60;
+		}
+
+	}else{
+		if(flagC ==1){
+			carry-=0x60;
+		}
+		if(flagH==1){
+			carry-=0x06;
+		}
+	}
+	
+	regist.A= carry;
+	
+
+	if(regist.A== 0){
+	regist.F= regist.F | 0x80;//flag ZERO
+	}
+	else{
+		regist.F= regist.F & 0x7F;//desactivar ZERO	
+	}
+	if(carry > 0xFF){ //activar carry
+		regist.F= regist.F | 0x10;
+	}else{
+		regist.F= regist.F & 0xEF;
+	}
+	regist.F= regist.F & 0xDF;//desactiva el half
+}
+
+//JR Z, r8, 0x28 branch si el flag ZERO es 1
+void jr_zr8( char valor){
+	unsigned char u = regist.F >> 7;
+	if(u== 1){
+		regist.PC+= (signed char) valor;
+		
+		machine_cycle=+12;
+	}else{
+		
+		machine_cycle+=8;
+	}
+}
+
+//ADD HL, HL, 0x29
+void add_hl_hl(){
+	reconstruirHL();
+	suma2(&regist.HL, regist.HL);
+	deconstruirHL();
+}
+
+//LD A,(HL+), 0x2a
+void ld_a_hll() { 
+	regist.HL=regist.H;
+	regist.HL=regist.HL<<8;
+	regist.HL=regist.HL|regist.L;
+	//unsigned char16_t temp= regist.HL << 8;
+	//unsigned char16_t temp2=0x0;
+	//temp= temp | temp2; 
+	
+	regist.A = loadMEMB((regist.HL+ 0x01));
+	
+}  
 
 // 0x2b
 void dec_hl() { 
@@ -842,6 +946,44 @@ void dec_l() {
 	reconstruirHL();
 }
 
+//LD L,d8, 0x2e
+void ld_l8(unsigned char valor){
+	regist.L=valor;
+	reconstruirHL();
+}
+
+//CPL, 0x2f
+void cpl(){
+	regist.A= ~regist.A;
+
+	regist.F= regist.F | 0x20; //activar half
+	regist.F= regist.F | 0x40; //activar N
+}
+
+//JR NC, r8, 0x30 branch si el flag de carry es 0
+void jr_ncr8(char valor){
+	unsigned char u = regist.F >> 4 & 0x01;
+	if(u== 1){
+		machine_cycle+=8;
+	}else{
+		regist.PC+= (signed char) valor;
+		
+		machine_cycle=+12;
+	}
+}
+
+//LD SP, d16, 0x31
+void ld_sp16(char16_t valor){
+	regist.SP= valor;
+}
+
+//LD (HL-),A 0x32
+void ld_hlma(){
+	reconstruirHL();
+	writeMEMB(regist.HL,regist.A);
+	regist.HL-= 0x01;
+	deconstruirHL();
+}
 
 // 0x33
 void inc_sp() { regist.SP++; }
@@ -864,6 +1006,49 @@ void dec_hlm() {
 	writeMEMB(patata, temp);
 }
 
+//LD (HL), d8, 0x36
+void ld_hlld8(unsigned char valor){
+	reconstruirHL();
+	writeMEMB(regist.HL, valor);
+}
+
+//SCF, 0x37
+void scf(){
+	regist.F= regist.F | 0x10;//activar flag acarreo
+	regist.F= regist.F & 0xDF; //desactivar half
+	regist.F= regist.F & 0xBF; //desactivar N
+}
+
+//JR C,r8, 0x38
+void jr_cr8( char valor){
+	unsigned char u = regist.F >> 4;
+	if(u== 0){
+		machine_cycle+=8;
+	}else{
+		regist.PC+= (signed char) valor;
+		
+		machine_cycle=+12;
+	}
+}
+
+//ADD HL,SP, 0x39
+void add_hl_SP(){
+	reconstruirHL();
+	suma2(&regist.HL, regist.SP);
+	deconstruirHL();
+}
+
+//LD A,(HL-), 0x3a
+void ld_a_hlm(){
+	regist.HL=regist.H;
+	regist.HL=regist.HL<<8;
+	regist.HL=regist.HL|regist.L;
+	//unsigned char16_t temp= regist.HL << 8;
+	//unsigned char16_t temp2=0x0;
+	//temp= temp | temp2; 
+	
+	regist.A = loadMEMB((regist.HL - 0x01));
+}
 
 // 0x3b
 void dec_sp() { regist.SP=regist.SP - 0x01; }
@@ -874,6 +1059,23 @@ void inc_a() { inc(&regist.A); }
 // 0x3d
 void dec_a() { dec(&regist.A); }
 
+//LD A,d8, 0x3e
+void ld_a8(unsigned char valor){
+	regist.A=valor;
+}
+
+//CCF 0x3f
+void CCF(){
+	unsigned char flagC= (regist.F >> 4) & 0x01;
+	if(flagC == 1){
+		regist.F= regist.F & 0xEF;
+	}else{
+		regist.F= regist.F | 0x10;
+	}
+
+	regist.F= regist.F & 0xDF; //desactivar half
+	regist.F= regist.F & 0xBF; //desactivar N
+}
 
 //LD B, C  0x40, copia B a B
 void ld_b_b() { 
@@ -1620,6 +1822,442 @@ void cp_hlp(void) {
 // 0xbf
 void cp_a(void) { cp(regist.A); }
 
+// 0xc0
+void ret_nz(){
+	unsigned char u = regist.F >> 7;
+	if(u == 1){
+		machine_cycle+=8;
+	}else{
+		regist.PC= loadMEM16pila(&regist.SP);
+		machine_cycle=+20;
+	}
+}
+
+//0xc1 POP BC, dia 2 de noviembre de 2020, esto lleva un anyo planteado y tras un paron desde junio volvemos a la carga sin acordarme de la mitad de las cosas BRING BACK THE FURYO STYLE!
+void pop_bc(){
+	reconstruirBC();
+	regist.BC= loadMEM16pila(&regist.SP);
+	deconstruirBC();
+}
+
+//0xc2
+void jp_nz_a16(unsigned short valor){ //creo que tambien hay que comprobar que el flag de carry este activado, pero patata, gran probabilidad de error en algun momento
+	unsigned char u = regist.F >> 7;
+	if(u==0){
+		regist.PC=valor;
+		clock_cycle+=16;//REVISAAAAAAAAR
+	}else{
+		clock_cycle+=12;
+	}
+}
+
+//0xc3
+void jp_a16(unsigned short valor){
+	regist.PC=valor;
+}
+
+//0xc4
+void call_nz_a16(unsigned short valor){
+	unsigned char u = regist.F >> 7;
+	if(u==0){
+		writeMEM16pila((char16_t) regist.PC,&regist.SP);
+		regist.PC=valor;
+		clock_cycle+=24;//REVISAAAAAAAAR
+	}else{
+		clock_cycle+=12;
+	}
+}
+
+//0xc5
+void push_bc(){
+	reconstruirBC();
+	writeMEM16pila(regist.BC, &regist.SP);
+	deconstruirBC();
+}
+
+//0xc6
+void add_a_d8(unsigned char valor){
+	suma(&regist.A, valor);
+}
+
+//0xc7
+void rst_00h(){
+	writeMEM16pila((char16_t) regist.PC, &regist.SP);
+	regist.PC=0x0000;
+}
+
+//0xc8
+void ret_z(){
+	unsigned char u = regist.F >> 7;
+	if(u==1){
+		regist.PC = loadMEM16pila(&regist.SP);
+		clock_cycle+=20;
+	}else{
+		clock_cycle+=8;
+	}
+}
+
+//0xc9
+void ret(){
+	regist.PC= loadMEM16pila(&regist.SP);
+}
+
+//0xca
+void jp_z_a16(unsigned short valor){
+	unsigned char u = regist.F >> 7;
+	if(u==1){
+		regist.PC=valor;
+		clock_cycle+=16;//REVISAAAAAAAAR
+	}else{
+		clock_cycle+=12;
+	}
+}
+
+//0xcb PREFIX CB, aqui, mira socio, ni puta idea, hay como otra 256 instrucciones dentro de esta, pendiente de investigar, continuo con las que se hacer
+
+//0xcc
+void call_z_a16(unsigned short valor){
+	unsigned char u = regist.F >> 7;
+	if(u==1){
+		writeMEM16pila((char16_t) regist.PC,&regist.SP);
+		regist.PC=valor;
+		clock_cycle+=24;//REVISAAAAAAAAR
+	}else{
+		clock_cycle+=12;
+	}
+}
+
+//0xcd
+void call_a16(unsigned short valor){
+	writeMEM16pila((char16_t) regist.PC,&regist.SP);
+	regist.PC=valor;
+}
+
+//0xce
+void adc_a_d8(unsigned char valor){
+	sumaC(&regist.A, valor);
+}
+
+//0xcf
+void RST_08H(){
+	writeMEM16pila((char16_t) regist.PC, &regist.SP);
+	regist.PC=0x0008;
+}
+
+//0xd0
+void ret_nc(){
+	unsigned char u = regist.F >> 4 & 0x01;
+	if(u == 1){
+		machine_cycle+=8;
+	}else{
+		regist.PC= loadMEM16pila(&regist.SP);
+		machine_cycle=+20;
+	}
+}
+
+//0xd1
+void pop_de(){
+	reconstruirDE();
+	regist.DE= loadMEM16pila(&regist.SP);
+	deconstruirDE();
+}
+
+//0xd2
+void jp_nc_a16(unsigned short valor){
+	unsigned char u = regist.F >> 4 & 0x01;
+	if(u==0){
+		regist.PC=valor;
+		clock_cycle+=16;//REVISAAAAAAAAR
+	}else{
+		clock_cycle+=12;
+	}
+}
+
+//0xd4
+void call_nc_a16(unsigned short valor){
+	unsigned char u = regist.F >> 4 & 0x01;
+	if(u==0){
+		writeMEM16pila((char16_t) regist.PC,&regist.SP);
+		regist.PC=valor;
+		clock_cycle+=24;//REVISAAAAAAAAR
+	}else{
+		clock_cycle+=12;
+	}
+}
+
+//0xd5
+void push_de(){
+	reconstruirDE();
+	writeMEM16pila(regist.DE, &regist.SP);
+	deconstruirDE();
+}
+
+//0xd6
+void sub_d8(unsigned char valor){
+	resta(&regist.A, valor);
+}
+
+//0xd7
+void rst_10h(){
+	writeMEM16pila((char16_t) regist.PC, &regist.SP);
+	regist.PC=0x0010;
+}
+
+//0xd8
+void ret_c(){
+	unsigned char u = regist.F >> 4 & 0x01;
+	if(u==1){
+		regist.PC = loadMEM16pila(&regist.SP);
+		clock_cycle+=20;
+	}else{
+		clock_cycle+=8;
+	}
+}
+
+//0xd9
+void reti(){
+	regist.PC= loadMEM16pila(&regist.SP);
+	//habilitar interrupciones, pero todavia no estan hechas
+}
+
+//0xda
+void jp_c_a16(unsigned short valor){
+	unsigned char u = regist.F >> 4 & 0x01;
+	if(u==1){
+		regist.PC=valor;
+		clock_cycle+=16;//REVISAAAAAAAAR
+	}else{
+		clock_cycle+=12;
+	}
+}
+
+//0xdc
+void call_c_a16(unsigned short valor){
+	unsigned char u = regist.F >> 4 & 0x01;
+	if(u==1){
+		writeMEM16pila((char16_t) regist.PC,&regist.SP);
+		regist.PC=valor;
+		clock_cycle+=24;//REVISAAAAAAAAR
+	}else{
+		clock_cycle+=12;
+	}
+}
+
+//0xde
+void sbc_a_d8(unsigned char valor){
+	restaC(&regist.A, valor);
+}
+
+//0xdf
+void rst_18h(){
+	writeMEM16pila((char16_t) regist.PC, &regist.SP);
+	regist.PC=0x0018;
+}
+
+//0xe0
+void ldh_a8_a(unsigned char valor){
+	writeMEMB(0xff00+valor, regist.A);
+}
+
+//0xe1
+void pop_hl(){
+	reconstruirHL();
+	regist.HL= loadMEM16pila(&regist.SP);
+	deconstruirHL();
+}
+
+//0xe2
+void ld_ca(){
+	writeMEMB(0xff00+regist.C, regist.A);
+}
+
+//0xe5
+void push_hl(){
+	reconstruirHL();
+	writeMEM16pila(regist.HL, &regist.SP);
+	deconstruirHL();
+}
+
+//0xe6
+void and_d8(unsigned char valor){
+	regist.A= regist.A & valor;
+
+	if(regist.A==0){//flag zero
+		regist.F= regist.F | 0x80;
+	} 
+	else{
+		regist.F= regist.F & 0x7F;
+	}
+	
+	regist.F= regist.F & 0xBF;//pone el flag de restar a 0;
+	regist.F= regist.F & 0xEF;// flag carry
+	regist.F= regist.F | 0x20;//activa el half
+}
+
+//0xe7
+void rst_20h(){
+	writeMEM16pila((char16_t) regist.PC, &regist.SP);
+	regist.PC=0x0020;
+}
+
+//0xe8 Esta va a petar fuertemente, he copiado la suma de dos registros de 16 bits y tru;eado uno para que sea de 8 bits, seguro que los calculos no encajan, no he revisado flags ni nada en el manual
+void add_sp_r8(char valor){
+	char32_t carry= regist.SP + valor;
+
+	//para comprobar el half
+	char16_t half1=regist.SP & 0xFF;
+	char16_t half2=valor & 0xF;
+	char16_t half3=half1 + half2;
+
+	regist.SP=(char16_t) (carry & 0xFFFF);
+
+	if((carry >> 16) > 0x01){
+		regist.F= regist.F | 0x10;
+	}else{
+		regist.F= regist.F & 0xEF;//desactivar carry
+	}
+
+	//MUY POTENTE FALLO AQUI
+	if((half3>>8) >=0x01){ //comprobar half
+		regist.F= regist.F | 0x20;
+	}else{
+		regist.F= regist.F & 0xDF;
+	}
+	
+	regist.F= regist.F & 0x7F; //desactivar el flag Z
+	regist.F= regist.F &  0xBF; //desactivar el flag N
+}
+
+//0xe9
+void jp_hl(){
+	reconstruirHL();
+	regist.PC= regist.HL;
+}
+
+//0xea
+void ld_a16_a(unsigned short valor){
+	writeMEMB((char16_t) valor, regist.A);
+}
+
+//0xee
+void xor_d8(unsigned char valor){
+	xoro(&valor);
+}
+
+//0xef
+void rst_28h(){
+	writeMEM16pila((char16_t) regist.PC, &regist.SP);
+	regist.PC=0x0028;
+}
+
+//0xf0
+void ldh_a_a8(unsigned char valor){
+	regist.A= loadMEMB(0xff00+valor);
+}
+
+//0xf1
+void pop_af(){
+	regist.AF=regist.A;
+	regist.AF=regist.AF<<8;
+	regist.AF=regist.AF|regist.F;
+	regist.AF= loadMEM16pila(&regist.SP);
+	regist.A=(unsigned char) ((regist.AF >>8) & 0xFF);
+	regist.F=(unsigned char) (regist.AF & 0xFF);
+}
+
+//0xf2
+void la_ac(){
+	regist.A= loadMEMB(0xff00 + regist.C);
+}
+
+//0xf3 deshabilita las interrupciones despues de ejecutar esta instrunccion
+void di(){
+	//interrupciones = 0;
+}
+
+//0xf5
+void push_af(){
+	regist.AF=regist.A;
+	regist.AF=regist.AF<<8;
+	regist.AF=regist.AF|regist.F;
+	writeMEM16pila(regist.AF, &regist.SP);
+}
+
+//0xf6
+void or_d8(unsigned char valor){
+	regist.A= regist.A | valor;
+
+	if(regist.A==0){
+		regist.F= regist.F | 0x80;
+	}
+	else{
+		regist.F= regist.F & 0x7F;
+	}
+	
+	regist.F= regist.F & 0xBF;//pone el flag de restar a 0;
+	regist.F= regist.F & 0xEF;// flag carry
+	regist.F= regist.F & 0xDF;//desactiva el half
+}
+
+//0xf7
+void rst_30h(){
+	writeMEM16pila((char16_t) regist.PC, &regist.SP);
+	regist.PC=0x0030;
+}
+
+//0xf8 potencial errores varios, checkear flags y operaciones, mismo motivo que en la add de mas arriba
+void ld_hl_spr8(char valor){
+	int carry = regist.SP + valor;
+
+	//para comprobar el half
+	unsigned short half1=regist.SP & 0xFF;
+	unsigned short half2=valor & 0xF;
+	unsigned short half3=half1 + half2;
+
+	regist.HL=(char16_t) (carry & 0xFFFF);
+
+	if((carry >> 16) > 0x01){
+		regist.F= regist.F | 0x10;
+	}else{
+		regist.F= regist.F & 0xEF;//desactivar carry
+	}
+
+	//MUY POTENTE FALLO AQUI
+	if((half3>>8) >=0x01){ //comprobar half
+		regist.F= regist.F | 0x20;
+	}else{
+		regist.F= regist.F & 0xDF;
+	}
+
+	regist.F= regist.F & 0x7F; //desactivar el flag Z
+	regist.F= regist.F &  0xBF; //desactivar el flag N
+}
+
+//0xf9
+void ld_sp_hl(){
+	regist.SP= regist.HL;
+}
+
+//0xfa
+void ld_a_a16(unsigned short valor){
+	regist.A= loadMEMB((char16_t) valor);
+}
+
+//0xfb habilita interrupciones depues de ejecutar la instruccion
+void ei(){
+	//interrupciones=1;
+}
+
+//0xfe revisar que no he mirado la documentacion
+void cp_d8(unsigned char valor){
+	cp(valor);
+}
+
+//0xff
+void rst_38h(){
+	writeMEM16pila((char16_t) regist.PC, &regist.SP);
+	regist.PC=0x0038;
+}
 
 const struct instruction instructions[256]={
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x00
