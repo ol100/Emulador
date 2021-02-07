@@ -7,7 +7,11 @@
 #include <unistd.h>
 #include <signal.h>
 #include <algorithm>
+#include <string>
+#include "registro.h"
 #include "memoria.cpp"
+#include "ExtendedCPU.cpp"
+
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c\n"
 #define BYTE_TO_BINARY(byte)  \
@@ -32,9 +36,9 @@ struct instruction {
 
 } extern const instructions[256];
 
+struct registros regist;
 
-
-struct registros{
+/*struct registros{
     unsigned char A;
     unsigned char F;
     unsigned char B;
@@ -50,7 +54,7 @@ struct registros{
     unsigned short SP;
     unsigned short PC;
     unsigned char flags;
-}regist;
+}regist;*/
 
 void reset(){
     regist.A = 0x01;
@@ -557,7 +561,7 @@ void ld_b8(unsigned char valor){
 void rlca(){
 	//coges el bit mas significativo y lo dejas a la izquierda, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
 	unsigned char u = regist.A >> 7;
-	if (regist.A != 0){
+	if (u != 0){
 		regist.F = regist.F | 0x10;
 	}else
 	{
@@ -570,7 +574,11 @@ void rlca(){
 
 	regist.F= regist.F & 0xDF;//desactiva el half
 	regist.F= regist.F & 0xBF;//desactiva el flag N
-	regist.F= regist.F & 0x7F;//desactiva el flag 0
+	if(regist.A==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
 
 }
 
@@ -669,6 +677,7 @@ void ld_de16(char16_t valor){
 
 //LD (DE), A, 0x12 guardar el valor de A en la direccion de DE
 void ld_dea(){
+	reconstruirDE();
 	writeMEMB(regist.DE,regist.A);
 }
 
@@ -706,7 +715,7 @@ void rla(){
 
 	//vemos si el mas significativo de A es 1 o 0
 	unsigned char u = regist.A >> 7;
-	if (regist.A != 0){
+	if (u != 0){
 		regist.F = regist.F | 0x10;
 	}else
 	{
@@ -785,7 +794,7 @@ void rra(){
 	//coges el bit menos significativo y lo dejas a la derecha, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
 	unsigned char u = regist.A & 0x01;
 	
-	if (regist.A != 0){
+	if (u != 0){
 		regist.F = regist.F | 0x10;
 	}else
 	{
@@ -2172,7 +2181,7 @@ void la_ac(){
 
 //0xf3 deshabilita las interrupciones despues de ejecutar esta instrunccion
 void di(){
-	//interrupciones = 0;
+	interrrupt_enable=0;
 }
 
 //0xf5
@@ -2245,7 +2254,7 @@ void ld_a_a16(unsigned short valor){
 
 //0xfb habilita interrupciones depues de ejecutar la instruccion
 void ei(){
-	//interrupciones=1;
+	interrrupt_enable=1;
 }
 
 //0xfe revisar que no he mirado la documentacion
@@ -2259,68 +2268,72 @@ void rst_38h(){
 	regist.PC=0x0038;
 }
 
+void nada(){
+
+}
+
 const struct instruction instructions[256]={
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x00
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x01
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x02
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x01 ld_bc16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_bca }, //0x02
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_bc }, //0x03
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_b }, //0x04
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_b }, //0x05
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x06
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x07
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x08
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x09
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x0a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x06 ld_b8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rlca }, //0x07 
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x08 LD_a16_sp
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_bc }, //0x09
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_bc }, //0x0a
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_bc }, //0x0b
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_c }, //0x0c
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_c }, //0x0d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x0c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x0d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x0e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x0f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x10
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x11
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x12
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x0e ld_c8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rrca }, //0x0f
+	//{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x10
+	//{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x11
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:stop }, //0x10
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x11 ld_de16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_dea }, //0x12
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_de }, //0x13
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_d }, //0x14
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_d }, //0x15
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x17
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x18
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x19
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x1a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x16 ld_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rla }, //0x17 
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x18 jr_r8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_de }, //0x19
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_de }, //0x1a
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_de }, //0x1b
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_e }, //0x1c
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_e }, //0x1d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x1e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x1f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x20
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x21
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x22
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x1e ld_e8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rra }, //0x1f
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x20 jr_nr8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x21 ld_hl16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hla }, //0x22
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_hl }, //0x23
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_h }, //0x24
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_h }, //0x25
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x26
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x27
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x28
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x29
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x2a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x26 ld_h8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:DAA }, //0x27
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x28 jr_zr8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_hl }, //0x29
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_hll }, //0x2a
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_hl }, //0x2b
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_l }, //0x2c
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_l }, //0x2d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x2e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x2f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x30
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x31
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x32
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x2e ld_l8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cpl }, //0x2f
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x30 jr_ncr8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x31 ld_sp16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hlma }, //0x32
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_sp }, //0x33
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_hlm }, //0x34
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_hlm }, //0x35
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x36
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x37
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x38
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x39
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x3a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x36 ld_hlld8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:scf }, //0x37
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x38 jr_cr8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_SP }, //0x39
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_hlm }, //0x3a
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_sp }, //0x3b
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_a }, //0x3c
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_a }, //0x3d
@@ -2452,7 +2465,70 @@ const struct instruction instructions[256]={
 	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_l }, //0xbd
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:cp_hlp }, //0xbe
 	{ 1, 4, 1,cp_a }, //0xbf
-
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_nz }, //0xc0
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_bc }, //0xc1
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada}, //0xc2 Ver como pasar parametros jp_nz_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc3 jp_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc4 call_nz_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_bc }, //0xc5
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc6 add_a_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_00h }, //0xc7
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_z }, //0xc8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret }, //0xc9
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xca jp_z_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcb
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcc call_z_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcd call_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xce adc_a_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:RST_08H }, //0xcf
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_nc }, //0xd0
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_de }, //0xd1
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd2 jp_nc_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd3
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd4 call_nc_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_de }, //0xd5
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd6 sub_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_10h }, //0xd7
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_c }, //0xd8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:reti }, //0xd9
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xda jp_c_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdb
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdc call_c_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdd
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xde sbc_a_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_18h }, //0xdf
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe0 ldh_a8_a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_hl }, //0xe1
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_ca }, //0xe2
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe3
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe4
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_hl }, //0xe5
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe6 and_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_20h }, //0xe7
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe8 add_sp_r8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:jp_hl }, //0xe9
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xea ld_a16_a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xeb
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xec
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xed
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xee xor_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_28h }, //0xef
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf0 ldh_a_a8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_af }, //0xf1
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:la_ac }, //0xf2
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:di }, //0xf3
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf4
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_af }, //0xf5
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf6 or_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_30h }, //0xf7
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf8 ld_hl_spr8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_sp_hl }, //0xf9
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfa ld_a_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ei }, //0xfb
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfc
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfd
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfe cp_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_38h }, //0xff
 
 };
 
@@ -2488,7 +2564,7 @@ int main(int argc, char **argv){
 	//Sumar A + B
 	//instructions[0x88].action();
 	//Sumar A + C
-	instructions[0x81].action();
+	//instructions[0x81].action();
 	cout<< "\nRegistro B: " <<endl;
 	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
 	cout<< "\nRegistro C: " <<endl;
@@ -2506,6 +2582,34 @@ int main(int argc, char **argv){
 	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.H));
 	cout<< "\nRegistro L: " <<endl;
 	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.L));
+	string exit;
+	unsigned char ojo=0xf;
+	//int prueba=0;
+	int instt;
+	while(1){
+		//cin>>exit;
+		cin>> hex >> instt;
+		cout<<"has puesto: "<<instt<<"\n";
+		instructions[instt].action;
+		//ld_b8(ojo);
+		cout<< "\nRegistro B: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
+		cout<< "\nRegistro C: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.C));
+		
+		cout<< "\nRegistro A: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.A));
+		cout<< "\nRegistro F: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.F));
+		cout<< "\nRegistro D " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.D));
+		cout<< "\nRegistro E: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.E));
+		cout<< "\nRegistro H: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.H));
+		cout<< "\nRegistro L: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.L));
+	}
 	
 
 	//printf(" Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
