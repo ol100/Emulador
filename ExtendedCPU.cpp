@@ -8,19 +8,13 @@
 #include <signal.h>
 #include <algorithm>
 #include "registro.h"
+#include "memoria.h"
+#include "ExtendedCPU.h"
+#include "cpu.h"
 using namespace std;
 
 //aqui vienen las instrucciones CB
-
-struct CBinstruction {
-	int valid_instruction;
-	int clock_cycle;
-	int machine_cycle;
-	void (*action)(void);
-	
-	//unsigned char ticks;
-
-} extern const CBinstructions[256];
+const struct CBinstruction CBinstructions[256]={{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_38h }};
 
 
 static unsigned char rlc(unsigned char registro){
@@ -51,3 +45,33 @@ static unsigned char rlc(unsigned char registro){
 
 
 //0x00 RLC B
+void rlc_b(void){
+	regist.B=rlc(regist.B);
+}
+
+//0x01 RLC C
+void rlc_c(void){
+	regist.C=rlc(regist.C);
+}
+
+//0x02 RLC D
+void rlc_d(void){
+	regist.D=rlc(regist.D);
+}
+
+//0x03 RLC E
+void rlc_e(void){
+	regist.E=rlc(regist.E);
+}
+
+//0x04 RLC H
+void rlc_h(void){
+	regist.H=rlc(regist.H);
+	deconstruirHL();
+}
+
+//0x05 RLC L
+void rlc_l(void){
+	regist.L=rlc(regist.L);
+	deconstruirHL();
+}

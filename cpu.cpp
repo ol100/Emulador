@@ -9,8 +9,9 @@
 #include <algorithm>
 #include <string>
 #include "registro.h"
-#include "memoria.cpp"
-#include "ExtendedCPU.cpp"
+#include "memoria.h"
+#include "cpu.h"
+#include "ExtendedCPU.h"
 
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c\n"
@@ -26,18 +27,266 @@
 
 using namespace std; 
 	
-struct instruction {
-	int valid_instruction;
-	int clock_cycle;
-	int machine_cycle;
-	void (*action)(void);
-	
-	//unsigned char ticks;
-
-} extern const instructions[256];
-
 struct registros regist;
+const struct instruction instructions[256]={
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x00
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x01 ld_bc16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_bca }, //0x02
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_bc }, //0x03
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_b }, //0x04
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_b }, //0x05
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x06 ld_b8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rlca }, //0x07 
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x08 LD_a16_sp
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_bc }, //0x09
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_bc }, //0x0a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_bc }, //0x0b
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_c }, //0x0c
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_c }, //0x0d
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x0e ld_c8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rrca }, //0x0f
+	//{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x10
+	//{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x11
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:stop }, //0x10
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x11 ld_de16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_dea }, //0x12
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_de }, //0x13
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_d }, //0x14
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_d }, //0x15
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x16 ld_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rla }, //0x17 
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x18 jr_r8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_de }, //0x19
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_de }, //0x1a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_de }, //0x1b
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_e }, //0x1c
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_e }, //0x1d
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x1e ld_e8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rra }, //0x1f
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x20 jr_nr8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x21 ld_hl16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hla }, //0x22
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_hl }, //0x23
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_h }, //0x24
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_h }, //0x25
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x26 ld_h8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:DAA }, //0x27
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x28 jr_zr8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_hl }, //0x29
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_hll }, //0x2a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_hl }, //0x2b
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_l }, //0x2c
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_l }, //0x2d
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x2e ld_l8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cpl }, //0x2f
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x30 jr_ncr8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x31 ld_sp16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hlma }, //0x32
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_sp }, //0x33
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_hlm }, //0x34
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_hlm }, //0x35
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x36 ld_hlld8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:scf }, //0x37
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x38 jr_cr8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_SP }, //0x39
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_hlm }, //0x3a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_sp }, //0x3b
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_a }, //0x3c
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_a }, //0x3d
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_b }, //0x40
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_c }, //0x41
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_d }, //0x42
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_e }, //0x43
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_h }, //0x44
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_l }, //0x45
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_b_hl }, //0x46
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_a }, //0x47
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_b }, //0x48
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_c }, //0x49
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_d }, //0x4a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_e }, //0x4b
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_h }, //0x4c
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_l }, //0x4d
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_c_hl }, //0x4e
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_a }, //0x4f
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_b }, //0x50
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_c }, //0x51
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_d }, //0x52
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_e }, //0x53
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_h }, //0x54
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_l }, //0x55
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_d_hl }, //0x56
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_a }, //0x57
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_b }, //0x58
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_c }, //0x59
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_d }, //0x5a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_e }, //0x5b
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_h }, //0x5c
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_l }, //0x5d
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_e_hl }, //0x5e
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_a }, //0x5f
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_b }, //0x60
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_c }, //0x61
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_d }, //0x62
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_e }, //0x63
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_h }, //0x64
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_l }, //0x65
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_h_hl }, //0x66
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_a }, //0x67
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_b }, //0x68
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_c }, //0x69
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_d }, //0x6a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_e }, //0x6b
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_h }, //0x6c
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_l }, //0x6d
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_l_hl }, //0x6e
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_a }, //0x6f
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_b }, //0x70
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_c }, //0x71
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_d }, //0x72
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_e }, //0x73
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_h }, //0x74
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_l }, //0x75
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:halt }, //0x76
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_a }, //0x77
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_b }, //0x78
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_c }, //0x79
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_d }, //0x7a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_e }, //0x7b
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_h }, //0x7c
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_l }, //0x7d
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_a_hl }, //0x7e
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_a }, //0x7f
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_b }, //0x80
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_c }, //0x81
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_d }, //0x82
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_e }, //0x83
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_h }, //0x84
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_l }, //0x85
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:add_a_hl }, //0x86
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_a }, //0x87
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_b }, //0x88
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_c }, //0x89
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_d }, //0x8a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_e }, //0x8b
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_h }, //0x8c
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_l }, //0x8d
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:adc_a_hl }, //0x8e
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_a }, //0x8f
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_b }, //0x90
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_c }, //0x91
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_d }, //0x92
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_e }, //0x93
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_h }, //0x94
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_l }, //0x95
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sub_a_hl }, //0x96
+	{ 1, 4, 1,sub_a_a }, //0x97
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_b }, //0x98
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_c }, //0x99
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_d }, //0x9a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_e }, //0x9b
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_h }, //0x9c
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_l }, //0x9d
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sbc_a_hl }, //0x9e
+	{ 1, 4, 1,sbc_a_a }, //0x9f
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_b }, //0xa0
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_c }, //0xa1
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_d }, //0xa2
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_e }, //0xa3
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_h }, //0xa4
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_l }, //0xa5
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:and_hlp }, //0xa6
+	{ 1, 4, 1,and_a }, //0xa7
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_b }, //0xa8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_c }, //0xa9
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_d }, //0xaa
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_e }, //0xab
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_h }, //0xac
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_l }, //0xad
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:xor_hlp }, //0xae
+	{ 1, 4, 1,xor_a }, //0xaf
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_b }, //0xb0
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_c }, //0xb1
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_d }, //0xb2
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_e }, //0xb3
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_h }, //0xb4
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_l }, //0xb5
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:or_hlp }, //0xb6
+	{ 1, 4, 1,or_a }, //0xb7
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_b }, //0xb8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_c }, //0xb9
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_d }, //0xba
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_e }, //0xbb
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_h }, //0xbc
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_l }, //0xbd
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:cp_hlp }, //0xbe
+	{ 1, 4, 1,cp_a }, //0xbf
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_nz }, //0xc0
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_bc }, //0xc1
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada}, //0xc2 Ver como pasar parametros jp_nz_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc3 jp_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc4 call_nz_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_bc }, //0xc5
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc6 add_a_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_00h }, //0xc7
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_z }, //0xc8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret }, //0xc9
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xca jp_z_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcb
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcc call_z_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcd call_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xce adc_a_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:RST_08H }, //0xcf
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_nc }, //0xd0
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_de }, //0xd1
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd2 jp_nc_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd3
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd4 call_nc_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_de }, //0xd5
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd6 sub_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_10h }, //0xd7
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_c }, //0xd8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:reti }, //0xd9
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xda jp_c_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdb
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdc call_c_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdd
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xde sbc_a_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_18h }, //0xdf
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe0 ldh_a8_a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_hl }, //0xe1
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_ca }, //0xe2
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe3
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe4
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_hl }, //0xe5
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe6 and_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_20h }, //0xe7
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe8 add_sp_r8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:jp_hl }, //0xe9
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xea ld_a16_a
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xeb
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xec
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xed
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xee xor_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_28h }, //0xef
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf0 ldh_a_a8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_af }, //0xf1
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:la_ac }, //0xf2
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:di }, //0xf3
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf4
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_af }, //0xf5
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf6 or_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_30h }, //0xf7
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf8 ld_hl_spr8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_sp_hl }, //0xf9
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfa ld_a_a16
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ei }, //0xfb
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfc
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfd
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfe cp_d8
+	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_38h }, //0xff
 
+};
 /*struct registros{
     unsigned char A;
     unsigned char F;
@@ -541,6 +790,7 @@ void inc_bc() {
 
 // 0x04
 void inc_b(void) { 
+	cout<<"holabuenas"<<endl;
 	inc(&regist.B);
 	reconstruirBC();
 }
@@ -2272,265 +2522,7 @@ void nada(){
 
 }
 
-const struct instruction instructions[256]={
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x00
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x01 ld_bc16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_bca }, //0x02
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_bc }, //0x03
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_b }, //0x04
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_b }, //0x05
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x06 ld_b8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rlca }, //0x07 
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x08 LD_a16_sp
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_bc }, //0x09
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_bc }, //0x0a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_bc }, //0x0b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_c }, //0x0c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_c }, //0x0d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x0e ld_c8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rrca }, //0x0f
-	//{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x10
-	//{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x11
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:stop }, //0x10
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x11 ld_de16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_dea }, //0x12
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_de }, //0x13
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_d }, //0x14
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_d }, //0x15
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x16 ld_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rla }, //0x17 
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x18 jr_r8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_de }, //0x19
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_de }, //0x1a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_de }, //0x1b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_e }, //0x1c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_e }, //0x1d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x1e ld_e8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rra }, //0x1f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x20 jr_nr8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x21 ld_hl16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hla }, //0x22
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_hl }, //0x23
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_h }, //0x24
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_h }, //0x25
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x26 ld_h8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:DAA }, //0x27
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x28 jr_zr8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_hl }, //0x29
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_hll }, //0x2a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_hl }, //0x2b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_l }, //0x2c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_l }, //0x2d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x2e ld_l8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cpl }, //0x2f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x30 jr_ncr8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x31 ld_sp16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hlma }, //0x32
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_sp }, //0x33
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_hlm }, //0x34
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_hlm }, //0x35
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x36 ld_hlld8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:scf }, //0x37
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x38 jr_cr8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_SP }, //0x39
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_hlm }, //0x3a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_sp }, //0x3b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_a }, //0x3c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_a }, //0x3d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_b }, //0x40
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_c }, //0x41
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_d }, //0x42
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_e }, //0x43
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_h }, //0x44
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_l }, //0x45
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_b_hl }, //0x46
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_a }, //0x47
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_b }, //0x48
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_c }, //0x49
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_d }, //0x4a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_e }, //0x4b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_h }, //0x4c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_l }, //0x4d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_c_hl }, //0x4e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_a }, //0x4f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_b }, //0x50
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_c }, //0x51
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_d }, //0x52
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_e }, //0x53
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_h }, //0x54
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_l }, //0x55
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_d_hl }, //0x56
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_a }, //0x57
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_b }, //0x58
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_c }, //0x59
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_d }, //0x5a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_e }, //0x5b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_h }, //0x5c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_l }, //0x5d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_e_hl }, //0x5e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_a }, //0x5f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_b }, //0x60
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_c }, //0x61
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_d }, //0x62
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_e }, //0x63
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_h }, //0x64
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_l }, //0x65
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_h_hl }, //0x66
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_a }, //0x67
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_b }, //0x68
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_c }, //0x69
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_d }, //0x6a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_e }, //0x6b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_h }, //0x6c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_l }, //0x6d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_l_hl }, //0x6e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_a }, //0x6f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_b }, //0x70
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_c }, //0x71
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_d }, //0x72
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_e }, //0x73
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_h }, //0x74
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_l }, //0x75
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:halt }, //0x76
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_a }, //0x77
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_b }, //0x78
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_c }, //0x79
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_d }, //0x7a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_e }, //0x7b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_h }, //0x7c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_l }, //0x7d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_a_hl }, //0x7e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_a }, //0x7f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_b }, //0x80
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_c }, //0x81
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_d }, //0x82
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_e }, //0x83
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_h }, //0x84
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_l }, //0x85
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:add_a_hl }, //0x86
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_a }, //0x87
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_b }, //0x88
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_c }, //0x89
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_d }, //0x8a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_e }, //0x8b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_h }, //0x8c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_l }, //0x8d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:adc_a_hl }, //0x8e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_a }, //0x8f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_b }, //0x90
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_c }, //0x91
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_d }, //0x92
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_e }, //0x93
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_h }, //0x94
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_l }, //0x95
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sub_a_hl }, //0x96
-	{ 1, 4, 1,sub_a_a }, //0x97
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_b }, //0x98
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_c }, //0x99
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_d }, //0x9a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_e }, //0x9b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_h }, //0x9c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_l }, //0x9d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sbc_a_hl }, //0x9e
-	{ 1, 4, 1,sbc_a_a }, //0x9f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_b }, //0xa0
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_c }, //0xa1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_d }, //0xa2
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_e }, //0xa3
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_h }, //0xa4
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_l }, //0xa5
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:and_hlp }, //0xa6
-	{ 1, 4, 1,and_a }, //0xa7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_b }, //0xa8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_c }, //0xa9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_d }, //0xaa
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_e }, //0xab
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_h }, //0xac
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_l }, //0xad
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:xor_hlp }, //0xae
-	{ 1, 4, 1,xor_a }, //0xaf
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_b }, //0xb0
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_c }, //0xb1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_d }, //0xb2
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_e }, //0xb3
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_h }, //0xb4
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_l }, //0xb5
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:or_hlp }, //0xb6
-	{ 1, 4, 1,or_a }, //0xb7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_b }, //0xb8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_c }, //0xb9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_d }, //0xba
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_e }, //0xbb
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_h }, //0xbc
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_l }, //0xbd
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:cp_hlp }, //0xbe
-	{ 1, 4, 1,cp_a }, //0xbf
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_nz }, //0xc0
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_bc }, //0xc1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada}, //0xc2 Ver como pasar parametros jp_nz_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc3 jp_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc4 call_nz_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_bc }, //0xc5
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc6 add_a_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_00h }, //0xc7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_z }, //0xc8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret }, //0xc9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xca jp_z_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcb
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcc call_z_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcd call_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xce adc_a_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:RST_08H }, //0xcf
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_nc }, //0xd0
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_de }, //0xd1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd2 jp_nc_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd3
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd4 call_nc_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_de }, //0xd5
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd6 sub_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_10h }, //0xd7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_c }, //0xd8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:reti }, //0xd9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xda jp_c_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdb
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdc call_c_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdd
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xde sbc_a_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_18h }, //0xdf
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe0 ldh_a8_a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_hl }, //0xe1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_ca }, //0xe2
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe3
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe4
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_hl }, //0xe5
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe6 and_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_20h }, //0xe7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe8 add_sp_r8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:jp_hl }, //0xe9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xea ld_a16_a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xeb
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xec
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xed
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xee xor_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_28h }, //0xef
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf0 ldh_a_a8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_af }, //0xf1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:la_ac }, //0xf2
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:di }, //0xf3
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf4
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_af }, //0xf5
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf6 or_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_30h }, //0xf7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf8 ld_hl_spr8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_sp_hl }, //0xf9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfa ld_a_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ei }, //0xfb
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfc
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfd
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfe cp_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_38h }, //0xff
 
-};
 
 int main(int argc, char **argv){
 
@@ -2554,6 +2546,7 @@ int main(int argc, char **argv){
 
 	int i=0;
 	reset();
+	//inc_b();
 	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.F));
 	mem[0]=0x00;
 	mem[1]=0x3C;
@@ -2590,7 +2583,8 @@ int main(int argc, char **argv){
 		//cin>>exit;
 		cin>> hex >> instt;
 		cout<<"has puesto: "<<instt<<"\n";
-		instructions[instt].action;
+		instructions[instt].action();
+		
 		//ld_b8(ojo);
 		cout<< "\nRegistro B: " <<endl;
 		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));

@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <algorithm>
+#include "memoria.h"
 
 using namespace std;
 

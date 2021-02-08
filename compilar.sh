@@ -1,2 +1,2 @@
-g++ -o cpu cpu.cpp
+g++ -o cpu *.cpp
 
