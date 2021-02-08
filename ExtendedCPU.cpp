@@ -14,7 +14,34 @@
 using namespace std;
 
 //aqui vienen las instrucciones CB
-const struct CBinstruction CBinstructions[256]={{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_38h }};
+const struct CBinstruction CBinstructions[256]={
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_b },//0x00 
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_c },//0x01
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_d },//0x02
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_e },//0x03
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_h },//0x04
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_l },//0x05
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:rlc_hl },//0x06
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_a },//0x07
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_b },//0x08 
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_c },//0x09
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_d },//0x0a
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_e },//0x0b
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_h },//0x0c
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_l },//0x0d
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:rrc_hl },//0x0e
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_a },//0x0f
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_b },//0x10 
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_c },//0x11
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_d },//0x12
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_e },//0x13
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_h },//0x14
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_l },//0x15
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:rl_hl },//0x16
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_a }//0x17
+	
+	
+	};
 
 
 static unsigned char rlc(unsigned char registro){
@@ -42,6 +69,64 @@ static unsigned char rlc(unsigned char registro){
     return registro;
 }
 
+
+static unsigned char rrc(unsigned char registro){
+	//coges el bit menos significativo y lo dejas a la derecha, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
+	unsigned char u = registro & 0x01;
+	
+	if (u != 0){
+		regist.F = regist.F | 0x10;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+	}
+
+	registro= registro >> 1;
+	//como es una rotacion, se le mete por el otro lado lo que salio
+	registro += u << 7;
+
+	regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+
+    return registro;
+}
+
+static unsigned char rl(unsigned char registro){
+	//cogemos el valor del bit de carry
+	unsigned char bit=regist.F & 0x10;
+	bit= bit >>4;
+	bit= bit & 0x01;// para poder sumar el bit, que sera 0 o 1, como vaya la cosa
+
+	//vemos si el mas significativo de A es 1 o 0
+	unsigned char u = registro >> 7;
+	if (u != 0){
+		regist.F = regist.F | 0x10;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+	}
+
+	registro = registro << 1;
+
+	//como es una rotacion, se le mete al final lo que "salio"
+	registro += bit;
+
+	regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+
+    return registro;
+
+}
 
 
 //0x00 RLC B
@@ -74,4 +159,104 @@ void rlc_h(void){
 void rlc_l(void){
 	regist.L=rlc(regist.L);
 	deconstruirHL();
+}
+
+//0x06 RLC (HL)
+void rlc_hl(void){
+	reconstruirHL();
+	unsigned char bytememrotado=rlc(loadMEMB(regist.HL));
+	writeMEMB(regist.HL, bytememrotado);
+}
+
+//0x07 RLC A
+void rlc_a(void){
+	regist.A=rlc(regist.A);
+}
+
+//0x08 RRC B
+void rrc_b(void){
+	regist.B=rrc(regist.B);
+}
+
+//0x09 RRC C
+void rrc_c(void){
+	regist.C=rrc(regist.C);
+}
+
+//0x0a RRC D
+void rrc_d(void){
+	regist.D=rrc(regist.D);
+}
+
+//0x0b RRC E
+void rrc_e(void){
+	regist.E=rrc(regist.E);
+}
+
+//0x0c RRC H
+void rrc_h(void){
+	regist.H=rrc(regist.H);
+	deconstruirHL();
+}
+
+//0x0d RRC L
+void rrc_l(void){
+	regist.L=rrc(regist.L);
+	deconstruirHL();
+}
+
+//0x0e RRC (HL)
+void rrc_hl(void){
+	reconstruirHL();
+	unsigned char bytememrotado=rrc(loadMEMB(regist.HL));
+	writeMEMB(regist.HL, bytememrotado);
+}
+
+//0x0f RRC A
+void rrc_a(void){
+	regist.A=rrc(regist.A);
+}
+
+//0x10 RL B
+void rl_b(void){
+	regist.B=rl(regist.B);
+}
+
+//0x11 RL C
+void rl_c(void){
+	regist.C=rl(regist.C);
+}
+
+//0x12 RL D
+void rl_d(void){
+	regist.D=rl(regist.D);
+}
+
+//0x13 RL E
+void rl_e(void){
+	regist.E=rl(regist.E);
+}
+
+//0x14 RL H
+void rl_h(void){
+	regist.H=rl(regist.H);
+	deconstruirHL();
+}
+
+//0x15 RL L 
+void rl_l(void){
+	regist.L=rl(regist.L);
+	deconstruirHL();
+}
+
+//0x16 RL (HL)
+void rl_hl(void){
+	reconstruirHL();
+	unsigned char bytememrotado=rl(loadMEMB(regist.HL));
+	writeMEMB(regist.HL, bytememrotado);
+}
+
+//0x17 RL A 
+void rl_a(void){
+	regist.A=rl(regist.A);
 }

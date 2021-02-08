@@ -890,7 +890,7 @@ void rrca(){
 	//coges el bit menos significativo y lo dejas a la derecha, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
 	unsigned char u = regist.A & 0x01;
 	
-	if (regist.A != 0){
+	if (u != 0){
 		regist.F = regist.F | 0x10;
 	}else
 	{
@@ -903,7 +903,11 @@ void rrca(){
 
 	regist.F= regist.F & 0xDF;//desactiva el half
 	regist.F= regist.F & 0xBF;//desactiva el flag N
-	regist.F= regist.F & 0x7F;//desactiva el flag 0
+	if(regist.A==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
 
 }
 
@@ -979,7 +983,11 @@ void rla(){
 
 	regist.F= regist.F & 0xDF;//desactiva el half
 	regist.F= regist.F & 0xBF;//desactiva el flag N
-	regist.F= regist.F & 0x7F;//desactiva el flag 0
+	if(regist.A==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
 
 }
 
