@@ -198,6 +198,90 @@ static unsigned char rl2(unsigned char registro){
 
 }
 
+static unsigned char rr(unsigned char value) {
+	value >>= 1;
+	if(FLAGS_ISCARRY) value |= 0x80;
+	
+	if(value & 0x01) FLAGS_SET(FLAGS_CARRY);
+	else FLAGS_CLEAR(FLAGS_CARRY);
+	
+	if(value) FLAGS_CLEAR(FLAGS_ZERO);
+	else FLAGS_SET(FLAGS_ZERO);
+	
+	FLAGS_CLEAR(FLAGS_NEGATIVE | FLAGS_HALFCARRY);
+	
+	return value;
+}
+
+static unsigned char rr2(unsigned char registro){
+	//cogemos el valor del bit de carry
+	unsigned char bit=regist.F & 0x10;
+	bit= bit <<3;
+	bit= bit & 0x80;// para poder sumar el bit, que sera 0 o 1, como vaya la cosa
+
+	//coges el bit menos significativo y lo dejas a la derecha, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
+	unsigned char u = registro & 0x01;
+	
+	if (u != 0){
+		regist.F = regist.F | 0x10;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+	}
+
+	registro = registro >> 1;
+
+	//como es una rotacion, se le mete al final lo que "salio"
+	registro += bit;
+
+	regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+
+    return registro;
+
+}
+
+static unsigned char sla(unsigned char value) {
+	if(value & 0x80) FLAGS_SET(FLAGS_CARRY);
+	else FLAGS_CLEAR(FLAGS_CARRY);
+	
+	value <<= 1;
+	
+	if(value) FLAGS_CLEAR(FLAGS_ZERO);
+	else FLAGS_SET(FLAGS_ZERO);
+	
+	FLAGS_CLEAR(FLAGS_NEGATIVE | FLAGS_HALFCARRY);
+	
+	return value;
+}
+
+static unsigned char sla2(unsigned char registro){
+    unsigned char u= registro >>7;
+    if (u != 0){
+		regist.F = regist.F | 0x10;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+	}
+    registro=registro<<1;
+
+    regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+
+    return registro;
+    
+}
+
 int main(){
     unsigned char A= 0x8F;
     unsigned char B= 0x00;
@@ -207,10 +291,10 @@ int main(){
     unsigned char resultado3= A >> 7;
     unsigned char resultado4= B >> 7;
 
-    unsigned char resultado5=rl(A);
-    unsigned char resultado6=rl(B);
-    unsigned char resultado7=rl2(A);
-    unsigned char resultado8=rl2(B);
+    unsigned char resultado5=sla(A);
+    unsigned char resultado6=sla(B);
+    unsigned char resultado7=sla2(A);
+    unsigned char resultado8=sla2(B);
 
     //printf("Resultado 1:%u \n",resultado1);
     //printf("Resultado 2:%u \n",resultado2);

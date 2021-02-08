@@ -1066,7 +1066,11 @@ void rra(){
 
 	regist.F= regist.F & 0xDF;//desactiva el half
 	regist.F= regist.F & 0xBF;//desactiva el flag N
-	regist.F= regist.F & 0x7F;//desactiva el flag 0
+	if(regist.A==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
 
 }
 

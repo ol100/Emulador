@@ -14,6 +14,8 @@ struct CBinstruction {
 static unsigned char rlc(unsigned char registro);
 static unsigned char rrc(unsigned char registro);
 static unsigned char rl(unsigned char registro);
+static unsigned char rr(unsigned char registro);
+static unsigned char sla(unsigned char registro);
 
 
 void rlc_b(void);
@@ -40,3 +42,19 @@ void rl_h(void);
 void rl_l(void);
 void rl_hl(void);
 void rl_a(void);
+void rr_b(void);
+void rr_c(void);
+void rr_d(void);
+void rr_e(void);
+void rr_h(void);
+void rr_l(void);
+void rr_hl(void);
+void rr_a(void);
+void sla_b(void);
+void sla_c(void);
+void sla_d(void);
+void sla_e(void);
+void sla_h(void);
+void sla_l(void);
+void sla_hl(void);
+void sla_a(void);
