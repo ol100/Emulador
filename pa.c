@@ -450,16 +450,15 @@ int main(){
     unsigned char resultado7=bit2(0x04,A);
     unsigned char resultado8=bit2(0x04,B);
 */
-	bit(1 << 7,A);
-    bit(1 << 5,B);
-    bit2(0x07,A);
-    bit2(0x05,B);
 
     //printf("Resultado 1:%u \n",resultado1);
     //printf("Resultado 2:%u \n",resultado2);
     //printf("Resultado 3:%u \n",resultado3);
     //printf("Resultado 4:%u \n",resultado4);
-
+	regist.B=0x8D;
+	registers.B=0x8D;
+	regist.B=regist.B & 0xFE;
+	registers.B &= ~(1 << 0);
 
     //printf("Leading text1 \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado1));
     //printf("Leading text2 \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado2));
@@ -471,8 +470,8 @@ int main(){
     printf("ORIGINAL B \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(B));
     //printf("RESULTADO PAVO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado6));
     //printf("RESULTADO MIO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado8));
-    printf("RESULTADO F PAVO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(registers.F));
-    printf("RESULTADO F MIO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.F));
+    printf("RESULTADO F PAVO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(registers.B));
+    printf("RESULTADO F MIO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
 
 
     
