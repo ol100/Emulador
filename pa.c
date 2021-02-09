@@ -354,19 +354,106 @@ static unsigned char swap2(unsigned char registro){
     return registro;
 }
 
+static unsigned char srl(unsigned char value) {
+	if(value & 0x01) FLAGS_SET(FLAGS_CARRY);
+	else FLAGS_CLEAR(FLAGS_CARRY);
+	
+	value >>= 1;
+	
+	if(value) FLAGS_CLEAR(FLAGS_ZERO);
+	else FLAGS_SET(FLAGS_ZERO);
+		
+	FLAGS_CLEAR(FLAGS_NEGATIVE | FLAGS_HALFCARRY);
+	
+	return value;
+}
+
+static unsigned char srl2(unsigned char registro){
+    unsigned char u= registro & 0x01;
+    if (u != 0){
+		regist.F = regist.F | 0x10;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+	}
+    registro=registro >> 1;
+
+    regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+
+    return registro;
+    
+}
+
+static void bit(unsigned char bit, unsigned char value) {
+	if(value & bit) FLAGS_CLEAR(FLAGS_ZERO);
+	else FLAGS_SET(FLAGS_ZERO);
+	printf("SOY PAVO: %u\n",(value & bit));
+	
+	FLAGS_CLEAR(FLAGS_NEGATIVE);
+	FLAGS_SET(FLAGS_HALFCARRY);
+}
+
+static void bit2(unsigned char bit, unsigned char registro){
+	unsigned char u;
+	if(bit==0x00){
+		u=registro & 0x01;
+	}else if(bit==0x01){
+		u=registro & 0x02;
+		u= u>>1;
+	}else if(bit==0x02){
+		u=registro & 0x04;
+		u= u>>2;
+	}else if(bit==0x03){
+		u=registro & 0x08;
+		u= u>>3;
+	}else if(bit==0x04){
+		u=registro & 0x10;
+		u= u>>4;
+	}else if(bit==0x05){
+		u=registro & 0x20;
+		u= u>>5;
+	}else if(bit==0x06){
+		u=registro & 0x40;
+		u= u>>6;
+	}else if(bit==0x07){
+		u=registro & 0x80;
+		u= u>>7;
+	}
+	printf("SOY U: %u\n",u);
+	if(u==0){
+		regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	regist.F= regist.F | 0x20;//activa el flag H
+
+}
+
 int main(){
-    unsigned char A= 0x8F;
-    unsigned char B= 0x00;
+    unsigned char A= 0x00;
+    unsigned char B= 0xFF;
 
     unsigned char resultado1= (A & 0x80) >> 7;
     unsigned char resultado2= (B & 0x80) >> 7;
     unsigned char resultado3= A >> 7;
     unsigned char resultado4= B >> 7;
-
-    unsigned char resultado5=swap(A);
-    unsigned char resultado6=swap(B);
-    unsigned char resultado7=swap2(A);
-    unsigned char resultado8=swap2(B);
+/*
+    unsigned char resultado5=bit(0x04,A);
+    unsigned char resultado6=bit(0x04,B);
+    unsigned char resultado7=bit2(0x04,A);
+    unsigned char resultado8=bit2(0x04,B);
+*/
+	bit(1 << 7,A);
+    bit(1 << 5,B);
+    bit2(0x07,A);
+    bit2(0x05,B);
 
     //printf("Resultado 1:%u \n",resultado1);
     //printf("Resultado 2:%u \n",resultado2);
@@ -379,11 +466,11 @@ int main(){
     //printf("Leading text3 \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado3));
     //printf("Leading text4 \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado4));
     printf("ORIGINAL A \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(A));
-    printf("RESULTADO PAVO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado5));
-    printf("RESULTADO MIO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado7));
+    //printf("RESULTADO PAVO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado5));
+    //printf("RESULTADO MIO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado7));
     printf("ORIGINAL B \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(B));
-    printf("RESULTADO PAVO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado6));
-    printf("RESULTADO MIO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado8));
+    //printf("RESULTADO PAVO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado6));
+    //printf("RESULTADO MIO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(resultado8));
     printf("RESULTADO F PAVO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(registers.F));
     printf("RESULTADO F MIO \n"BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.F));
 

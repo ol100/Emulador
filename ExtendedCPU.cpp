@@ -70,7 +70,39 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_h },//0x34
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_l },//0x35
 	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:swap_hl },//0x36
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_a }//0x37
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_a },//0x37
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_b },//0x38 
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_c },//0x39
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_d },//0x3a
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_e },//0x3b
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_h },//0x3c
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_l },//0x3d
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:srl_hl },//0x3e
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_a },//0x3f
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_b },//0x40 
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_c },//0x41
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_d },//0x42
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_e },//0x43
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_h },//0x44
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_l },//0x45
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_0_hl },//0x46
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_a },//0x47
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_b },//0x48
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_c },//0x49
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_d },//0x4a
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_e },//0x4b
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_h },//0x4c
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_l },//0x4d
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_1_hl },//0x4e
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_a },//0x4f
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_b },//0x50
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_c },//0x51
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_d },//0x52
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_e },//0x53
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_h },//0x54
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_l },//0x55
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_2_hl },//0x56
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_a }//0x57
 	
 	};
 
@@ -256,6 +288,64 @@ static unsigned char swap(unsigned char registro){
     }
 
     return registro;
+}
+
+static unsigned char srl(unsigned char registro){
+    unsigned char u= registro & 0x01;
+    if (u != 0){
+		regist.F = regist.F | 0x10;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+	}
+    registro=registro >> 1;
+
+    regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+
+    return registro;
+    
+}
+
+static void bit(unsigned char bit, unsigned char registro){
+	unsigned char u;
+	if(bit==0x00){
+		u=registro & 0x01;
+	}else if(bit==0x01){
+		u=registro & 0x02;
+		u= u>>1;
+	}else if(bit==0x02){
+		u=registro & 0x04;
+		u= u>>2;
+	}else if(bit==0x03){
+		u=registro & 0x08;
+		u= u>>3;
+	}else if(bit==0x04){
+		u=registro & 0x10;
+		u= u>>4;
+	}else if(bit==0x05){
+		u=registro & 0x20;
+		u= u>>5;
+	}else if(bit==0x06){
+		u=registro & 0x40;
+		u= u>>6;
+	}else if(bit==0x07){
+		u=registro & 0x80;
+		u= u>>7;
+	}
+	if(u==0){
+		regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	regist.F= regist.F | 0x20;//activa el flag H
+
 }
 
 //0x00 RLC B
@@ -564,4 +654,171 @@ void swap_hl(void){
 //0x37 SWAP A 
 void swap_a(void){
 	regist.A=swap(regist.A);
+}
+
+//0x38 SRL B 
+void srl_b(void){
+	regist.B=srl(regist.B);
+}
+
+//0x39 SRL C 
+void srl_c(void){
+	regist.C=srl(regist.C);
+}
+
+//0x3a SRL D 
+void srl_d(void){
+	regist.D=srl(regist.D);
+}
+
+//0x3b SRL E 
+void srl_e(void){
+	regist.E=srl(regist.E);
+}
+
+//0x3c SRL H 
+void srl_h(void){
+	regist.H=srl(regist.H);
+	deconstruirHL();
+}
+
+//0x3d SRL L 
+void srl_l(void){
+	regist.L=srl(regist.L);
+	deconstruirHL();
+}
+
+//0x3e SRL (HL)
+void srl_hl(void){
+	reconstruirHL();
+	unsigned char bytememrotado=srl(loadMEMB(regist.HL));
+	writeMEMB(regist.HL, bytememrotado);
+}
+
+//0x3f SRL A 
+void srl_a(void){
+	regist.A=srl(regist.A);
+}
+
+//0x40 BIT 0,B
+void bit_0_b(void){
+	bit(0x00,regist.B);
+}
+
+//0x41 BIT 0,C
+void bit_0_c(void){
+	bit(0x00,regist.C);
+}
+
+//0x42 BIT 0,D
+void bit_0_d(void){
+	bit(0x00,regist.D);
+}
+
+//0x43 BIT 0,E
+void bit_0_e(void){
+	bit(0x00,regist.E);
+}
+
+//0x44 BIT 0,H
+void bit_0_h(void){
+	bit(0x00,regist.H);
+}
+
+//0x45 BIT 0,L
+void bit_0_l(void){
+	bit(0x00,regist.L);
+}
+
+//0x46 BIT 0,(HL)
+void bit_0_hl(void){
+	reconstruirHL();
+	bit(0x00,loadMEMB(regist.HL));
+}
+
+//0x47 BIT 0,A
+void bit_0_a(void){
+	bit(0x00,regist.A);
+}
+
+//0x48 BIT 1,B
+void bit_1_b(void){
+	bit(0x01,regist.B);
+}
+
+//0x49 BIT 1,C
+void bit_1_c(void){
+	bit(0x01,regist.C);
+}
+
+//0x4a BIT 1,D
+void bit_1_d(void){
+	bit(0x01,regist.D);
+}
+
+//0x4b BIT 1,E
+void bit_1_e(void){
+	bit(0x01,regist.E);
+}
+
+//0x4c BIT 1,H
+void bit_1_h(void){
+	bit(0x01,regist.H);
+}
+
+//0x4d BIT 1,L
+void bit_1_l(void){
+	bit(0x01,regist.L);
+}
+
+//0x4e BIT 1,(HL)
+void bit_1_hl(void){
+	reconstruirHL();
+	bit(0x01,loadMEMB(regist.HL));
+}
+
+//0x4f BIT 1,A
+void bit_1_a(void){
+	bit(0x01,regist.A);
+}
+
+//0x50 BIT 2,B
+void bit_2_b(void){
+	bit(0x02,regist.B);
+}
+
+//0x51 BIT 2,C
+void bit_2_c(void){
+	bit(0x02,regist.C);
+}
+
+//0x52 BIT 2,D
+void bit_2_d(void){
+	bit(0x02,regist.D);
+}
+
+//0x53 BIT 2,E
+void bit_2_e(void){
+	bit(0x02,regist.E);
+}
+
+//0x54 BIT 2,H
+void bit_2_h(void){
+	bit(0x02,regist.H);
+}
+
+//0x55 BIT 2,L
+void bit_2_l(void){
+	bit(0x02,regist.L);
+}
+
+//0x56 BIT 2,(HL)
+void bit_2_hl(void){
+	reconstruirHL();
+	bit(0x02,loadMEMB(regist.HL));
+}
+
+//0x57 BIT 2,A
+void bit_2_a(void){
+	bit(0x02,regist.A);
 }
