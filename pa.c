@@ -282,6 +282,78 @@ static unsigned char sla2(unsigned char registro){
     
 }
 
+
+
+static unsigned char sra(unsigned char value) {
+	if(value & 0x01) FLAGS_SET(FLAGS_CARRY);
+	else FLAGS_CLEAR(FLAGS_CARRY);
+	
+	value = (value & 0x80) | (value >> 1);
+	
+	if(value) FLAGS_CLEAR(FLAGS_ZERO);
+	else FLAGS_SET(FLAGS_ZERO);
+	
+	FLAGS_CLEAR(FLAGS_NEGATIVE | FLAGS_HALFCARRY);
+	
+	return value;
+}
+
+
+static unsigned char sra2(unsigned char registro){
+    unsigned char u= registro & 0x01;
+	unsigned char bitquesaleyvuelve;
+    if (u != 0){
+		regist.F = regist.F | 0x10;
+		bitquesaleyvuelve= 0x80;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+		bitquesaleyvuelve= 0x00;
+	}
+    registro=registro >> 1;
+	registro= registro + bitquesaleyvuelve;
+
+
+    regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+
+    return registro;
+    
+}
+
+static unsigned char swap(unsigned char value) {
+	value = ((value & 0xf) << 4) | ((value & 0xf0) >> 4);
+	
+	if(value) FLAGS_CLEAR(FLAGS_ZERO);
+	else FLAGS_SET(FLAGS_ZERO);
+	
+	FLAGS_CLEAR(FLAGS_NEGATIVE | FLAGS_HALFCARRY | FLAGS_CARRY);
+	
+	return value;
+}
+
+static unsigned char swap2(unsigned char registro){
+	unsigned char parte_baja=(registro & 0xF0)>> 4;
+	unsigned char parte_alta=(registro & 0x0F)<< 4;
+	registro= parte_baja | parte_alta;
+	
+	regist.F= regist.F & 0xEF;//desactiva carry
+	regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+
+    return registro;
+}
+
 int main(){
     unsigned char A= 0x8F;
     unsigned char B= 0x00;
@@ -291,10 +363,10 @@ int main(){
     unsigned char resultado3= A >> 7;
     unsigned char resultado4= B >> 7;
 
-    unsigned char resultado5=sla(A);
-    unsigned char resultado6=sla(B);
-    unsigned char resultado7=sla2(A);
-    unsigned char resultado8=sla2(B);
+    unsigned char resultado5=swap(A);
+    unsigned char resultado6=swap(B);
+    unsigned char resultado7=swap2(A);
+    unsigned char resultado8=swap2(B);
 
     //printf("Resultado 1:%u \n",resultado1);
     //printf("Resultado 2:%u \n",resultado2);

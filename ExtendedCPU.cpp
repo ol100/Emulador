@@ -54,7 +54,23 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sla_h },//0x24
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sla_l },//0x25
 	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:sla_hl },//0x26
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sla_a }//0x27
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_a },//0x27
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_b },//0x28 
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_c },//0x29
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_d },//0x2a
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_e },//0x2b
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_h },//0x2c
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_l },//0x2d
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:sra_hl },//0x2e
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_a },//0x2f
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_b },//0x30 
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_c },//0x31
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_d },//0x32
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_e },//0x33
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_h },//0x34
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_l },//0x35
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:swap_hl },//0x36
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_a }//0x37
 	
 	};
 
@@ -196,6 +212,50 @@ static unsigned char sla(unsigned char registro){
 
     return registro;
     
+}
+
+static unsigned char sra(unsigned char registro){
+    unsigned char u= registro & 0x01;
+	unsigned char bitquesaleyvuelve;
+    if (u != 0){
+		regist.F = regist.F | 0x10;
+		bitquesaleyvuelve= 0x80;
+	}else
+	{
+		regist.F= regist.F & 0xEF;
+		bitquesaleyvuelve= 0x00;
+	}
+    registro=registro >> 1;
+	registro= registro + bitquesaleyvuelve;
+
+
+    regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+
+    return registro;
+    
+}
+
+static unsigned char swap(unsigned char registro){
+	unsigned char parte_baja=(registro & 0xF0)>> 4;
+	unsigned char parte_alta=(registro & 0x0F)<< 4;
+	registro= parte_baja | parte_alta;
+	
+	regist.F= regist.F & 0xEF;//desactiva carry
+	regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+
+    return registro;
 }
 
 //0x00 RLC B
@@ -379,7 +439,7 @@ void sla_b(void){
 	regist.B=sla(regist.B);
 }
 
-//0x21 SLA B 
+//0x21 SLA C 
 void sla_c(void){
 	regist.C=sla(regist.C);
 }
@@ -416,4 +476,92 @@ void sla_hl(void){
 //0x27 SLA A 
 void sla_a(void){
 	regist.A=sla(regist.A);
+}
+
+//0x28 SRA B 
+void sra_b(void){
+	regist.B=sra(regist.B);
+}
+
+//0x29 SRA C 
+void sra_c(void){
+	regist.C=sra(regist.C);
+}
+
+//0x2a SRA D 
+void sra_d(void){
+	regist.D=sra(regist.D);
+}
+
+//0x2b SRA E 
+void sra_e(void){
+	regist.E=sra(regist.E);
+}
+
+//0x2c SRA H 
+void sra_h(void){
+	regist.H=sra(regist.H);
+	deconstruirHL();
+}
+
+//0x2d SRA L 
+void sra_l(void){
+	regist.L=sra(regist.L);
+	deconstruirHL();
+}
+
+//0x2e SRA (HL)
+void sra_hl(void){
+	reconstruirHL();
+	unsigned char bytememrotado=sra(loadMEMB(regist.HL));
+	writeMEMB(regist.HL, bytememrotado);
+}
+
+//0x2f SRA A 
+void sra_a(void){
+	regist.A=sra(regist.A);
+}
+
+//0x30 SWAP B 
+void swap_b(void){
+	regist.B=swap(regist.B);
+}
+
+//0x31 SWAP C 
+void swap_c(void){
+	regist.C=swap(regist.C);
+}
+
+//0x32 SWAP D 
+void swap_d(void){
+	regist.D=swap(regist.D);
+}
+
+//0x33 SWAP E 
+void swap_e(void){
+	regist.E=swap(regist.E);
+}
+
+//0x34 SWAP H 
+void swap_h(void){
+	regist.H=swap(regist.H);
+	deconstruirHL();
+}
+
+//0x35 SWAP L 
+void swap_l(void){
+	regist.L=swap(regist.L);
+	deconstruirHL();
+}
+
+//0x36 SWAP (HL)
+void swap_hl(void){
+	reconstruirHL();
+	unsigned char bytememrotado=swap(loadMEMB(regist.HL));
+	writeMEMB(regist.HL, bytememrotado);
+}
+
+//0x37 SWAP A 
+void swap_a(void){
+	regist.A=swap(regist.A);
 }
