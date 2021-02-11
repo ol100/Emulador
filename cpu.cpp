@@ -28,263 +28,264 @@
 using namespace std; 
 	
 struct registros regist;
-const struct instruction instructions[256]={
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x00
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x01 ld_bc16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_bca }, //0x02
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_bc }, //0x03
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_b }, //0x04
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_b }, //0x05
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x06 ld_b8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rlca }, //0x07 
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x08 LD_a16_sp
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_bc }, //0x09
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_bc }, //0x0a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_bc }, //0x0b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_c }, //0x0c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_c }, //0x0d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x0e ld_c8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rrca }, //0x0f
-	//{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x10
-	//{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nop }, //0x11
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:stop }, //0x10
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x11 ld_de16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_dea }, //0x12
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_de }, //0x13
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_d }, //0x14
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_d }, //0x15
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x16 ld_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rla }, //0x17 
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x18 jr_r8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_de }, //0x19
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_de }, //0x1a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_de }, //0x1b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_e }, //0x1c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_e }, //0x1d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x1e ld_e8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rra }, //0x1f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x20 jr_nr8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x21 ld_hl16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hla }, //0x22
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_hl }, //0x23
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_h }, //0x24
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_h }, //0x25
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x26 ld_h8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:DAA }, //0x27
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x28 jr_zr8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_hl }, //0x29
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_hll }, //0x2a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_hl }, //0x2b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_l }, //0x2c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_l }, //0x2d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x2e ld_l8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cpl }, //0x2f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x30 jr_ncr8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x31 ld_sp16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hlma }, //0x32
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_sp }, //0x33
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_hlm }, //0x34
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_hlm }, //0x35
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x36 ld_hlld8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:scf }, //0x37
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0x38 jr_cr8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_hl_SP }, //0x39
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_hlm }, //0x3a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_sp }, //0x3b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:inc_a }, //0x3c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:dec_a }, //0x3d
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_b }, //0x40
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_c }, //0x41
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_d }, //0x42
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_e }, //0x43
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_h }, //0x44
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_l }, //0x45
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_b_hl }, //0x46
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_b_a }, //0x47
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_b }, //0x48
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_c }, //0x49
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_d }, //0x4a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_e }, //0x4b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_h }, //0x4c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_l }, //0x4d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_c_hl }, //0x4e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_c_a }, //0x4f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_b }, //0x50
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_c }, //0x51
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_d }, //0x52
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_e }, //0x53
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_h }, //0x54
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_l }, //0x55
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_d_hl }, //0x56
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_d_a }, //0x57
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_b }, //0x58
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_c }, //0x59
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_d }, //0x5a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_e }, //0x5b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_h }, //0x5c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_l }, //0x5d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_e_hl }, //0x5e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_e_a }, //0x5f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_b }, //0x60
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_c }, //0x61
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_d }, //0x62
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_e }, //0x63
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_h }, //0x64
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_l }, //0x65
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_h_hl }, //0x66
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_h_a }, //0x67
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_b }, //0x68
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_c }, //0x69
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_d }, //0x6a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_e }, //0x6b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_h }, //0x6c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_l }, //0x6d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_l_hl }, //0x6e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_l_a }, //0x6f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_b }, //0x70
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_c }, //0x71
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_d }, //0x72
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_e }, //0x73
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_h }, //0x74
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_l }, //0x75
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:halt }, //0x76
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_hl_a }, //0x77
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_b }, //0x78
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_c }, //0x79
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_d }, //0x7a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_e }, //0x7b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_h }, //0x7c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_l }, //0x7d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:ld_a_hl }, //0x7e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_a_a }, //0x7f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_b }, //0x80
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_c }, //0x81
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_d }, //0x82
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_e }, //0x83
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_h }, //0x84
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_l }, //0x85
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:add_a_hl }, //0x86
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:add_a_a }, //0x87
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_b }, //0x88
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_c }, //0x89
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_d }, //0x8a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_e }, //0x8b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_h }, //0x8c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_l }, //0x8d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:adc_a_hl }, //0x8e
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:adc_a_a }, //0x8f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_b }, //0x90
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_c }, //0x91
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_d }, //0x92
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_e }, //0x93
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_h }, //0x94
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sub_a_l }, //0x95
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sub_a_hl }, //0x96
-	{ 1, 4, 1,sub_a_a }, //0x97
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_b }, //0x98
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_c }, //0x99
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_d }, //0x9a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_e }, //0x9b
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_h }, //0x9c
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:sbc_a_l }, //0x9d
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sbc_a_hl }, //0x9e
-	{ 1, 4, 1,sbc_a_a }, //0x9f
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_b }, //0xa0
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_c }, //0xa1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_d }, //0xa2
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_e }, //0xa3
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_h }, //0xa4
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:and_l }, //0xa5
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:and_hlp }, //0xa6
-	{ 1, 4, 1,and_a }, //0xa7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_b }, //0xa8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_c }, //0xa9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_d }, //0xaa
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_e }, //0xab
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_h }, //0xac
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:xor_l }, //0xad
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:xor_hlp }, //0xae
-	{ 1, 4, 1,xor_a }, //0xaf
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_b }, //0xb0
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_c }, //0xb1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_d }, //0xb2
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_e }, //0xb3
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_h }, //0xb4
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:or_l }, //0xb5
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:or_hlp }, //0xb6
-	{ 1, 4, 1,or_a }, //0xb7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_b }, //0xb8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_c }, //0xb9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_d }, //0xba
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_e }, //0xbb
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_h }, //0xbc
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:cp_l }, //0xbd
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:cp_hlp }, //0xbe
-	{ 1, 4, 1,cp_a }, //0xbf
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_nz }, //0xc0
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_bc }, //0xc1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada}, //0xc2 Ver como pasar parametros jp_nz_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc3 jp_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc4 call_nz_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_bc }, //0xc5
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xc6 add_a_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_00h }, //0xc7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_z }, //0xc8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret }, //0xc9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xca jp_z_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcb
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcc call_z_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xcd call_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xce adc_a_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:RST_08H }, //0xcf
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_nc }, //0xd0
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_de }, //0xd1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd2 jp_nc_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd3
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd4 call_nc_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_de }, //0xd5
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xd6 sub_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_10h }, //0xd7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ret_c }, //0xd8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:reti }, //0xd9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xda jp_c_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdb
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdc call_c_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xdd
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xde sbc_a_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_18h }, //0xdf
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe0 ldh_a8_a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_hl }, //0xe1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_ca }, //0xe2
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe3
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe4
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_hl }, //0xe5
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe6 and_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_20h }, //0xe7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xe8 add_sp_r8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:jp_hl }, //0xe9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xea ld_a16_a
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xeb
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xec
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xed
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xee xor_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_28h }, //0xef
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf0 ldh_a_a8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:pop_af }, //0xf1
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:la_ac }, //0xf2
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:di }, //0xf3
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf4
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:push_af }, //0xf5
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf6 or_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_30h }, //0xf7
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xf8 ld_hl_spr8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ld_sp_hl }, //0xf9
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfa ld_a_a16
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:ei }, //0xfb
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfc
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfd
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:nada }, //0xfe cp_d8
-	{ valid_instruction:true, clock_cycle:4, machine_cycle:1, action:rst_38h }, //0xff
+struct instruction instructions[256]={
+	{   clock_cycle:4, machine_cycle:1, action:nop, action_bit_number:0, action_parameter:0}, //0x00
+	{   clock_cycle:4, machine_cycle:1, action:(void (*)(unsigned int))ld_bc16, action_bit_number:0, action_parameter:0 }, //0x01 
+	{   clock_cycle:4, machine_cycle:1, action:ld_bca, action_bit_number:0, action_parameter:0 }, //0x02
+	{   clock_cycle:4, machine_cycle:1, action:inc_bc, action_bit_number:0, action_parameter:0 }, //0x03
+	{   clock_cycle:4, machine_cycle:1, action:inc_b, action_bit_number:0, action_parameter:0 }, //0x04
+	{   clock_cycle:4, machine_cycle:1, action:dec_b, action_bit_number:0, action_parameter:0 }, //0x05
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x06 ld_b8
+	{   clock_cycle:4, machine_cycle:1, action:rlca, action_bit_number:0, action_parameter:0 }, //0x07 
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x08 LD_a16_sp
+	{   clock_cycle:4, machine_cycle:1, action:add_hl_bc, action_bit_number:0, action_parameter:0 }, //0x09
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_bc, action_bit_number:0, action_parameter:0 }, //0x0a
+	{   clock_cycle:4, machine_cycle:1, action:dec_bc, action_bit_number:0, action_parameter:0 }, //0x0b
+	{   clock_cycle:4, machine_cycle:1, action:inc_c, action_bit_number:0, action_parameter:0 }, //0x0c
+	{   clock_cycle:4, machine_cycle:1, action:dec_c, action_bit_number:0, action_parameter:0 }, //0x0d
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x0e ld_c8
+	{   clock_cycle:4, machine_cycle:1, action:rrca, action_bit_number:0, action_parameter:0 }, //0x0f
+	//{   clock_cycle:4, machine_cycle:1, action:nop, action_bit_number:0, action_parameter:0 }, //0x10
+	//{   clock_cycle:4, machine_cycle:1, action:nop, action_bit_number:0, action_parameter:0 }, //0x11
+	{   clock_cycle:4, machine_cycle:1, action:stop, action_bit_number:0, action_parameter:0 }, //0x10
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x11 ld_de16
+	{   clock_cycle:4, machine_cycle:1, action:ld_dea, action_bit_number:0, action_parameter:0 }, //0x12
+	{   clock_cycle:4, machine_cycle:1, action:inc_de, action_bit_number:0, action_parameter:0 }, //0x13
+	{   clock_cycle:4, machine_cycle:1, action:inc_d, action_bit_number:0, action_parameter:0 }, //0x14
+	{   clock_cycle:4, machine_cycle:1, action:dec_d, action_bit_number:0, action_parameter:0 }, //0x15
+	{   clock_cycle:4, machine_cycle:1, action:(void (*)(unsigned int))ld_d8, action_bit_number:8, action_parameter:1 }, //0x16 ld_d8
+	{   clock_cycle:4, machine_cycle:1, action:rla, action_bit_number:0, action_parameter:0 }, //0x17 
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x18 jr_r8
+	{   clock_cycle:4, machine_cycle:1, action:add_hl_de, action_bit_number:0, action_parameter:0 }, //0x19
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_de, action_bit_number:0, action_parameter:0 }, //0x1a
+	{   clock_cycle:4, machine_cycle:1, action:dec_de, action_bit_number:0, action_parameter:0 }, //0x1b
+	{   clock_cycle:4, machine_cycle:1, action:inc_e, action_bit_number:0, action_parameter:0 }, //0x1c
+	{   clock_cycle:4, machine_cycle:1, action:dec_e, action_bit_number:0, action_parameter:0 }, //0x1d
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x1e ld_e8
+	{   clock_cycle:4, machine_cycle:1, action:rra, action_bit_number:0, action_parameter:0 }, //0x1f
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x20 jr_nr8
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x21 ld_hl16
+	{   clock_cycle:4, machine_cycle:1, action:ld_hla, action_bit_number:0, action_parameter:0 }, //0x22
+	{   clock_cycle:4, machine_cycle:1, action:inc_hl, action_bit_number:0, action_parameter:0 }, //0x23
+	{   clock_cycle:4, machine_cycle:1, action:inc_h, action_bit_number:0, action_parameter:0 }, //0x24
+	{   clock_cycle:4, machine_cycle:1, action:dec_h, action_bit_number:0, action_parameter:0 }, //0x25
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x26 ld_h8
+	{   clock_cycle:4, machine_cycle:1, action:DAA, action_bit_number:0, action_parameter:0 }, //0x27
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x28 jr_zr8
+	{   clock_cycle:4, machine_cycle:1, action:add_hl_hl, action_bit_number:0, action_parameter:0 }, //0x29
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_hll, action_bit_number:0, action_parameter:0 }, //0x2a
+	{   clock_cycle:4, machine_cycle:1, action:dec_hl, action_bit_number:0, action_parameter:0 }, //0x2b
+	{   clock_cycle:4, machine_cycle:1, action:inc_l, action_bit_number:0, action_parameter:0 }, //0x2c
+	{   clock_cycle:4, machine_cycle:1, action:dec_l, action_bit_number:0, action_parameter:0 }, //0x2d
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x2e ld_l8
+	{   clock_cycle:4, machine_cycle:1, action:cpl, action_bit_number:0, action_parameter:0 }, //0x2f
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x30 jr_ncr8
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x31 ld_sp16
+	{   clock_cycle:4, machine_cycle:1, action:ld_hlma, action_bit_number:0, action_parameter:0 }, //0x32
+	{   clock_cycle:4, machine_cycle:1, action:inc_sp, action_bit_number:0, action_parameter:0 }, //0x33
+	{   clock_cycle:4, machine_cycle:1, action:inc_hlm, action_bit_number:0, action_parameter:0 }, //0x34
+	{   clock_cycle:4, machine_cycle:1, action:dec_hlm, action_bit_number:0, action_parameter:0 }, //0x35
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x36 ld_hlld8
+	{   clock_cycle:4, machine_cycle:1, action:scf, action_bit_number:0, action_parameter:0 }, //0x37
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x38 jr_cr8
+	{   clock_cycle:4, machine_cycle:1, action:add_hl_SP, action_bit_number:0, action_parameter:0 }, //0x39
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_hlm, action_bit_number:0, action_parameter:0 }, //0x3a
+	{   clock_cycle:4, machine_cycle:1, action:dec_sp, action_bit_number:0, action_parameter:0 }, //0x3b
+	{   clock_cycle:4, machine_cycle:1, action:inc_a, action_bit_number:0, action_parameter:0 }, //0x3c
+	{   clock_cycle:4, machine_cycle:1, action:dec_a, action_bit_number:0, action_parameter:0 }, //0x3d
+	{   clock_cycle:4, machine_cycle:1, action:ld_b_b, action_bit_number:0, action_parameter:0 }, //0x40
+	{   clock_cycle:4, machine_cycle:1, action:ld_b_c, action_bit_number:0, action_parameter:0 }, //0x41
+	{   clock_cycle:4, machine_cycle:1, action:ld_b_d, action_bit_number:0, action_parameter:0 }, //0x42
+	{   clock_cycle:4, machine_cycle:1, action:ld_b_e, action_bit_number:0, action_parameter:0 }, //0x43
+	{   clock_cycle:4, machine_cycle:1, action:ld_b_h, action_bit_number:0, action_parameter:0 }, //0x44
+	{   clock_cycle:4, machine_cycle:1, action:ld_b_l, action_bit_number:0, action_parameter:0 }, //0x45
+	{   clock_cycle:8, machine_cycle:2, action:ld_b_hl, action_bit_number:0, action_parameter:0 }, //0x46
+	{   clock_cycle:4, machine_cycle:1, action:ld_b_a, action_bit_number:0, action_parameter:0 }, //0x47
+	{   clock_cycle:4, machine_cycle:1, action:ld_c_b, action_bit_number:0, action_parameter:0 }, //0x48
+	{   clock_cycle:4, machine_cycle:1, action:ld_c_c, action_bit_number:0, action_parameter:0 }, //0x49
+	{   clock_cycle:4, machine_cycle:1, action:ld_c_d, action_bit_number:0, action_parameter:0 }, //0x4a
+	{   clock_cycle:4, machine_cycle:1, action:ld_c_e, action_bit_number:0, action_parameter:0 }, //0x4b
+	{   clock_cycle:4, machine_cycle:1, action:ld_c_h, action_bit_number:0, action_parameter:0 }, //0x4c
+	{   clock_cycle:4, machine_cycle:1, action:ld_c_l, action_bit_number:0, action_parameter:0 }, //0x4d
+	{   clock_cycle:8, machine_cycle:2, action:ld_c_hl, action_bit_number:0, action_parameter:0 }, //0x4e
+	{   clock_cycle:4, machine_cycle:1, action:ld_c_a, action_bit_number:0, action_parameter:0 }, //0x4f
+	{   clock_cycle:4, machine_cycle:1, action:ld_d_b, action_bit_number:0, action_parameter:0 }, //0x50
+	{   clock_cycle:4, machine_cycle:1, action:ld_d_c, action_bit_number:0, action_parameter:0 }, //0x51
+	{   clock_cycle:4, machine_cycle:1, action:ld_d_d, action_bit_number:0, action_parameter:0 }, //0x52
+	{   clock_cycle:4, machine_cycle:1, action:ld_d_e, action_bit_number:0, action_parameter:0 }, //0x53
+	{   clock_cycle:4, machine_cycle:1, action:ld_d_h, action_bit_number:0, action_parameter:0 }, //0x54
+	{   clock_cycle:4, machine_cycle:1, action:ld_d_l, action_bit_number:0, action_parameter:0 }, //0x55
+	{   clock_cycle:8, machine_cycle:2, action:ld_d_hl, action_bit_number:0, action_parameter:0 }, //0x56
+	{   clock_cycle:4, machine_cycle:1, action:ld_d_a, action_bit_number:0, action_parameter:0 }, //0x57
+	{   clock_cycle:4, machine_cycle:1, action:ld_e_b, action_bit_number:0, action_parameter:0 }, //0x58
+	{   clock_cycle:4, machine_cycle:1, action:ld_e_c, action_bit_number:0, action_parameter:0 }, //0x59
+	{   clock_cycle:4, machine_cycle:1, action:ld_e_d, action_bit_number:0, action_parameter:0 }, //0x5a
+	{   clock_cycle:4, machine_cycle:1, action:ld_e_e, action_bit_number:0, action_parameter:0 }, //0x5b
+	{   clock_cycle:4, machine_cycle:1, action:ld_e_h, action_bit_number:0, action_parameter:0 }, //0x5c
+	{   clock_cycle:4, machine_cycle:1, action:ld_e_l, action_bit_number:0, action_parameter:0 }, //0x5d
+	{   clock_cycle:8, machine_cycle:2, action:ld_e_hl, action_bit_number:0, action_parameter:0 }, //0x5e
+	{   clock_cycle:4, machine_cycle:1, action:ld_e_a, action_bit_number:0, action_parameter:0 }, //0x5f
+	{   clock_cycle:4, machine_cycle:1, action:ld_h_b, action_bit_number:0, action_parameter:0 }, //0x60
+	{   clock_cycle:4, machine_cycle:1, action:ld_h_c, action_bit_number:0, action_parameter:0 }, //0x61
+	{   clock_cycle:4, machine_cycle:1, action:ld_h_d, action_bit_number:0, action_parameter:0 }, //0x62
+	{   clock_cycle:4, machine_cycle:1, action:ld_h_e, action_bit_number:0, action_parameter:0 }, //0x63
+	{   clock_cycle:4, machine_cycle:1, action:ld_h_h, action_bit_number:0, action_parameter:0 }, //0x64
+	{   clock_cycle:4, machine_cycle:1, action:ld_h_l, action_bit_number:0, action_parameter:0 }, //0x65
+	{   clock_cycle:8, machine_cycle:2, action:ld_h_hl, action_bit_number:0, action_parameter:0 }, //0x66
+	{   clock_cycle:4, machine_cycle:1, action:ld_h_a, action_bit_number:0, action_parameter:0 }, //0x67
+	{   clock_cycle:4, machine_cycle:1, action:ld_l_b, action_bit_number:0, action_parameter:0 }, //0x68
+	{   clock_cycle:4, machine_cycle:1, action:ld_l_c, action_bit_number:0, action_parameter:0 }, //0x69
+	{   clock_cycle:4, machine_cycle:1, action:ld_l_d, action_bit_number:0, action_parameter:0 }, //0x6a
+	{   clock_cycle:4, machine_cycle:1, action:ld_l_e, action_bit_number:0, action_parameter:0 }, //0x6b
+	{   clock_cycle:4, machine_cycle:1, action:ld_l_h, action_bit_number:0, action_parameter:0 }, //0x6c
+	{   clock_cycle:4, machine_cycle:1, action:ld_l_l, action_bit_number:0, action_parameter:0 }, //0x6d
+	{   clock_cycle:8, machine_cycle:2, action:ld_l_hl, action_bit_number:0, action_parameter:0 }, //0x6e
+	{   clock_cycle:4, machine_cycle:1, action:ld_l_a, action_bit_number:0, action_parameter:0 }, //0x6f
+	{   clock_cycle:4, machine_cycle:1, action:ld_hl_b, action_bit_number:0, action_parameter:0 }, //0x70
+	{   clock_cycle:4, machine_cycle:1, action:ld_hl_c, action_bit_number:0, action_parameter:0 }, //0x71
+	{   clock_cycle:4, machine_cycle:1, action:ld_hl_d, action_bit_number:0, action_parameter:0 }, //0x72
+	{   clock_cycle:4, machine_cycle:1, action:ld_hl_e, action_bit_number:0, action_parameter:0 }, //0x73
+	{   clock_cycle:4, machine_cycle:1, action:ld_hl_h, action_bit_number:0, action_parameter:0 }, //0x74
+	{   clock_cycle:4, machine_cycle:1, action:ld_hl_l, action_bit_number:0, action_parameter:0 }, //0x75
+	{   clock_cycle:4, machine_cycle:1, action:halt, action_bit_number:0, action_parameter:0 }, //0x76
+	{   clock_cycle:4, machine_cycle:1, action:ld_hl_a, action_bit_number:0, action_parameter:0 }, //0x77
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_b, action_bit_number:0, action_parameter:0 }, //0x78
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_c, action_bit_number:0, action_parameter:0 }, //0x79
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_d, action_bit_number:0, action_parameter:0 }, //0x7a
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_e, action_bit_number:0, action_parameter:0 }, //0x7b
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_h, action_bit_number:0, action_parameter:0 }, //0x7c
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_l, action_bit_number:0, action_parameter:0 }, //0x7d
+	{   clock_cycle:8, machine_cycle:2, action:ld_a_hl, action_bit_number:0, action_parameter:0 }, //0x7e
+	{   clock_cycle:4, machine_cycle:1, action:ld_a_a, action_bit_number:0, action_parameter:0 }, //0x7f
+	{   clock_cycle:4, machine_cycle:1, action:add_a_b, action_bit_number:0, action_parameter:0 }, //0x80
+	{   clock_cycle:4, machine_cycle:1, action:add_a_c, action_bit_number:0, action_parameter:0 }, //0x81
+	{   clock_cycle:4, machine_cycle:1, action:add_a_d, action_bit_number:0, action_parameter:0 }, //0x82
+	{   clock_cycle:4, machine_cycle:1, action:add_a_e, action_bit_number:0, action_parameter:0 }, //0x83
+	{   clock_cycle:4, machine_cycle:1, action:add_a_h, action_bit_number:0, action_parameter:0 }, //0x84
+	{   clock_cycle:4, machine_cycle:1, action:add_a_l, action_bit_number:0, action_parameter:0 }, //0x85
+	{   clock_cycle:8, machine_cycle:2, action:add_a_hl, action_bit_number:0, action_parameter:0 }, //0x86
+	{   clock_cycle:4, machine_cycle:1, action:add_a_a, action_bit_number:0, action_parameter:0 }, //0x87
+	{   clock_cycle:4, machine_cycle:1, action:adc_a_b, action_bit_number:0, action_parameter:0 }, //0x88
+	{   clock_cycle:4, machine_cycle:1, action:adc_a_c, action_bit_number:0, action_parameter:0 }, //0x89
+	{   clock_cycle:4, machine_cycle:1, action:adc_a_d, action_bit_number:0, action_parameter:0 }, //0x8a
+	{   clock_cycle:4, machine_cycle:1, action:adc_a_e, action_bit_number:0, action_parameter:0 }, //0x8b
+	{   clock_cycle:4, machine_cycle:1, action:adc_a_h, action_bit_number:0, action_parameter:0 }, //0x8c
+	{   clock_cycle:4, machine_cycle:1, action:adc_a_l, action_bit_number:0, action_parameter:0 }, //0x8d
+	{   clock_cycle:8, machine_cycle:2, action:adc_a_hl, action_bit_number:0, action_parameter:0 }, //0x8e
+	{   clock_cycle:4, machine_cycle:1, action:adc_a_a, action_bit_number:0, action_parameter:0 }, //0x8f
+	{   clock_cycle:4, machine_cycle:1, action:sub_a_b, action_bit_number:0, action_parameter:0 }, //0x90
+	{   clock_cycle:4, machine_cycle:1, action:sub_a_c, action_bit_number:0, action_parameter:0 }, //0x91
+	{   clock_cycle:4, machine_cycle:1, action:sub_a_d, action_bit_number:0, action_parameter:0 }, //0x92
+	{   clock_cycle:4, machine_cycle:1, action:sub_a_e, action_bit_number:0, action_parameter:0 }, //0x93
+	{   clock_cycle:4, machine_cycle:1, action:sub_a_h, action_bit_number:0, action_parameter:0 }, //0x94
+	{   clock_cycle:4, machine_cycle:1, action:sub_a_l, action_bit_number:0, action_parameter:0 }, //0x95
+	{   clock_cycle:8, machine_cycle:2, action:sub_a_hl, action_bit_number:0, action_parameter:0 }, //0x96
+	{  4, 1,sub_a_a, action_bit_number:0, action_parameter:0 }, //0x97
+	{   clock_cycle:4, machine_cycle:1, action:sbc_a_b, action_bit_number:0, action_parameter:0 }, //0x98
+	{   clock_cycle:4, machine_cycle:1, action:sbc_a_c, action_bit_number:0, action_parameter:0 }, //0x99
+	{   clock_cycle:4, machine_cycle:1, action:sbc_a_d, action_bit_number:0, action_parameter:0 }, //0x9a
+	{   clock_cycle:4, machine_cycle:1, action:sbc_a_e, action_bit_number:0, action_parameter:0 }, //0x9b
+	{   clock_cycle:4, machine_cycle:1, action:sbc_a_h, action_bit_number:0, action_parameter:0 }, //0x9c
+	{   clock_cycle:4, machine_cycle:1, action:sbc_a_l, action_bit_number:0, action_parameter:0 }, //0x9d
+	{   clock_cycle:8, machine_cycle:2, action:sbc_a_hl, action_bit_number:0, action_parameter:0 }, //0x9e
+	{  4, 1,sbc_a_a, action_bit_number:0, action_parameter:0 }, //0x9f
+	{   clock_cycle:4, machine_cycle:1, action:and_b, action_bit_number:0, action_parameter:0 }, //0xa0
+	{   clock_cycle:4, machine_cycle:1, action:and_c, action_bit_number:0, action_parameter:0 }, //0xa1
+	{   clock_cycle:4, machine_cycle:1, action:and_d, action_bit_number:0, action_parameter:0 }, //0xa2
+	{   clock_cycle:4, machine_cycle:1, action:and_e, action_bit_number:0, action_parameter:0 }, //0xa3
+	{   clock_cycle:4, machine_cycle:1, action:and_h, action_bit_number:0, action_parameter:0 }, //0xa4
+	{   clock_cycle:4, machine_cycle:1, action:and_l, action_bit_number:0, action_parameter:0 }, //0xa5
+	{   clock_cycle:8, machine_cycle:2, action:and_hlp, action_bit_number:0, action_parameter:0 }, //0xa6
+	{  4, 1,and_a, action_bit_number:0, action_parameter:0 }, //0xa7
+	{   clock_cycle:4, machine_cycle:1, action:xor_b, action_bit_number:0, action_parameter:0 }, //0xa8
+	{   clock_cycle:4, machine_cycle:1, action:xor_c, action_bit_number:0, action_parameter:0 }, //0xa9
+	{   clock_cycle:4, machine_cycle:1, action:xor_d, action_bit_number:0, action_parameter:0 }, //0xaa
+	{   clock_cycle:4, machine_cycle:1, action:xor_e, action_bit_number:0, action_parameter:0 }, //0xab
+	{   clock_cycle:4, machine_cycle:1, action:xor_h, action_bit_number:0, action_parameter:0 }, //0xac
+	{   clock_cycle:4, machine_cycle:1, action:xor_l, action_bit_number:0, action_parameter:0 }, //0xad
+	{   clock_cycle:8, machine_cycle:2, action:xor_hlp, action_bit_number:0, action_parameter:0 }, //0xae
+	{  4, 1,xor_a, action_bit_number:0, action_parameter:0 }, //0xaf
+	{   clock_cycle:4, machine_cycle:1, action:or_b, action_bit_number:0, action_parameter:0 }, //0xb0
+	{   clock_cycle:4, machine_cycle:1, action:or_c, action_bit_number:0, action_parameter:0 }, //0xb1
+	{   clock_cycle:4, machine_cycle:1, action:or_d, action_bit_number:0, action_parameter:0 }, //0xb2
+	{   clock_cycle:4, machine_cycle:1, action:or_e, action_bit_number:0, action_parameter:0 }, //0xb3
+	{   clock_cycle:4, machine_cycle:1, action:or_h, action_bit_number:0, action_parameter:0 }, //0xb4
+	{   clock_cycle:4, machine_cycle:1, action:or_l, action_bit_number:0, action_parameter:0 }, //0xb5
+	{   clock_cycle:8, machine_cycle:2, action:or_hlp, action_bit_number:0, action_parameter:0 }, //0xb6
+	{  4, 1,or_a, action_bit_number:0, action_parameter:0 }, //0xb7
+	{   clock_cycle:4, machine_cycle:1, action:cp_b, action_bit_number:0, action_parameter:0 }, //0xb8
+	{   clock_cycle:4, machine_cycle:1, action:cp_c, action_bit_number:0, action_parameter:0 }, //0xb9
+	{   clock_cycle:4, machine_cycle:1, action:cp_d, action_bit_number:0, action_parameter:0 }, //0xba
+	{   clock_cycle:4, machine_cycle:1, action:cp_e, action_bit_number:0, action_parameter:0 }, //0xbb
+	{   clock_cycle:4, machine_cycle:1, action:cp_h, action_bit_number:0, action_parameter:0 }, //0xbc
+	{   clock_cycle:4, machine_cycle:1, action:cp_l, action_bit_number:0, action_parameter:0 }, //0xbd
+	{   clock_cycle:8, machine_cycle:2, action:cp_hlp, action_bit_number:0, action_parameter:0 }, //0xbe
+	{  4, 1,cp_a, action_bit_number:0, action_parameter:0 }, //0xbf
+	{   clock_cycle:4, machine_cycle:1, action:ret_nz, action_bit_number:0, action_parameter:0 }, //0xc0
+	{   clock_cycle:4, machine_cycle:1, action:pop_bc, action_bit_number:0, action_parameter:0 }, //0xc1
+	{   clock_cycle:4, machine_cycle:1, action:nada}, //0xc2 Ver como pasar parametros jp_nz_a16
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xc3 jp_a16
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xc4 call_nz_a16
+	{   clock_cycle:4, machine_cycle:1, action:push_bc, action_bit_number:0, action_parameter:0 }, //0xc5
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xc6 add_a_d8
+	{   clock_cycle:4, machine_cycle:1, action:rst_00h, action_bit_number:0, action_parameter:0 }, //0xc7
+	{   clock_cycle:4, machine_cycle:1, action:ret_z, action_bit_number:0, action_parameter:0 }, //0xc8
+	{   clock_cycle:4, machine_cycle:1, action:ret, action_bit_number:0, action_parameter:0 }, //0xc9
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xca jp_z_a16
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xcb
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xcc call_z_a16
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xcd call_a16
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xce adc_a_d8
+	{   clock_cycle:4, machine_cycle:1, action:RST_08H, action_bit_number:0, action_parameter:0 }, //0xcf
+	{   clock_cycle:4, machine_cycle:1, action:ret_nc, action_bit_number:0, action_parameter:0 }, //0xd0
+	{   clock_cycle:4, machine_cycle:1, action:pop_de, action_bit_number:0, action_parameter:0 }, //0xd1
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xd2 jp_nc_a16
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xd3
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xd4 call_nc_a16
+	{   clock_cycle:4, machine_cycle:1, action:push_de, action_bit_number:0, action_parameter:0 }, //0xd5
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xd6 sub_d8
+	{   clock_cycle:4, machine_cycle:1, action:rst_10h, action_bit_number:0, action_parameter:0 }, //0xd7
+	{   clock_cycle:4, machine_cycle:1, action:ret_c, action_bit_number:0, action_parameter:0 }, //0xd8
+	{   clock_cycle:4, machine_cycle:1, action:reti, action_bit_number:0, action_parameter:0 }, //0xd9
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xda jp_c_a16
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xdb
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xdc call_c_a16
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xdd
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xde sbc_a_d8
+	{   clock_cycle:4, machine_cycle:1, action:rst_18h, action_bit_number:0, action_parameter:0 }, //0xdf
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xe0 ldh_a8_a
+	{   clock_cycle:4, machine_cycle:1, action:pop_hl, action_bit_number:0, action_parameter:0 }, //0xe1
+	{   clock_cycle:4, machine_cycle:1, action:ld_ca, action_bit_number:0, action_parameter:0 }, //0xe2
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xe3
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xe4
+	{   clock_cycle:4, machine_cycle:1, action:push_hl, action_bit_number:0, action_parameter:0 }, //0xe5
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xe6 and_d8
+	{   clock_cycle:4, machine_cycle:1, action:rst_20h, action_bit_number:0, action_parameter:0 }, //0xe7
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xe8 add_sp_r8
+	{   clock_cycle:4, machine_cycle:1, action:jp_hl, action_bit_number:0, action_parameter:0 }, //0xe9
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xea ld_a16_a
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xeb
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xec
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xed
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xee xor_d8
+	{   clock_cycle:4, machine_cycle:1, action:rst_28h, action_bit_number:0, action_parameter:0 }, //0xef
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xf0 ldh_a_a8
+	{   clock_cycle:4, machine_cycle:1, action:pop_af, action_bit_number:0, action_parameter:0 }, //0xf1
+	{   clock_cycle:4, machine_cycle:1, action:la_ac, action_bit_number:0, action_parameter:0 }, //0xf2
+	{   clock_cycle:4, machine_cycle:1, action:di, action_bit_number:0, action_parameter:0 }, //0xf3
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xf4
+	{   clock_cycle:4, machine_cycle:1, action:push_af, action_bit_number:0, action_parameter:0 }, //0xf5
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xf6 or_d8
+	{   clock_cycle:4, machine_cycle:1, action:rst_30h, action_bit_number:0, action_parameter:0 }, //0xf7
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xf8 ld_hl_spr8
+	{   clock_cycle:4, machine_cycle:1, action:ld_sp_hl, action_bit_number:0, action_parameter:0 }, //0xf9
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xfa ld_a_a16
+	{   clock_cycle:4, machine_cycle:1, action:ei, action_bit_number:0, action_parameter:0 }, //0xfb
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xfc
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xfd
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xfe cp_d8
+	
+	{   clock_cycle:4, machine_cycle:1, action:rst_38h, action_bit_number:0, action_parameter:0 } //0xff
 
 };
 /*struct registros{
@@ -305,7 +306,7 @@ const struct instruction instructions[256]={
     unsigned char flags;
 }regist;*/
 
-void reset(){
+void reset () {
     regist.A = 0x01;
 	regist.F = 0xb0;
 	regist.B = 0x00;
@@ -334,35 +335,35 @@ void reset(){
 
 }
 
-void reconstruirHL(){
+void reconstruirHL () {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
 }
 
-void deconstruirHL(){
+void deconstruirHL () {
 	regist.H=(unsigned char) ((regist.HL >>8) & 0xFF);
 	regist.L=(unsigned char) (regist.HL & 0xFF);
 }
 
-void reconstruirDE(){
+void reconstruirDE () {
 	regist.DE=regist.D;
 	regist.DE=regist.DE<<8;
 	regist.DE=regist.DE|regist.E;
 }
 
-void deconstruirDE(){
+void deconstruirDE () {
 	regist.D=(unsigned char) ((regist.DE >>8) & 0xFF);
 	regist.E=(unsigned char) (regist.DE & 0xFF);
 }
 
-void reconstruirBC(){
+void reconstruirBC () {
 	regist.BC=regist.B;
 	regist.BC=regist.BC<<8;
 	regist.BC=regist.BC|regist.C;
 }
 
-void deconstruirBC(){
+void deconstruirBC () {
 	regist.B=(unsigned char) ((regist.BC >>8) & 0xFF);
 	regist.C=(unsigned char) (regist.BC & 0xFF);
 }
@@ -382,7 +383,7 @@ void keyboardInterrupt(int signal){
 }
 
 //funcion para indicar que ha habido acarreo
-static void acarreo(){
+static void acarreo () {
 	//activar flag con OR
 	regist.F= regist.F | 0x10;
 
@@ -394,7 +395,7 @@ static void acarreo(){
 }
 
 //HALF CARRY
-static void half(){
+static void half () {
 		//activar flag con OR
 	regist.F= regist.F | 0x20;
 
@@ -405,7 +406,7 @@ static void half(){
 }
 
 //SUBSTRACT N
-static void SUBSTRACT(){
+static void SUBSTRACT () {
 	//activar flag con OR
 	regist.F= regist.F | 0x40;
 
@@ -417,7 +418,7 @@ static void SUBSTRACT(){
 }
 
 //ZERO
-static void zero(){
+static void zero () {
 	//activar flag con OR
 	regist.F= regist.F | 0x80;
 
@@ -765,7 +766,7 @@ static void cp(unsigned char A){
 }
 
 //NOP 0x00
-void nop(){
+void nop (unsigned int) {
 	clock_cycle+=4;
 	machine_cycle++;
 }
@@ -777,26 +778,25 @@ void ld_bc16(char16_t valor){
 }
 
 //LD (BC), A, 0x02 guardar el valor de A en la direccion de BC
-void ld_bca(){
+void ld_bca (unsigned int) {
 	writeMEMB(regist.BC,regist.A);
 }
 
 // 0x03
-void inc_bc() { 
+void inc_bc (unsigned int) { 
 	reconstruirBC();
 	regist.BC=regist.BC + 0x01;
 	deconstruirBC(); 
 } //en estas no se comprueban flags
 
 // 0x04
-void inc_b(void) { 
-	cout<<"holabuenas"<<endl;
+void inc_b (unsigned int) {
 	inc(&regist.B);
 	reconstruirBC();
 }
 
 // 0x05
-void dec_b() { 
+void dec_b (unsigned int) { 
 	dec(&regist.B);
 	reconstruirBC();
 }
@@ -808,7 +808,7 @@ void ld_b8(unsigned char valor){
 }
 
 //RLCA 0x07 rota A un bit a la izquierda, y si el bit mas significativo es 1 activas el flag de carry
-void rlca(){
+void rlca (unsigned int) {
 	//coges el bit mas significativo y lo dejas a la izquierda, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
 	unsigned char u = regist.A >> 7;
 	if (u != 0){
@@ -838,7 +838,7 @@ void LD_a16_sp(char16_t direccion){
 }
 
 //ADD HL, BC, 0x09 suma dos valores de 16 bits y lo guarda en HL
-void add_hl_bc(){
+void add_hl_bc (unsigned int) {
 	reconstruirBC();
 	reconstruirHL();
 	suma2(&regist.HL, regist.BC);
@@ -846,7 +846,7 @@ void add_hl_bc(){
 }
 
 //LD a,(BC), 0x0a carga el valor de BC y lo mete en A
-void ld_a_bc() { 
+void ld_a_bc (unsigned int) { 
 	//hacer esto en la futura funcion loadMEM
 	regist.BC=regist.B;
 	regist.BC=regist.BC<<8;
@@ -860,20 +860,20 @@ void ld_a_bc() {
 }  
 
 // 0x0b
-void dec_bc() { 
+void dec_bc (unsigned int) { 
 	reconstruirBC();
 	regist.BC=regist.BC - 0x01;
 	deconstruirBC(); 
 } //en estas no se comprueban flags(las que trabajan con registros de 16 bits)
 
 // 0x0c
-void inc_c() { 
+void inc_c (unsigned int) { 
 	inc(&regist.C); 
 	reconstruirBC();	
 }
 
 // 0x0d
-void dec_c() { 
+void dec_c (unsigned int) { 
 	dec(&regist.C);
 	reconstruirBC();
 
@@ -886,7 +886,7 @@ void ld_c8(unsigned char valor){
 }
 
 //RRCA, 0x0F rota A un bit a la derecha, y si el bit menos significativo es 1 activas el flag de carry
-void rrca(){
+void rrca (unsigned int) {
 	//coges el bit menos significativo y lo dejas a la derecha, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
 	unsigned char u = regist.A & 0x01;
 	
@@ -912,7 +912,7 @@ void rrca(){
 }
 
 //STOP 0x10 para la CPU y la pantalla hasta que se presione un boton
-void stop(){
+void stop (unsigned int) {
 	//clock_cycle+=4;
 	//machine_cycle++;
 	//STOPGPU();
@@ -930,26 +930,26 @@ void ld_de16(char16_t valor){
 }
 
 //LD (DE), A, 0x12 guardar el valor de A en la direccion de DE
-void ld_dea(){
+void ld_dea (unsigned int) {
 	reconstruirDE();
 	writeMEMB(regist.DE,regist.A);
 }
 
 // 0x13
-void inc_de() { 
+void inc_de (unsigned int) { 
 	reconstruirDE();
 	regist.DE=regist.DE + 0x01; 
 	deconstruirDE();
 } //en estas no se comprueban flags(las que trabajan con registros de 16 bits)
 
 // 0x14
-void inc_d() {
+void inc_d (unsigned int) {
 	inc(&regist.D);
 	reconstruirDE();
 }
 
 // 0x15
-void dec_d() {
+void dec_d (unsigned int) {
 	dec(&regist.D);
 	reconstruirDE();	
 }
@@ -961,7 +961,7 @@ void ld_d8(unsigned char valor){
 }
 
 //RLA 0x17 rotar A un bit a la izquierda, el mas significativo es el nuevo valor del flag carry y el antiguo valor es el bit menos significativo de a
-void rla(){
+void rla (unsigned int) {
 	//cogemos el valor del bit de carry
 	unsigned char bit=regist.F & 0x10;
 	bit= bit >>4;
@@ -997,7 +997,7 @@ void jr_r8(char valor){
 }
 
 //ADD HL, DE, 0x19
-void add_hl_de(){
+void add_hl_de (unsigned int) {
 	reconstruirDE();
 	reconstruirHL();
 	suma2(&regist.HL, regist.DE);
@@ -1005,7 +1005,7 @@ void add_hl_de(){
 }
 
 //LD a,(DE), 0x1a
-void ld_a_de() { 
+void ld_a_de (unsigned int) { 
 	regist.DE=regist.D;
 	regist.DE=regist.DE<<8;
 	regist.DE=regist.DE|regist.E;
@@ -1018,20 +1018,20 @@ void ld_a_de() {
 }  
 
 // 0x1b
-void dec_de() { 
+void dec_de (unsigned int) { 
 	reconstruirDE();
 	regist.DE=regist.DE - 0x01;
 	deconstruirDE();
 } //en estas no se comprueban flags(las que trabajan con registros de 16 bits)
 
 // 0x1c
-void inc_e() {
+void inc_e (unsigned int) {
 	inc(&regist.E); 
 	reconstruirDE();
 }
 
 // 0x1d
-void dec_e() {
+void dec_e (unsigned int) {
 	dec(&regist.E); 
 	reconstruirHL();
 }
@@ -1043,7 +1043,7 @@ void ld_e8(unsigned char valor){
 }
 
 //RRA 0x1f, rotas A un bit a la derecha, el bit menos significativo pasa a ser el bit de carry y el antiguo valor es el mas significativo
-void rra(){
+void rra (unsigned int) {
 	//cogemos el valor del bit de carry
 	unsigned char bit=regist.F & 0x10;
 	bit= bit <<3;
@@ -1093,27 +1093,27 @@ void ld_hl16(char16_t valor){
 }
 
 //LD (HL+), A, 0x22
-void ld_hla(){
+void ld_hla (unsigned int) {
 	reconstruirDE();
 	writeMEMB((regist.DE + 0x01),regist.A);
 }
 
 // 0x23
-void inc_hl() {  
+void inc_hl (unsigned int) {  
 	reconstruirHL();
 	regist.HL=regist.HL + 0x01;
 	deconstruirHL();
 } //en estas no se comprueban flags(las que trabajan con registros de 16 bits)
 
 // 0x24
-void inc_h() { 
+void inc_h (unsigned int) { 
 	inc(&regist.H); 
 	reconstruirHL();
 
 }
 
 // 0x25
-void dec_h() { 
+void dec_h (unsigned int) { 
 	dec(&regist.H);
 	reconstruirHL();
 }
@@ -1125,7 +1125,7 @@ void ld_h8(unsigned char valor){
 }
 
 //DAA, 0x27
-void DAA(){
+void DAA (unsigned int) {
 	unsigned short carry= regist.A;
 	//esta operacion se hace justo despues de una suma o resta, y como siempre se cambia el flag N al hace una u otra (coge el valor 0 al sumar y 1 al restar)
 	unsigned char flagN= (regist.F >> 6) & 0x01;
@@ -1179,14 +1179,14 @@ void jr_zr8( char valor){
 }
 
 //ADD HL, HL, 0x29
-void add_hl_hl(){
+void add_hl_hl (unsigned int) {
 	reconstruirHL();
 	suma2(&regist.HL, regist.HL);
 	deconstruirHL();
 }
 
 //LD A,(HL+), 0x2a
-void ld_a_hll() { 
+void ld_a_hll (unsigned int) { 
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1199,20 +1199,20 @@ void ld_a_hll() {
 }  
 
 // 0x2b
-void dec_hl() { 
+void dec_hl (unsigned int) { 
 	reconstruirHL();
 	regist.HL=regist.HL - 0x01;
 	deconstruirHL(); 
 } //en estas no se comprueban flags(las que trabajan con registros de 16 bits)
 
 // 0x2c
-void inc_l() { 
+void inc_l (unsigned int) { 
 	inc(&regist.L); 
 	reconstruirHL();
 }
 
 // 0x2d
-void dec_l() { 
+void dec_l (unsigned int) { 
 	dec(&regist.L); 
 	reconstruirHL();
 }
@@ -1224,7 +1224,7 @@ void ld_l8(unsigned char valor){
 }
 
 //CPL, 0x2f
-void cpl(){
+void cpl (unsigned int) {
 	regist.A= ~regist.A;
 
 	regist.F= regist.F | 0x20; //activar half
@@ -1249,7 +1249,7 @@ void ld_sp16(char16_t valor){
 }
 
 //LD (HL-),A 0x32
-void ld_hlma(){
+void ld_hlma (unsigned int) {
 	reconstruirHL();
 	writeMEMB(regist.HL,regist.A);
 	regist.HL-= 0x01;
@@ -1257,10 +1257,10 @@ void ld_hlma(){
 }
 
 // 0x33
-void inc_sp() { regist.SP++; }
+void inc_sp (unsigned int) { regist.SP++; }
 
 // 0x34
-void inc_hlm() {
+void inc_hlm (unsigned int) {
 	reconstruirHL();
 	char16_t patata=regist.HL;
 	unsigned char temp=inc2(loadMEMB(regist.HL));
@@ -1269,7 +1269,7 @@ void inc_hlm() {
 }
 
 // 0x35
-void dec_hlm() {
+void dec_hlm (unsigned int) {
 	reconstruirHL();
 	char16_t patata=regist.HL;
 	unsigned char temp=dec2(loadMEMB(regist.HL));
@@ -1284,7 +1284,7 @@ void ld_hlld8(unsigned char valor){
 }
 
 //SCF, 0x37
-void scf(){
+void scf (unsigned int) {
 	regist.F= regist.F | 0x10;//activar flag acarreo
 	regist.F= regist.F & 0xDF; //desactivar half
 	regist.F= regist.F & 0xBF; //desactivar N
@@ -1303,14 +1303,14 @@ void jr_cr8( char valor){
 }
 
 //ADD HL,SP, 0x39
-void add_hl_SP(){
+void add_hl_SP (unsigned int) {
 	reconstruirHL();
 	suma2(&regist.HL, regist.SP);
 	deconstruirHL();
 }
 
 //LD A,(HL-), 0x3a
-void ld_a_hlm(){
+void ld_a_hlm (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1322,13 +1322,13 @@ void ld_a_hlm(){
 }
 
 // 0x3b
-void dec_sp() { regist.SP=regist.SP - 0x01; }
+void dec_sp (unsigned int) { regist.SP=regist.SP - 0x01; }
 
 // 0x3c
-void inc_a() { inc(&regist.A); }
+void inc_a (unsigned int) { inc(&regist.A); }
 
 // 0x3d
-void dec_a() { dec(&regist.A); }
+void dec_a (unsigned int) { dec(&regist.A); }
 
 //LD A,d8, 0x3e
 void ld_a8(unsigned char valor){
@@ -1336,7 +1336,7 @@ void ld_a8(unsigned char valor){
 }
 
 //CCF 0x3f
-void CCF(){
+void CCF (unsigned int) {
 	unsigned char flagC= (regist.F >> 4) & 0x01;
 	if(flagC == 1){
 		regist.F= regist.F & 0xEF;
@@ -1349,44 +1349,44 @@ void CCF(){
 }
 
 //LD B, C  0x40, copia B a B
-void ld_b_b() { 
+void ld_b_b (unsigned int) { 
 	regist.B = regist.B;
 	reconstruirBC();
 	
 }
 
 //LD B, C  0x41, copia C a B
-void ld_b_c() { 
+void ld_b_c (unsigned int) { 
 	regist.B = regist.C;
 	reconstruirBC();
 }
 
 //LD B, D  0x42, copia D a B
-void ld_b_d() { 
+void ld_b_d (unsigned int) { 
 	regist.B = regist.D;
 	reconstruirBC();
 }
 
 //LD B, E  0x43, copia E a B
-void ld_b_e() { 
+void ld_b_e (unsigned int) { 
 	regist.B = regist.E;
 	reconstruirBC();	
 }
 
 //LD B, H  0x44, copia H a B
-void ld_b_h() { 
+void ld_b_h (unsigned int) { 
 	regist.B = regist.H;
 	reconstruirBC();	
 }
 
 //LD B, L  0x45, copia L a B
-void ld_b_l() { 
+void ld_b_l (unsigned int) { 
 	regist.B = regist.L;
 	reconstruirBC();	
 }
 
 //LD B, HL  0x46, carga HL a B
-void ld_b_hl() { 
+void ld_b_hl (unsigned int) { 
 	
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
@@ -1400,49 +1400,49 @@ void ld_b_hl() {
 	}
 
 //LD B, A  0x47, copia A a B
-void ld_b_a() { 
+void ld_b_a (unsigned int) { 
 	regist.B = regist.A;
 	reconstruirBC();
 }
 
 //LD C, B 0x48, copia B a C
-void ld_c_b() {
+void ld_c_b (unsigned int) {
 	regist.C = regist.B;
 	reconstruirBC();
 }
 
 //LD C, C 0x49, copia C a C
-void ld_c_c() {
+void ld_c_c (unsigned int) {
 	regist.C = regist.C;
 	reconstruirBC();
 }
 
 //LD C, D 0x4a, copia D a C
-void ld_c_d() {
+void ld_c_d (unsigned int) {
 	regist.C = regist.D;
 	reconstruirBC();
 }
 
 //LD C, e 0x4b, copia E a C
-void ld_c_e() {
+void ld_c_e (unsigned int) {
 	regist.C = regist.E;
 	reconstruirBC();
 }
 
 //LD C, B 0x4c, copia H a C
-void ld_c_h() {
+void ld_c_h (unsigned int) {
 	regist.C = regist.H;
 	reconstruirBC();
 }
 
 //LD C, B 0x4d, copia L a C
-void ld_c_l() {
+void ld_c_l (unsigned int) {
 	regist.C = regist.L;
 	reconstruirBC();
 }
 
 //LD C, HL  0x4e, carga HL a C
-void ld_c_hl() { 
+void ld_c_hl (unsigned int) { 
 	//hacer esto en la futura funcion loadMEM
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
@@ -1456,49 +1456,49 @@ void ld_c_hl() {
 }
 
 //LD C, A  0x4f, copia A a C
-void ld_c_a() {
+void ld_c_a (unsigned int) {
 	regist.C = regist.A;
 	reconstruirBC();
 }
 
 //LD D, B 0x50, copia B a D
-void ld_d_b() {
+void ld_d_b (unsigned int) {
 	regist.D = regist.B;
 	reconstruirDE();
 }
 
 //LD D, C 0x51, copia C a D
-void ld_d_c() {
+void ld_d_c (unsigned int) {
 	regist.D = regist.C;
 	reconstruirDE();
 }
 
 //LD D, D 0x52, copia D a D
-void ld_d_d() {
+void ld_d_d (unsigned int) {
 	regist.D = regist.D;
 	reconstruirDE();
 }
 
 //LD D, e 0x53, copia E a D
-void ld_d_e() {
+void ld_d_e (unsigned int) {
 	regist.D = regist.E;
 	reconstruirDE();
 }
 
 //LD D, B 0x54, copia H a D
-void ld_d_h() {
+void ld_d_h (unsigned int) {
 	regist.D = regist.H;
 	reconstruirDE();
 }
 
 //LD D, B 0x55, copia L a D
-void ld_d_l() {
+void ld_d_l (unsigned int) {
 	regist.D = regist.L;
 	reconstruirDE();
 }
 
 //LD D, HL  0x56, carga HL a D
-void ld_d_hl() { 
+void ld_d_hl (unsigned int) { 
 	//hacer esto en la futura funcion loadMEM
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
@@ -1512,49 +1512,49 @@ void ld_d_hl() {
 	}
 
 //LD E, A  0x57, copia A a E
-void ld_d_a() {
+void ld_d_a (unsigned int) {
 	regist.D = regist.A;
 	reconstruirDE();
 }
 
 //LD E, B 0x58, copia B a E
-void ld_e_b() {
+void ld_e_b (unsigned int) {
 	regist.E = regist.B;
 	reconstruirDE();
 }
 
 //LD E, C 0x59, copia C a E
-void ld_e_c() {
+void ld_e_c (unsigned int) {
 	regist.E = regist.C;
 	reconstruirDE();
 }
 
 //LD E, D 0x5a, copia D a E
-void ld_e_d() {
+void ld_e_d (unsigned int) {
 	regist.E = regist.D;
 	reconstruirDE();
 }
 
 //LD E, e 0x5b, copia E a E
-void ld_e_e() {
+void ld_e_e (unsigned int) {
 	regist.E = regist.E;
 	reconstruirDE();
 }
 
 //LD E, B 0x5c, copia H a E
-void ld_e_h() {
+void ld_e_h (unsigned int) {
 	regist.E = regist.H;
 	reconstruirDE();
 }
 
 //LD E, B 0x5d, copia L a E
-void ld_e_l() {
+void ld_e_l (unsigned int) {
 	regist.E = regist.L;
 	reconstruirDE();
 }
 
 //LD E, HL  0x5e, carga HL a E
-void ld_e_hl() { 
+void ld_e_hl (unsigned int) { 
 	//hacer esto en la futura funcion loadMEM
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
@@ -1568,49 +1568,49 @@ void ld_e_hl() {
 }
 
 //LD E, A  0x5f, copia A a E
-void ld_e_a() {
+void ld_e_a (unsigned int) {
 	regist.E = regist.A;
 	reconstruirDE();
 }
 
 //LD H, B 0x60, copia B a H
-void ld_h_b() {
+void ld_h_b (unsigned int) {
 	regist.H = regist.B;
 	reconstruirHL();
 	}
 
 //LD H, C 0x61, copia C a H
-void ld_h_c() {
+void ld_h_c (unsigned int) {
 	regist.H = regist.C;
 	reconstruirHL();
 }
 
 //LD H, D 0x62, copia D a H
-void ld_h_d() {
+void ld_h_d (unsigned int) {
 	regist.H = regist.D;
 	reconstruirHL();
 }
 
 //LD H, e 0x63, copia E a H
-void ld_h_e() {
+void ld_h_e (unsigned int) {
 	regist.H = regist.E;
 	reconstruirHL();
 }
 
 //LD H, B 0x64, copia H a H
-void ld_h_h() {
+void ld_h_h (unsigned int) {
 	regist.H = regist.H;
 	reconstruirHL();
 }
 
 //LD H, B 0x65, copia L a H
-void ld_h_l() {
+void ld_h_l (unsigned int) {
 	regist.H = regist.L;
 	reconstruirHL();
 }
 
 //LD H, HL  0x66, carga HL a H
-void ld_h_hl() { 
+void ld_h_hl (unsigned int) { 
 	//hacer esto en la futura funcion loadMEM
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
@@ -1624,49 +1624,49 @@ void ld_h_hl() {
 	}
 
 //LD H, A  0x67, copia A a H
-void ld_h_a() {
+void ld_h_a (unsigned int) {
 	regist.H = regist.A;
 	reconstruirHL();
 }
 
 //LD L, B 0x68, copia B a L
-void ld_l_b() {
+void ld_l_b (unsigned int) {
 	regist.L = regist.B;
 	reconstruirHL();
 }
 
 //LD L, C 0x69, copia C a L
-void ld_l_c() {
+void ld_l_c (unsigned int) {
 	regist.L = regist.C;
 	reconstruirHL();
 }
 
 //LD L, D 0x6a, copia D a L
-void ld_l_d() {
+void ld_l_d (unsigned int) {
 	regist.L = regist.D;
 	reconstruirHL();
 }
 
 //LD L, e 0x6b, copia E a L
-void ld_l_e() {
+void ld_l_e (unsigned int) {
 	regist.L = regist.E;
 	reconstruirHL();
 }
 
 //LD L, B 0x6c, copia H a L
-void ld_l_h() {
+void ld_l_h (unsigned int) {
 	regist.L = regist.H;
 	reconstruirHL();
 }
 
 //LD L, B 0x6d, copia L a L
-void ld_l_l() {
+void ld_l_l (unsigned int) {
 	regist.L = regist.L;
 	reconstruirHL();
 }
 
 //LD L, HL  0x6e, carga HL a L
-void ld_l_hl() { 
+void ld_l_hl (unsigned int) { 
 	//hacer esto en la futura funcion loadMEM
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
@@ -1680,13 +1680,13 @@ void ld_l_hl() {
 }
 
 //LD L, A  0x6f, copia A a L
-void ld_l_a() {
+void ld_l_a (unsigned int) {
 	regist.L = regist.A;
 	reconstruirHL();
 }
 
 //LD (HL), B  0x70, guarda en mem B en la direccion de HL
-void ld_hl_b() {
+void ld_hl_b (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1694,7 +1694,7 @@ void ld_hl_b() {
 }
 
 //LD (HL), C  0x71, guarda en mem C en la direccion de HL
-void ld_hl_c() {
+void ld_hl_c (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1702,7 +1702,7 @@ void ld_hl_c() {
 }
 
 //LD (HL), D  0x72, guarda en mem D en la direccion de HL
-void ld_hl_d() {
+void ld_hl_d (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1710,7 +1710,7 @@ void ld_hl_d() {
 }
 
 //LD (HL), E  0x73, guarda en mem E en la direccion de HL
-void ld_hl_e() {
+void ld_hl_e (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1718,7 +1718,7 @@ void ld_hl_e() {
 }
 
 //LD (HL), H  0x74, guarda en mem H en la direccion de HL
-void ld_hl_h() {
+void ld_hl_h (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1726,7 +1726,7 @@ void ld_hl_h() {
 }
 
 //LD (HL), L  0x75, guarda en mem L en la direccion de HL
-void ld_hl_l() {
+void ld_hl_l (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1735,7 +1735,7 @@ void ld_hl_l() {
 
 
 //HALT 0x76 Se para la CPU hasta que cualquier interrupcion llegue
-void halt(){
+void halt (unsigned int) {
 	clock_cycle+=4;
 	machine_cycle++;
 	while(!interrrupt_enable){
@@ -1746,7 +1746,7 @@ void halt(){
 }
 
 //LD (HL), A  0x77, guarda en mem A en la direccion de HL
-void ld_hl_a() {
+void ld_hl_a (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1754,25 +1754,25 @@ void ld_hl_a() {
 }
 
 //LD A, B 0x78, copia B a A
-void ld_a_b() {regist.A = regist.B;}
+void ld_a_b (unsigned int) {regist.A = regist.B;}
 
 //LD A, C 0x79, copia C a A
-void ld_a_c() {regist.A = regist.C;}
+void ld_a_c (unsigned int) {regist.A = regist.C;}
 
 //LD A, D 0x7a, copia D a A
-void ld_a_d() {regist.A = regist.D;}
+void ld_a_d (unsigned int) {regist.A = regist.D;}
 
 //LD A, E 0x7b, copia E a A
-void ld_a_e() {regist.A = regist.E;}
+void ld_a_e (unsigned int) {regist.A = regist.E;}
 
 //LD A, B 0x7c, copia H a A
-void ld_a_h() {regist.A = regist.H;}
+void ld_a_h (unsigned int) {regist.A = regist.H;}
 
 //LD A, B 0x7d, copia L a A
-void ld_a_l() {regist.A = regist.L;}
+void ld_a_l (unsigned int) {regist.A = regist.L;}
 
 //LD A, HL  0x7e, carga HL a A
-void ld_a_hl() { 
+void ld_a_hl (unsigned int) { 
 	//hacer esto en la futura funcion loadMEM
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
@@ -1785,47 +1785,47 @@ void ld_a_hl() {
 	}
 
 //LD A, A  0x7f, copia A a A
-void ld_a_a() {regist.A = regist.A;}
+void ld_a_a (unsigned int) {regist.A = regist.A;}
 
 //ADD A, B 0x80, Suma A y B y lo guarda en A
-void add_a_b(){
+void add_a_b (unsigned int) {
 	suma(&regist.A, regist.B);
 
 }
 
 //ADD A, C 0x81, Suma A y C y lo guarda en A
-void add_a_c(){
+void add_a_c (unsigned int) {
 	suma(&regist.A, regist.C);
 
 
 }
 
 //ADD A, D 0x82, Suma A y D y lo guarda en A
-void add_a_d(){
+void add_a_d (unsigned int) {
 	suma(&regist.A, regist.D);
 
 }
 
 //ADD A, E 0x83, Suma A y E y lo guarda en A
-void add_a_e(){
+void add_a_e (unsigned int) {
 	suma(&regist.A, regist.E);
 
 }
 
 //ADD A, H 0x84, Suma A y H y lo guarda en A
-void add_a_h(){
+void add_a_h (unsigned int) {
 	suma(&regist.A, regist.H);
 
 }
 
 //ADD A, L 0x85, Suma A y L y lo guarda en A
-void add_a_l(){
+void add_a_l (unsigned int) {
 	suma(&regist.A, regist.L);
 
 }
 
 //ADD A, HL 0x86, Suma A y (HL) y lo guarda en A
-void add_a_hl(){
+void add_a_hl (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1834,49 +1834,49 @@ void add_a_hl(){
 }
 
 //ADD A, A 0x87, Suma A y A y lo guarda en A
-void add_a_a(){
+void add_a_a (unsigned int) {
 	suma(&regist.A, regist.A);
 
 }
 
 //ADC A, B, 0x88 Suma A y B con acarreo, se guarda en A
-void adc_a_b(){
+void adc_a_b (unsigned int) {
 	sumaC(&regist.A, regist.B);
 
 }
 
 //ADC A, C, 0x89 Suma A y C con acarreo, se guarda en A
-void adc_a_c(){
+void adc_a_c (unsigned int) {
 	sumaC(&regist.A, regist.C);
 
 }
 
 //ADC A, D, 0x8a Suma A y D con acarreo, se guarda en A
-void adc_a_d(){
+void adc_a_d (unsigned int) {
 	sumaC(&regist.A, regist.D);
 ;
 }
 
 //ADC A, E, 0x8b Suma A y E con acarreo, se guarda en A
-void adc_a_e(){
+void adc_a_e (unsigned int) {
 	sumaC(&regist.A, regist.E);
 
 }
 
 //ADC A, H, 0x8c Suma A y H con acarreo, se guarda en A
-void adc_a_h(){
+void adc_a_h (unsigned int) {
 	sumaC(&regist.A, regist.H);
 
 }
 
 //ADC A, L, 0x8d Suma A y L con acarreo, se guarda en A
-void adc_a_l(){
+void adc_a_l (unsigned int) {
 	sumaC(&regist.A, regist.L);
 
 }
 
 //ADC A, (HL), 0x8e Suma A y (HL) con acarreo, se guarda en A
-void adc_a_hl(){
+void adc_a_hl (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1885,49 +1885,49 @@ void adc_a_hl(){
 }
 
 //ADC A, A, 0x8f Suma A y A con acarreo, se guarda en A
-void adc_a_a(){
+void adc_a_a (unsigned int) {
 	sumaC(&regist.A, regist.A);
 
 }
 
 //SUB A, B 0x90, resta A y B y lo guarda en A
-void sub_a_b(){
+void sub_a_b (unsigned int) {
 	resta(&regist.A, regist.B);
 
 }
 
 //SUB A, C 0x91, resta A y C y lo guarda en A
-void sub_a_c(){
+void sub_a_c (unsigned int) {
 	resta(&regist.A, regist.C);
 
 }
 
 //SUB A, D 0x92, resta A y D y lo guarda en A
-void sub_a_d(){
+void sub_a_d (unsigned int) {
 	resta(&regist.A, regist.D);
 
 }
 
 //SUB A, E 0x93, resta A y E y lo guarda en A
-void sub_a_e(){
+void sub_a_e (unsigned int) {
 	resta(&regist.A, regist.E);
 
 }
 
 //SUB A, H 0x94, resta A y H y lo guarda en A
-void sub_a_h(){
+void sub_a_h (unsigned int) {
 	resta(&regist.A, regist.H);
 
 }
 
 //SUB A, L 0x95, resta A y L y lo guarda en A
-void sub_a_l(void){
+void sub_a_l (unsigned int) {
 	resta(&regist.A, regist.L);
 
 }
 
 //SUB A, HL 0x96, resta A y (HL) y lo guarda en A
-void sub_a_hl(void){
+void sub_a_hl (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1936,7 +1936,7 @@ void sub_a_hl(void){
 }
 
 //SUB A, A 0x97, resta A y A y lo guarda en A
-void sub_a_a(void){
+void sub_a_a (unsigned int) {
 	resta(&regist.A, regist.A);
 
 }
@@ -1944,25 +1944,25 @@ void sub_a_a(void){
 
 
 // 0x98
-void sbc_a_b(void) { restaC(&regist.A, regist.B); }
+void sbc_a_b (unsigned int) {restaC(&regist.A, regist.B); }
 
 // 0x99
-void sbc_a_c(void) { restaC(&regist.A, regist.C); }
+void sbc_a_c (unsigned int) {restaC(&regist.A, regist.C); }
 
 // 0x9a
-void sbc_a_d(void) { restaC(&regist.A, regist.D); }
+void sbc_a_d (unsigned int) {restaC(&regist.A, regist.D); }
 
 // 0x9b
-void sbc_a_e(void) { restaC(&regist.A, regist.E); }
+void sbc_a_e (unsigned int) {restaC(&regist.A, regist.E); }
 
 // 0x9c
-void sbc_a_h(void) { restaC(&regist.A, regist.H); }
+void sbc_a_h (unsigned int) {restaC(&regist.A, regist.H); }
 
 // 0x9d
-void sbc_a_l(void) { restaC(&regist.A, regist.L); }
+void sbc_a_l (unsigned int) {restaC(&regist.A, regist.L); }
 
 // 0x9e
-void sbc_a_hl(void) {
+void sbc_a_hl (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -1971,28 +1971,28 @@ void sbc_a_hl(void) {
 }
 
 // 0x9f
-void sbc_a_a(void) { restaC(&regist.A, regist.A); }
+void sbc_a_a (unsigned int) {restaC(&regist.A, regist.A); }
 
 // 0xa0
-void and_b(void) { ando(&regist.B); }
+void and_b (unsigned int) {ando(&regist.B); }
 
 // 0xa1
-void and_c(void) { ando(&regist.C); }
+void and_c (unsigned int) {ando(&regist.C); }
 
 // 0xa2
-void and_d(void) { ando(&regist.D); }
+void and_d (unsigned int) {ando(&regist.D); }
 
 // 0xa3
-void and_e(void) { ando(&regist.E); }
+void and_e (unsigned int) {ando(&regist.E); }
 
 // 0xa4
-void and_h(void) { ando(&regist.H); }
+void and_h (unsigned int) {ando(&regist.H); }
 
 // 0xa5
-void and_l(void) { ando(&regist.L); }
+void and_l (unsigned int) {ando(&regist.L); }
 
 // 0xa6
-void and_hlp(void) {
+void and_hlp(unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L; 
@@ -2001,28 +2001,28 @@ void and_hlp(void) {
 }
 
 // 0xa7
-void and_a(void) { ando(&regist.A); }
+void and_a (unsigned int) {ando(&regist.A); }
 
 // 0xa8
-void xor_b(void) { xoro(&regist.B); }
+void xor_b (unsigned int) {xoro(&regist.B); }
 
 // 0xa9
-void xor_c(void) { xoro(&regist.C); }
+void xor_c (unsigned int) {xoro(&regist.C); }
 
 // 0xaa
-void xor_d(void) { xoro(&regist.D); }
+void xor_d (unsigned int) {xoro(&regist.D); }
 
 // 0xab
-void xor_e(void) { xoro(&regist.E); }
+void xor_e (unsigned int) {xoro(&regist.E); }
 
 // 0xac
-void xor_h(void) { xoro(&regist.H); }
+void xor_h (unsigned int) {xoro(&regist.H); }
 
 // 0xad
-void xor_l(void) { xoro(&regist.L); }
+void xor_l (unsigned int) {xoro(&regist.L); }
 
 // 0xae
-void xor_hlp(void) { 
+void xor_hlp (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L;
@@ -2031,28 +2031,28 @@ void xor_hlp(void) {
 }
 
 // 0xaf
-void xor_a(void) { xoro(&regist.A); }
+void xor_a (unsigned int) {xoro(&regist.A); }
 
 // 0xb0
-void or_b(void) { oro(&regist.B); }
+void or_b (unsigned int) {oro(&regist.B); }
 
 // 0xb1
-void or_c(void) { oro(&regist.C); }
+void or_c (unsigned int) {oro(&regist.C); }
 
 // 0xb2
-void or_d(void) { oro(&regist.D); }
+void or_d (unsigned int) {oro(&regist.D); }
 
 // 0xb3
-void or_e(void) { oro(&regist.E); }
+void or_e (unsigned int) {oro(&regist.E); }
 
 // 0xb4
-void or_h(void) { oro(&regist.H); }
+void or_h (unsigned int) {oro(&regist.H); }
 
 // 0xb5
-void or_l(void) { oro(&regist.L); }
+void or_l (unsigned int) {oro(&regist.L); }
 
 // 0xb6
-void or_hlp(void) {
+void or_hlp (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L; 
@@ -2061,28 +2061,28 @@ void or_hlp(void) {
 }
 
 // 0xb7
-void or_a(void) { oro(&regist.A); }
+void or_a (unsigned int) {oro(&regist.A); }
 
 // 0xb8
-void cp_b(void) { cp(regist.B); }
+void cp_b (unsigned int) {cp(regist.B); }
 
 // 0xb9
-void cp_c(void) { cp(regist.C); }
+void cp_c (unsigned int) {cp(regist.C); }
 
 // 0xba
-void cp_d(void) { cp(regist.D); }
+void cp_d (unsigned int) {cp(regist.D); }
 
 // 0xbb
-void cp_e(void) { cp(regist.E); }
+void cp_e (unsigned int) {cp(regist.E); }
 
 // 0xbc
-void cp_h(void) { cp(regist.H); }
+void cp_h (unsigned int) {cp(regist.H); }
 
 // 0xbd
-void cp_l(void) { cp(regist.L); }
+void cp_l (unsigned int) {cp(regist.L); }
 
 // 0xbe
-void cp_hlp(void) {
+void cp_hlp (unsigned int) {
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
 	regist.HL=regist.HL|regist.L; 
@@ -2091,10 +2091,10 @@ void cp_hlp(void) {
 }
 
 // 0xbf
-void cp_a(void) { cp(regist.A); }
+void cp_a (unsigned int) {cp(regist.A); }
 
 // 0xc0
-void ret_nz(){
+void ret_nz (unsigned int) {
 	unsigned char u = regist.F >> 7;
 	if(u == 1){
 		machine_cycle+=8;
@@ -2105,7 +2105,7 @@ void ret_nz(){
 }
 
 //0xc1 POP BC, dia 2 de noviembre de 2020, esto lleva un anyo planteado y tras un paron desde junio volvemos a la carga sin acordarme de la mitad de las cosas BRING BACK THE FURYO STYLE!
-void pop_bc(){
+void pop_bc (unsigned int) {
 	reconstruirBC();
 	regist.BC= loadMEM16pila(&regist.SP);
 	deconstruirBC();
@@ -2140,7 +2140,7 @@ void call_nz_a16(unsigned short valor){
 }
 
 //0xc5
-void push_bc(){
+void push_bc (unsigned int) {
 	reconstruirBC();
 	writeMEM16pila(regist.BC, &regist.SP);
 	deconstruirBC();
@@ -2152,13 +2152,13 @@ void add_a_d8(unsigned char valor){
 }
 
 //0xc7
-void rst_00h(){
+void rst_00h (unsigned int) {
 	writeMEM16pila((char16_t) regist.PC, &regist.SP);
 	regist.PC=0x0000;
 }
 
 //0xc8
-void ret_z(){
+void ret_z (unsigned int) {
 	unsigned char u = regist.F >> 7;
 	if(u==1){
 		regist.PC = loadMEM16pila(&regist.SP);
@@ -2169,7 +2169,7 @@ void ret_z(){
 }
 
 //0xc9
-void ret(){
+void ret (unsigned int) {
 	regist.PC= loadMEM16pila(&regist.SP);
 }
 
@@ -2210,13 +2210,13 @@ void adc_a_d8(unsigned char valor){
 }
 
 //0xcf
-void RST_08H(){
+void RST_08H (unsigned int) {
 	writeMEM16pila((char16_t) regist.PC, &regist.SP);
 	regist.PC=0x0008;
 }
 
 //0xd0
-void ret_nc(){
+void ret_nc (unsigned int) {
 	unsigned char u = regist.F >> 4 & 0x01;
 	if(u == 1){
 		machine_cycle+=8;
@@ -2227,7 +2227,7 @@ void ret_nc(){
 }
 
 //0xd1
-void pop_de(){
+void pop_de (unsigned int) {
 	reconstruirDE();
 	regist.DE= loadMEM16pila(&regist.SP);
 	deconstruirDE();
@@ -2257,7 +2257,7 @@ void call_nc_a16(unsigned short valor){
 }
 
 //0xd5
-void push_de(){
+void push_de (unsigned int) {
 	reconstruirDE();
 	writeMEM16pila(regist.DE, &regist.SP);
 	deconstruirDE();
@@ -2269,13 +2269,13 @@ void sub_d8(unsigned char valor){
 }
 
 //0xd7
-void rst_10h(){
+void rst_10h (unsigned int) {
 	writeMEM16pila((char16_t) regist.PC, &regist.SP);
 	regist.PC=0x0010;
 }
 
 //0xd8
-void ret_c(){
+void ret_c (unsigned int) {
 	unsigned char u = regist.F >> 4 & 0x01;
 	if(u==1){
 		regist.PC = loadMEM16pila(&regist.SP);
@@ -2286,7 +2286,7 @@ void ret_c(){
 }
 
 //0xd9
-void reti(){
+void reti (unsigned int) {
 	regist.PC= loadMEM16pila(&regist.SP);
 	//habilitar interrupciones, pero todavia no estan hechas
 }
@@ -2320,7 +2320,7 @@ void sbc_a_d8(unsigned char valor){
 }
 
 //0xdf
-void rst_18h(){
+void rst_18h (unsigned int) {
 	writeMEM16pila((char16_t) regist.PC, &regist.SP);
 	regist.PC=0x0018;
 }
@@ -2331,19 +2331,19 @@ void ldh_a8_a(unsigned char valor){
 }
 
 //0xe1
-void pop_hl(){
+void pop_hl (unsigned int) {
 	reconstruirHL();
 	regist.HL= loadMEM16pila(&regist.SP);
 	deconstruirHL();
 }
 
 //0xe2
-void ld_ca(){
+void ld_ca (unsigned int) {
 	writeMEMB(0xff00+regist.C, regist.A);
 }
 
 //0xe5
-void push_hl(){
+void push_hl (unsigned int) {
 	reconstruirHL();
 	writeMEM16pila(regist.HL, &regist.SP);
 	deconstruirHL();
@@ -2366,7 +2366,7 @@ void and_d8(unsigned char valor){
 }
 
 //0xe7
-void rst_20h(){
+void rst_20h (unsigned int) {
 	writeMEM16pila((char16_t) regist.PC, &regist.SP);
 	regist.PC=0x0020;
 }
@@ -2400,7 +2400,7 @@ void add_sp_r8(char valor){
 }
 
 //0xe9
-void jp_hl(){
+void jp_hl (unsigned int) {
 	reconstruirHL();
 	regist.PC= regist.HL;
 }
@@ -2416,7 +2416,7 @@ void xor_d8(unsigned char valor){
 }
 
 //0xef
-void rst_28h(){
+void rst_28h (unsigned int) {
 	writeMEM16pila((char16_t) regist.PC, &regist.SP);
 	regist.PC=0x0028;
 }
@@ -2427,7 +2427,7 @@ void ldh_a_a8(unsigned char valor){
 }
 
 //0xf1
-void pop_af(){
+void pop_af (unsigned int) {
 	regist.AF=regist.A;
 	regist.AF=regist.AF<<8;
 	regist.AF=regist.AF|regist.F;
@@ -2437,17 +2437,17 @@ void pop_af(){
 }
 
 //0xf2
-void la_ac(){
+void la_ac (unsigned int) {
 	regist.A= loadMEMB(0xff00 + regist.C);
 }
 
 //0xf3 deshabilita las interrupciones despues de ejecutar esta instrunccion
-void di(){
+void di (unsigned int) {
 	interrrupt_enable=0;
 }
 
 //0xf5
-void push_af(){
+void push_af (unsigned int) {
 	regist.AF=regist.A;
 	regist.AF=regist.AF<<8;
 	regist.AF=regist.AF|regist.F;
@@ -2471,7 +2471,7 @@ void or_d8(unsigned char valor){
 }
 
 //0xf7
-void rst_30h(){
+void rst_30h (unsigned int) {
 	writeMEM16pila((char16_t) regist.PC, &regist.SP);
 	regist.PC=0x0030;
 }
@@ -2505,7 +2505,7 @@ void ld_hl_spr8(char valor){
 }
 
 //0xf9
-void ld_sp_hl(){
+void ld_sp_hl (unsigned int) {
 	regist.SP= regist.HL;
 }
 
@@ -2515,7 +2515,7 @@ void ld_a_a16(unsigned short valor){
 }
 
 //0xfb habilita interrupciones depues de ejecutar la instruccion
-void ei(){
+void ei (unsigned int) {
 	interrrupt_enable=1;
 }
 
@@ -2525,12 +2525,12 @@ void cp_d8(unsigned char valor){
 }
 
 //0xff
-void rst_38h(){
+void rst_38h (unsigned int) {
 	writeMEM16pila((char16_t) regist.PC, &regist.SP);
 	regist.PC=0x0038;
 }
 
-void nada(){
+void nada (unsigned int) {
 
 }
 
@@ -2589,14 +2589,27 @@ int main(int argc, char **argv){
 	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.L));
 	string exit;
 	unsigned char ojo=0xf;
-	//int prueba=0;
+	int prueba=0;
 	int instt;
+	int parametro;
 	while(1){
 		//cin>>exit;
 		cin>> hex >> instt;
 		cout<<"has puesto: "<<instt<<"\n";
-		instructions[instt].action();
+		/*if(instructions[instt].action_bit_number==0){
+			instructions[instt].action(prueba);
+		}else{
+			cin>> hex >> parametro;
+			instructions[instt].action_parameter=parametro;
+			instructions[instt].action(instructions[instt].action_parameter);
+		}*/
 		
+		if(instructions[instt].action_bit_number!=0){
+			cin>> hex >> parametro;
+			instructions[instt].action_parameter=parametro;
+		}
+		instructions[instt].action(instructions[instt].action_parameter);
+
 		//ld_b8(ojo);
 		cout<< "\nRegistro B: " <<endl;
 		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
