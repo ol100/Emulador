@@ -206,7 +206,71 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_7_h },//0xbc
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_7_l },//0xbd
 	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:res_7_hl },//0xbe
-	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_7_a }//0xbf
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_7_a },//0xbf
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_b },//0xc0
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_c },//0xc1
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_d },//0xc2
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_e },//0xc3
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_h },//0xc4
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_l },//0xc5
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_0_hl },//0xc6
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_a },//0xc7
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_b },//0xc8
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_c },//0xc9
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_d },//0xca
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_e },//0xcb
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_h },//0xcc
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_l },//0xcd
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_1_hl },//0xce
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_a },//0xcf
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_b },//0xd0
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_c },//0xd1
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_d },//0xd2
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_e },//0xd3
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_h },//0xd4
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_l },//0xd5
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_2_hl },//0xd6
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_a },//0xd7
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_b },//0xd8
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_c },//0xd9
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_d },//0xda
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_e },//0xdb
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_h },//0xdc
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_l },//0xdd
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_3_hl },//0xde
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_a },//0xdf
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_b },//0xe0
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_c },//0xe1
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_d },//0xe2
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_e },//0xe3
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_h },//0xe4
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_l },//0xe5
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_4_hl },//0xe6
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_a },//0xe7
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_b },//0xe8
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_c },//0xe9
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_d },//0xea
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_e },//0xeb
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_h },//0xec
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_l },//0xed
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_5_hl },//0xee
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_a },//0xef
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_b },//0xf0
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_c },//0xf1
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_d },//0xf2
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_e },//0xf3
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_h },//0xf4
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_l },//0xf5
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_6_hl },//0xf6
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_a },//0xf7
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_b },//0xf8
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_c },//0xf9
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_d },//0xfa
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_e },//0xfb
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_h },//0xfc
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_l },//0xfd
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_7_hl },//0xfe
+	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_a }//0xff
 	
 	};
 
@@ -1482,4 +1546,356 @@ void res_7_hl(void){
 //0xbf RES 7,A
 void res_7_a(void){
 	regist.A=regist.A & 0x7F;
+}
+
+//0xc0 SET 0,B
+void set_0_b(void){
+	regist.B=regist.B | 0x01;
+}
+
+//0xc1 SET 0,C
+void set_0_c(void){
+	regist.C=regist.C | 0x01;
+}
+
+//0xc2 SET 0,D
+void set_0_d(void){
+	regist.D=regist.D | 0x01;
+}
+
+//0xc3 SET 0,E
+void set_0_e(void){
+	regist.E=regist.E | 0x01;
+}
+
+//0xc4 SET 0,H
+void set_0_h(void){
+	regist.H=regist.H | 0x01;
+	deconstruirHL();
+}
+
+//0xc5 SET 0,L
+void set_0_l(void){
+	regist.L=regist.L | 0x01;
+	deconstruirHL();
+}
+
+//0xc6 SET 0,(HL)
+void set_0_hl(void){
+	reconstruirHL();
+	unsigned char ByteMEM=(loadMEMB(regist.HL) | 0x01);
+	writeMEMB(regist.HL, ByteMEM);
+}
+
+//0xc7 SET 0,A
+void set_0_a(void){
+	regist.A=regist.A | 0x01;
+}
+
+//0xc8 SET 1,B
+void set_1_b(void){
+	regist.B=regist.B | 0x02;
+}
+
+//0xc9 SET 1,C
+void set_1_c(void){
+	regist.C=regist.C | 0x02;
+}
+
+//0xca SET 1,D
+void set_1_d(void){
+	regist.D=regist.D | 0x02;
+}
+
+//0xcb SET 1,E
+void set_1_e(void){
+	regist.E=regist.E | 0x02;
+}
+
+//0xcc SET 1,H
+void set_1_h(void){
+	regist.H=regist.H | 0x02;
+	deconstruirHL();
+}
+
+//0xcd SET 1,L
+void set_1_l(void){
+	regist.L=regist.L | 0x02;
+	deconstruirHL();
+}
+
+//0xce SET 1,(HL)
+void set_1_hl(void){
+	reconstruirHL();
+	unsigned char ByteMEM=(loadMEMB(regist.HL) | 0x02);
+	writeMEMB(regist.HL, ByteMEM);
+}
+
+//0xcf SET 1,A
+void set_1_a(void){
+	regist.A=regist.A | 0x02;
+}
+
+//0xd0 SET 2,B
+void set_2_b(void){
+	regist.B=regist.B | 0x04;
+}
+
+//0xd1 SET 2,C
+void set_2_c(void){
+	regist.C=regist.C | 0x04;
+}
+
+//0xd2 SET 2,D
+void set_2_d(void){
+	regist.D=regist.D | 0x04;
+}
+
+//0xd3 SET 2,E
+void set_2_e(void){
+	regist.E=regist.E | 0x04;
+}
+
+//0xd4 SET 2,H
+void set_2_h(void){
+	regist.H=regist.H | 0x04;
+	deconstruirHL();
+}
+
+//0xd5 SET 2,L
+void set_2_l(void){
+	regist.L=regist.L | 0x04;
+	deconstruirHL();
+}
+
+//0xd6 SET 2,(HL)
+void set_2_hl(void){
+	reconstruirHL();
+	unsigned char ByteMEM=(loadMEMB(regist.HL) | 0x04);
+	writeMEMB(regist.HL, ByteMEM);
+}
+
+//0xd7 SET 2,A
+void set_2_a(void){
+	regist.A=regist.A | 0x04;
+}
+
+//0xd8 SET 3,B
+void set_3_b(void){
+	regist.B=regist.B | 0x08;
+}
+
+//0xd9 SET 3,C
+void set_3_c(void){
+	regist.C=regist.C | 0x08;
+}
+
+//0xda SET 3,D
+void set_3_d(void){
+	regist.D=regist.D | 0x08;
+}
+
+//0xdb SET 3,E
+void set_3_e(void){
+	regist.E=regist.E | 0x08;
+}
+
+//0xdc SET 3,H
+void set_3_h(void){
+	regist.H=regist.H | 0x08;
+	deconstruirHL();
+}
+
+//0xdd SET 3,L
+void set_3_l(void){
+	regist.L=regist.L | 0x08;
+	deconstruirHL();
+}
+
+//0xde SET 3,(HL)
+void set_3_hl(void){
+	reconstruirHL();
+	unsigned char ByteMEM=(loadMEMB(regist.HL) | 0x08);
+	writeMEMB(regist.HL, ByteMEM);
+}
+
+//0xdf SET 3,A
+void set_3_a(void){
+	regist.A=regist.A | 0x08;
+}
+
+//0xe0 SET 4,B
+void set_4_b(void){
+	regist.B=regist.B | 0x10;
+}
+
+//0xe1 SET 4,C
+void set_4_c(void){
+	regist.C=regist.C | 0x10;
+}
+
+//0xe2 SET 4,D
+void set_4_d(void){
+	regist.D=regist.D | 0x10;
+}
+
+//0xe3 SET 4,E
+void set_4_e(void){
+	regist.E=regist.E | 0x10;
+}
+
+//0xe4 SET 4,H
+void set_4_h(void){
+	regist.H=regist.H | 0x10;
+	deconstruirHL();
+}
+
+//0xe5 SET 4,L
+void set_4_l(void){
+	regist.L=regist.L | 0x10;
+	deconstruirHL();
+}
+
+//0xe6 SET 4,(HL)
+void set_4_hl(void){
+	reconstruirHL();
+	unsigned char ByteMEM=(loadMEMB(regist.HL) | 0x10);
+	writeMEMB(regist.HL, ByteMEM);
+}
+
+//0xe7 SET 4,A
+void set_4_a(void){
+	regist.A=regist.A | 0x10;
+}
+
+//0xe8 SET 5,B
+void set_5_b(void){
+	regist.B=regist.B | 0x20;
+}
+
+//0xe9 SET 5,C
+void set_5_c(void){
+	regist.C=regist.C | 0x20;
+}
+
+//0xea SET 5,D
+void set_5_d(void){
+	regist.D=regist.D | 0x20;
+}
+
+//0xeb SET 5,E
+void set_5_e(void){
+	regist.E=regist.E | 0x20;
+}
+
+//0xec SET 5,H
+void set_5_h(void){
+	regist.H=regist.H | 0x20;
+	deconstruirHL();
+}
+
+//0xed SET 5,L
+void set_5_l(void){
+	regist.L=regist.L | 0x20;
+	deconstruirHL();
+}
+
+//0xee SET 5,(HL)
+void set_5_hl(void){
+	reconstruirHL();
+	unsigned char ByteMEM=(loadMEMB(regist.HL) | 0x20);
+	writeMEMB(regist.HL, ByteMEM);
+}
+
+//0xef SET 5,A
+void set_5_a(void){
+	regist.A=regist.A | 0x20;
+}
+
+//0xf0 SET 6,B
+void set_6_b(void){
+	regist.B=regist.B | 0x40;
+}
+
+//0xf1 SET 6,C
+void set_6_c(void){
+	regist.C=regist.C | 0x40;
+}
+
+//0xf2 SET 6,D
+void set_6_d(void){
+	regist.D=regist.D | 0x40;
+}
+
+//0xf3 SET 6,E
+void set_6_e(void){
+	regist.E=regist.E | 0x40;
+}
+
+//0xf4 SET 6,H
+void set_6_h(void){
+	regist.H=regist.H | 0x40;
+	deconstruirHL();
+}
+
+//0xf5 SET 6,L
+void set_6_l(void){
+	regist.L=regist.L | 0x40;
+	deconstruirHL();
+}
+
+//0xf6 SET 6,(HL)
+void set_6_hl(void){
+	reconstruirHL();
+	unsigned char ByteMEM=(loadMEMB(regist.HL) | 0x40);
+	writeMEMB(regist.HL, ByteMEM);
+}
+
+//0xf7 SET 6,A
+void set_6_a(void){
+	regist.A=regist.A | 0x40;
+}
+
+//0xf8 SET 7,B
+void set_7_b(void){
+	regist.B=regist.B | 0x80;
+}
+
+//0xf9 SET 7,C
+void set_7_c(void){
+	regist.C=regist.C | 0x80;
+}
+
+//0xfa SET 7,D
+void set_7_d(void){
+	regist.D=regist.D | 0x80;
+}
+
+//0xfb SET 7,E
+void set_7_e(void){
+	regist.E=regist.E | 0x80;
+}
+
+//0xfc SET 7,H
+void set_7_h(void){
+	regist.H=regist.H | 0x80;
+	deconstruirHL();
+}
+
+//0xfd SET 7,L
+void set_7_l(void){
+	regist.L=regist.L | 0x80;
+	deconstruirHL();
+}
+
+//0xfe SET 7,(HL)
+void set_7_hl(void){
+	reconstruirHL();
+	unsigned char ByteMEM=(loadMEMB(regist.HL) | 0x80);
+	writeMEMB(regist.HL, ByteMEM);
+}
+
+//0xff SET 7,A
+void set_7_a(void){
+	regist.A=regist.A | 0x80;
 }
