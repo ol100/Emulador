@@ -21,7 +21,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_e },//0x03
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_h },//0x04
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_l },//0x05
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:rlc_hl },//0x06
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:rlc_hl },//0x06
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rlc_a },//0x07
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_b },//0x08 
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_c },//0x09
@@ -29,7 +29,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_e },//0x0b
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_h },//0x0c
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_l },//0x0d
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:rrc_hl },//0x0e
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:rrc_hl },//0x0e
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rrc_a },//0x0f
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_b },//0x10 
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_c },//0x11
@@ -37,7 +37,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_e },//0x13
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_h },//0x14
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_l },//0x15
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:rl_hl },//0x16
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:rl_hl },//0x16
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rl_a },//0x17
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rr_b },//0x18 
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rr_c },//0x19
@@ -45,7 +45,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rr_e },//0x1b
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rr_h },//0x1c
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rr_l },//0x1d
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:rr_hl },//0x1e
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:rr_hl },//0x1e
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:rr_a },//0x1f
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sla_b },//0x20 
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sla_c },//0x21
@@ -53,7 +53,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sla_e },//0x23
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sla_h },//0x24
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sla_l },//0x25
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:sla_hl },//0x26
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:sla_hl },//0x26
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_a },//0x27
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_b },//0x28 
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_c },//0x29
@@ -61,7 +61,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_e },//0x2b
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_h },//0x2c
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_l },//0x2d
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:sra_hl },//0x2e
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:sra_hl },//0x2e
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:sra_a },//0x2f
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_b },//0x30 
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_c },//0x31
@@ -69,7 +69,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_e },//0x33
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_h },//0x34
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_l },//0x35
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:swap_hl },//0x36
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:swap_hl },//0x36
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:swap_a },//0x37
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_b },//0x38 
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_c },//0x39
@@ -77,7 +77,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_e },//0x3b
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_h },//0x3c
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_l },//0x3d
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:srl_hl },//0x3e
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:srl_hl },//0x3e
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:srl_a },//0x3f
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_b },//0x40 
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_c },//0x41
@@ -85,7 +85,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_e },//0x43
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_h },//0x44
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_l },//0x45
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_0_hl },//0x46
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:bit_0_hl },//0x46
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_0_a },//0x47
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_b },//0x48
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_c },//0x49
@@ -93,7 +93,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_e },//0x4b
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_h },//0x4c
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_l },//0x4d
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_1_hl },//0x4e
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:bit_1_hl },//0x4e
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_1_a },//0x4f
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_b },//0x50
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_c },//0x51
@@ -101,7 +101,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_e },//0x53
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_h },//0x54
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_l },//0x55
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_2_hl },//0x56
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:bit_2_hl },//0x56
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_2_a },//0x57
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_3_b },//0x58
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_3_c },//0x59
@@ -109,7 +109,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_3_e },//0x5b
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_3_h },//0x5c
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_3_l },//0x5d
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_3_hl },//0x5e
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:bit_3_hl },//0x5e
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_3_a },//0x5f
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_4_b },//0x60
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_4_c },//0x61
@@ -117,7 +117,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_4_e },//0x63
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_4_h },//0x64
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_4_l },//0x65
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_4_hl },//0x66
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:bit_4_hl },//0x66
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_4_a },//0x67
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_5_b },//0x68
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_5_c },//0x69
@@ -125,7 +125,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_5_e },//0x6b
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_5_h },//0x6c
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_5_l },//0x6d
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_5_hl },//0x6e
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:bit_5_hl },//0x6e
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_5_a },//0x6f
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_6_b },//0x70
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_6_c },//0x71
@@ -133,7 +133,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_6_e },//0x73
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_6_h },//0x74
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_6_l },//0x75
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_6_hl },//0x76
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:bit_6_hl },//0x76
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_6_a },//0x77
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_7_b },//0x78
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_7_c },//0x79
@@ -141,7 +141,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_7_e },//0x7b
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_7_h },//0x7c
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_7_l },//0x7d
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:bit_7_hl },//0x7e
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:bit_7_hl },//0x7e
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:bit_7_a },//0x7f
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_0_b },//0x80
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_0_c },//0x81
@@ -149,7 +149,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_0_e },//0x83
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_0_h },//0x84
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_0_l },//0x85
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:res_0_hl },//0x86
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:res_0_hl },//0x86
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_0_a },//0x87
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_1_b },//0x88
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_1_c },//0x89
@@ -157,7 +157,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_1_e },//0x8b
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_1_h },//0x8c
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_1_l },//0x8d
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:res_1_hl },//0x8e
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:res_1_hl },//0x8e
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_1_a },//0x8f
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_2_b },//0x90
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_2_c },//0x91
@@ -165,7 +165,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_2_e },//0x93
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_2_h },//0x94
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_2_l },//0x95
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:res_2_hl },//0x96
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:res_2_hl },//0x96
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_2_a },//0x97
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_3_b },//0x98
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_3_c },//0x99
@@ -173,7 +173,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_3_e },//0x9b
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_3_h },//0x9c
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_3_l },//0x9d
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:res_3_hl },//0x9e
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:res_3_hl },//0x9e
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_3_a },//0x9f
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_4_b },//0xa0
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_4_c },//0xa1
@@ -181,7 +181,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_4_e },//0xa3
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_4_h },//0xa4
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_4_l },//0xa5
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:res_4_hl },//0xa6
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:res_4_hl },//0xa6
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_4_a },//0xa7
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_5_b },//0xa8
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_5_c },//0xa9
@@ -189,7 +189,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_5_e },//0xab
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_5_h },//0xac
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_5_l },//0xad
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:res_5_hl },//0xae
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:res_5_hl },//0xae
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_5_a },//0xaf
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_6_b },//0xb0
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_6_c },//0xb1
@@ -197,7 +197,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_6_e },//0xb3
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_6_h },//0xb4
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_6_l },//0xb5
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:res_6_hl },//0xb6
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:res_6_hl },//0xb6
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_6_a },//0xb7
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_7_b },//0xb8
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_7_c },//0xb9
@@ -205,7 +205,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_7_e },//0xbb
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_7_h },//0xbc
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_7_l },//0xbd
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:res_7_hl },//0xbe
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:res_7_hl },//0xbe
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:res_7_a },//0xbf
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_b },//0xc0
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_c },//0xc1
@@ -213,7 +213,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_e },//0xc3
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_h },//0xc4
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_l },//0xc5
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_0_hl },//0xc6
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:set_0_hl },//0xc6
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_0_a },//0xc7
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_b },//0xc8
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_c },//0xc9
@@ -221,7 +221,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_e },//0xcb
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_h },//0xcc
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_l },//0xcd
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_1_hl },//0xce
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:set_1_hl },//0xce
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_1_a },//0xcf
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_b },//0xd0
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_c },//0xd1
@@ -229,7 +229,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_e },//0xd3
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_h },//0xd4
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_l },//0xd5
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_2_hl },//0xd6
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:set_2_hl },//0xd6
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_2_a },//0xd7
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_b },//0xd8
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_c },//0xd9
@@ -237,7 +237,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_e },//0xdb
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_h },//0xdc
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_l },//0xdd
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_3_hl },//0xde
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:set_3_hl },//0xde
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_3_a },//0xdf
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_b },//0xe0
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_c },//0xe1
@@ -245,7 +245,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_e },//0xe3
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_h },//0xe4
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_l },//0xe5
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_4_hl },//0xe6
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:set_4_hl },//0xe6
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_4_a },//0xe7
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_b },//0xe8
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_c },//0xe9
@@ -253,7 +253,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_e },//0xeb
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_h },//0xec
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_l },//0xed
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_5_hl },//0xee
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:set_5_hl },//0xee
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_5_a },//0xef
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_b },//0xf0
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_c },//0xf1
@@ -261,7 +261,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_e },//0xf3
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_h },//0xf4
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_l },//0xf5
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_6_hl },//0xf6
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:set_6_hl },//0xf6
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_6_a },//0xf7
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_b },//0xf8
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_c },//0xf9
@@ -269,7 +269,7 @@ const struct CBinstruction CBinstructions[256]={
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_e },//0xfb
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_h },//0xfc
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_l },//0xfd
-	{ valid_instruction:true, clock_cycle:16, machine_cycle:2, action:set_7_hl },//0xfe
+	{ valid_instruction:true, clock_cycle:16, machine_cycle:4, action:set_7_hl },//0xfe
 	{ valid_instruction:true, clock_cycle:8, machine_cycle:2, action:set_7_a }//0xff
 	
 	};

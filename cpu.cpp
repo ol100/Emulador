@@ -30,70 +30,72 @@ using namespace std;
 struct registros regist;
 struct instruction instructions[256]={
 	{   clock_cycle:4, machine_cycle:1, action:nop, action_bit_number:0, action_parameter:0}, //0x00
-	{   clock_cycle:4, machine_cycle:1, action:(void (*)(unsigned int))ld_bc16, action_bit_number:0, action_parameter:0 }, //0x01 
-	{   clock_cycle:4, machine_cycle:1, action:ld_bca, action_bit_number:0, action_parameter:0 }, //0x02
-	{   clock_cycle:4, machine_cycle:1, action:inc_bc, action_bit_number:0, action_parameter:0 }, //0x03
+	{   clock_cycle:12, machine_cycle:3, action:(void (*)(unsigned int))ld_bc16, action_bit_number:16, action_parameter:2 }, //0x01 
+	{   clock_cycle:8, machine_cycle:2, action:ld_bca, action_bit_number:0, action_parameter:0 }, //0x02
+	{   clock_cycle:8, machine_cycle:2, action:inc_bc, action_bit_number:0, action_parameter:0 }, //0x03
 	{   clock_cycle:4, machine_cycle:1, action:inc_b, action_bit_number:0, action_parameter:0 }, //0x04
 	{   clock_cycle:4, machine_cycle:1, action:dec_b, action_bit_number:0, action_parameter:0 }, //0x05
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x06 ld_b8
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))ld_b8, action_bit_number:8, action_parameter:1 }, //0x06 ld_b8
 	{   clock_cycle:4, machine_cycle:1, action:rlca, action_bit_number:0, action_parameter:0 }, //0x07 
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x08 LD_a16_sp
-	{   clock_cycle:4, machine_cycle:1, action:add_hl_bc, action_bit_number:0, action_parameter:0 }, //0x09
-	{   clock_cycle:4, machine_cycle:1, action:ld_a_bc, action_bit_number:0, action_parameter:0 }, //0x0a
-	{   clock_cycle:4, machine_cycle:1, action:dec_bc, action_bit_number:0, action_parameter:0 }, //0x0b
+	{   clock_cycle:20, machine_cycle:5, action:(void (*)(unsigned int))LD_a16_sp, action_bit_number:16, action_parameter:2 }, //0x08 LD_a16_sp
+	{   clock_cycle:8, machine_cycle:2, action:add_hl_bc, action_bit_number:0, action_parameter:0 }, //0x09
+	{   clock_cycle:8, machine_cycle:2, action:ld_a_bc, action_bit_number:0, action_parameter:0 }, //0x0a
+	{   clock_cycle:8, machine_cycle:2, action:dec_bc, action_bit_number:0, action_parameter:0 }, //0x0b
 	{   clock_cycle:4, machine_cycle:1, action:inc_c, action_bit_number:0, action_parameter:0 }, //0x0c
 	{   clock_cycle:4, machine_cycle:1, action:dec_c, action_bit_number:0, action_parameter:0 }, //0x0d
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x0e ld_c8
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))ld_c8, action_bit_number:8, action_parameter:1 }, //0x0e ld_c8
 	{   clock_cycle:4, machine_cycle:1, action:rrca, action_bit_number:0, action_parameter:0 }, //0x0f
 	//{   clock_cycle:4, machine_cycle:1, action:nop, action_bit_number:0, action_parameter:0 }, //0x10
 	//{   clock_cycle:4, machine_cycle:1, action:nop, action_bit_number:0, action_parameter:0 }, //0x11
 	{   clock_cycle:4, machine_cycle:1, action:stop, action_bit_number:0, action_parameter:0 }, //0x10
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x11 ld_de16
-	{   clock_cycle:4, machine_cycle:1, action:ld_dea, action_bit_number:0, action_parameter:0 }, //0x12
-	{   clock_cycle:4, machine_cycle:1, action:inc_de, action_bit_number:0, action_parameter:0 }, //0x13
+	{   clock_cycle:12, machine_cycle:3, action:(void (*)(unsigned int))ld_de16, action_bit_number:16, action_parameter:2 }, //0x11 ld_de16
+	{   clock_cycle:8, machine_cycle:2, action:ld_dea, action_bit_number:0, action_parameter:0 }, //0x12
+	{   clock_cycle:8, machine_cycle:2, action:inc_de, action_bit_number:0, action_parameter:0 }, //0x13
 	{   clock_cycle:4, machine_cycle:1, action:inc_d, action_bit_number:0, action_parameter:0 }, //0x14
 	{   clock_cycle:4, machine_cycle:1, action:dec_d, action_bit_number:0, action_parameter:0 }, //0x15
-	{   clock_cycle:4, machine_cycle:1, action:(void (*)(unsigned int))ld_d8, action_bit_number:8, action_parameter:1 }, //0x16 ld_d8
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))ld_d8, action_bit_number:8, action_parameter:1 }, //0x16 ld_d8
 	{   clock_cycle:4, machine_cycle:1, action:rla, action_bit_number:0, action_parameter:0 }, //0x17 
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x18 jr_r8
-	{   clock_cycle:4, machine_cycle:1, action:add_hl_de, action_bit_number:0, action_parameter:0 }, //0x19
-	{   clock_cycle:4, machine_cycle:1, action:ld_a_de, action_bit_number:0, action_parameter:0 }, //0x1a
-	{   clock_cycle:4, machine_cycle:1, action:dec_de, action_bit_number:0, action_parameter:0 }, //0x1b
+	{   clock_cycle:12, machine_cycle:3, action:(void (*)(unsigned int))jr_r8, action_bit_number:8, action_parameter:1 }, //0x18 jr_r8
+	{   clock_cycle:8, machine_cycle:2, action:add_hl_de, action_bit_number:0, action_parameter:0 }, //0x19
+	{   clock_cycle:8, machine_cycle:2, action:ld_a_de, action_bit_number:0, action_parameter:0 }, //0x1a
+	{   clock_cycle:8, machine_cycle:2, action:dec_de, action_bit_number:0, action_parameter:0 }, //0x1b
 	{   clock_cycle:4, machine_cycle:1, action:inc_e, action_bit_number:0, action_parameter:0 }, //0x1c
 	{   clock_cycle:4, machine_cycle:1, action:dec_e, action_bit_number:0, action_parameter:0 }, //0x1d
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x1e ld_e8
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))ld_e8, action_bit_number:1, action_parameter:1 }, //0x1e ld_e8
 	{   clock_cycle:4, machine_cycle:1, action:rra, action_bit_number:0, action_parameter:0 }, //0x1f
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x20 jr_nr8
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x21 ld_hl16
-	{   clock_cycle:4, machine_cycle:1, action:ld_hla, action_bit_number:0, action_parameter:0 }, //0x22
-	{   clock_cycle:4, machine_cycle:1, action:inc_hl, action_bit_number:0, action_parameter:0 }, //0x23
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))jr_nr8, action_bit_number:8, action_parameter:1 }, //0x20 jr_nr8
+	{   clock_cycle:12, machine_cycle:3, action:(void (*)(unsigned int))ld_hl16, action_bit_number:16, action_parameter:2 }, //0x21 ld_hl16
+	{   clock_cycle:8, machine_cycle:2, action:ld_hla, action_bit_number:0, action_parameter:0 }, //0x22
+	{   clock_cycle:8, machine_cycle:2, action:inc_hl, action_bit_number:0, action_parameter:0 }, //0x23
 	{   clock_cycle:4, machine_cycle:1, action:inc_h, action_bit_number:0, action_parameter:0 }, //0x24
 	{   clock_cycle:4, machine_cycle:1, action:dec_h, action_bit_number:0, action_parameter:0 }, //0x25
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x26 ld_h8
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))ld_h8, action_bit_number:8, action_parameter:1 }, //0x26 ld_h8
 	{   clock_cycle:4, machine_cycle:1, action:DAA, action_bit_number:0, action_parameter:0 }, //0x27
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x28 jr_zr8
-	{   clock_cycle:4, machine_cycle:1, action:add_hl_hl, action_bit_number:0, action_parameter:0 }, //0x29
-	{   clock_cycle:4, machine_cycle:1, action:ld_a_hll, action_bit_number:0, action_parameter:0 }, //0x2a
-	{   clock_cycle:4, machine_cycle:1, action:dec_hl, action_bit_number:0, action_parameter:0 }, //0x2b
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))jr_zr8, action_bit_number:8, action_parameter:1 }, //0x28 jr_zr8
+	{   clock_cycle:8, machine_cycle:2, action:add_hl_hl, action_bit_number:0, action_parameter:0 }, //0x29
+	{   clock_cycle:8, machine_cycle:2, action:ld_a_hll, action_bit_number:0, action_parameter:0 }, //0x2a
+	{   clock_cycle:8, machine_cycle:2, action:dec_hl, action_bit_number:0, action_parameter:0 }, //0x2b
 	{   clock_cycle:4, machine_cycle:1, action:inc_l, action_bit_number:0, action_parameter:0 }, //0x2c
 	{   clock_cycle:4, machine_cycle:1, action:dec_l, action_bit_number:0, action_parameter:0 }, //0x2d
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x2e ld_l8
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))ld_l8, action_bit_number:8, action_parameter:1 }, //0x2e ld_l8
 	{   clock_cycle:4, machine_cycle:1, action:cpl, action_bit_number:0, action_parameter:0 }, //0x2f
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x30 jr_ncr8
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x31 ld_sp16
-	{   clock_cycle:4, machine_cycle:1, action:ld_hlma, action_bit_number:0, action_parameter:0 }, //0x32
-	{   clock_cycle:4, machine_cycle:1, action:inc_sp, action_bit_number:0, action_parameter:0 }, //0x33
-	{   clock_cycle:4, machine_cycle:1, action:inc_hlm, action_bit_number:0, action_parameter:0 }, //0x34
-	{   clock_cycle:4, machine_cycle:1, action:dec_hlm, action_bit_number:0, action_parameter:0 }, //0x35
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x36 ld_hlld8
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))jr_ncr8, action_bit_number:8, action_parameter:1 }, //0x30 jr_ncr8
+	{   clock_cycle:12, machine_cycle:3, action:(void (*)(unsigned int))ld_sp16, action_bit_number:16, action_parameter:2 }, //0x31 ld_sp16
+	{   clock_cycle:8, machine_cycle:2, action:ld_hlma, action_bit_number:0, action_parameter:0 }, //0x32
+	{   clock_cycle:8, machine_cycle:2, action:inc_sp, action_bit_number:0, action_parameter:0 }, //0x33
+	{   clock_cycle:12, machine_cycle:3, action:inc_hlm, action_bit_number:0, action_parameter:0 }, //0x34
+	{   clock_cycle:12, machine_cycle:3, action:dec_hlm, action_bit_number:0, action_parameter:0 }, //0x35
+	{   clock_cycle:12, machine_cycle:3, action:(void (*)(unsigned int))ld_hlld8, action_bit_number:8, action_parameter:1 }, //0x36 ld_hlld8
 	{   clock_cycle:4, machine_cycle:1, action:scf, action_bit_number:0, action_parameter:0 }, //0x37
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0x38 jr_cr8
-	{   clock_cycle:4, machine_cycle:1, action:add_hl_SP, action_bit_number:0, action_parameter:0 }, //0x39
-	{   clock_cycle:4, machine_cycle:1, action:ld_a_hlm, action_bit_number:0, action_parameter:0 }, //0x3a
-	{   clock_cycle:4, machine_cycle:1, action:dec_sp, action_bit_number:0, action_parameter:0 }, //0x3b
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))jr_cr8, action_bit_number:8, action_parameter:1 }, //0x38 jr_cr8
+	{   clock_cycle:8, machine_cycle:2, action:add_hl_SP, action_bit_number:0, action_parameter:0 }, //0x39
+	{   clock_cycle:8, machine_cycle:2, action:ld_a_hlm, action_bit_number:0, action_parameter:0 }, //0x3a
+	{   clock_cycle:8, machine_cycle:2, action:dec_sp, action_bit_number:0, action_parameter:0 }, //0x3b
 	{   clock_cycle:4, machine_cycle:1, action:inc_a, action_bit_number:0, action_parameter:0 }, //0x3c
 	{   clock_cycle:4, machine_cycle:1, action:dec_a, action_bit_number:0, action_parameter:0 }, //0x3d
-	{   clock_cycle:4, machine_cycle:1, action:ld_b_b, action_bit_number:0, action_parameter:0 }, //0x40
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))ld_a8, action_bit_number:8, action_parameter:1 }, //0x3e
+	{   clock_cycle:4, machine_cycle:1, action:CCF, action_bit_number:0, action_parameter:0 }, //0x3f
+	{   clock_cycle:8, machine_cycle:2, action:ld_b_b, action_bit_number:0, action_parameter:0 }, //0x40
 	{   clock_cycle:4, machine_cycle:1, action:ld_b_c, action_bit_number:0, action_parameter:0 }, //0x41
 	{   clock_cycle:4, machine_cycle:1, action:ld_b_d, action_bit_number:0, action_parameter:0 }, //0x42
 	{   clock_cycle:4, machine_cycle:1, action:ld_b_e, action_bit_number:0, action_parameter:0 }, //0x43
@@ -141,14 +143,14 @@ struct instruction instructions[256]={
 	{   clock_cycle:4, machine_cycle:1, action:ld_l_l, action_bit_number:0, action_parameter:0 }, //0x6d
 	{   clock_cycle:8, machine_cycle:2, action:ld_l_hl, action_bit_number:0, action_parameter:0 }, //0x6e
 	{   clock_cycle:4, machine_cycle:1, action:ld_l_a, action_bit_number:0, action_parameter:0 }, //0x6f
-	{   clock_cycle:4, machine_cycle:1, action:ld_hl_b, action_bit_number:0, action_parameter:0 }, //0x70
-	{   clock_cycle:4, machine_cycle:1, action:ld_hl_c, action_bit_number:0, action_parameter:0 }, //0x71
-	{   clock_cycle:4, machine_cycle:1, action:ld_hl_d, action_bit_number:0, action_parameter:0 }, //0x72
-	{   clock_cycle:4, machine_cycle:1, action:ld_hl_e, action_bit_number:0, action_parameter:0 }, //0x73
-	{   clock_cycle:4, machine_cycle:1, action:ld_hl_h, action_bit_number:0, action_parameter:0 }, //0x74
-	{   clock_cycle:4, machine_cycle:1, action:ld_hl_l, action_bit_number:0, action_parameter:0 }, //0x75
+	{   clock_cycle:8, machine_cycle:2, action:ld_hl_b, action_bit_number:0, action_parameter:0 }, //0x70
+	{   clock_cycle:8, machine_cycle:2, action:ld_hl_c, action_bit_number:0, action_parameter:0 }, //0x71
+	{   clock_cycle:8, machine_cycle:2, action:ld_hl_d, action_bit_number:0, action_parameter:0 }, //0x72
+	{   clock_cycle:8, machine_cycle:2, action:ld_hl_e, action_bit_number:0, action_parameter:0 }, //0x73
+	{   clock_cycle:8, machine_cycle:2, action:ld_hl_h, action_bit_number:0, action_parameter:0 }, //0x74
+	{   clock_cycle:8, machine_cycle:2, action:ld_hl_l, action_bit_number:0, action_parameter:0 }, //0x75
 	{   clock_cycle:4, machine_cycle:1, action:halt, action_bit_number:0, action_parameter:0 }, //0x76
-	{   clock_cycle:4, machine_cycle:1, action:ld_hl_a, action_bit_number:0, action_parameter:0 }, //0x77
+	{   clock_cycle:8, machine_cycle:2, action:ld_hl_a, action_bit_number:0, action_parameter:0 }, //0x77
 	{   clock_cycle:4, machine_cycle:1, action:ld_a_b, action_bit_number:0, action_parameter:0 }, //0x78
 	{   clock_cycle:4, machine_cycle:1, action:ld_a_c, action_bit_number:0, action_parameter:0 }, //0x79
 	{   clock_cycle:4, machine_cycle:1, action:ld_a_d, action_bit_number:0, action_parameter:0 }, //0x7a
@@ -221,71 +223,70 @@ struct instruction instructions[256]={
 	{   clock_cycle:4, machine_cycle:1, action:cp_l, action_bit_number:0, action_parameter:0 }, //0xbd
 	{   clock_cycle:8, machine_cycle:2, action:cp_hlp, action_bit_number:0, action_parameter:0 }, //0xbe
 	{  4, 1,cp_a, action_bit_number:0, action_parameter:0 }, //0xbf
-	{   clock_cycle:4, machine_cycle:1, action:ret_nz, action_bit_number:0, action_parameter:0 }, //0xc0
-	{   clock_cycle:4, machine_cycle:1, action:pop_bc, action_bit_number:0, action_parameter:0 }, //0xc1
-	{   clock_cycle:4, machine_cycle:1, action:nada}, //0xc2 Ver como pasar parametros jp_nz_a16
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xc3 jp_a16
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xc4 call_nz_a16
-	{   clock_cycle:4, machine_cycle:1, action:push_bc, action_bit_number:0, action_parameter:0 }, //0xc5
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xc6 add_a_d8
-	{   clock_cycle:4, machine_cycle:1, action:rst_00h, action_bit_number:0, action_parameter:0 }, //0xc7
-	{   clock_cycle:4, machine_cycle:1, action:ret_z, action_bit_number:0, action_parameter:0 }, //0xc8
-	{   clock_cycle:4, machine_cycle:1, action:ret, action_bit_number:0, action_parameter:0 }, //0xc9
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xca jp_z_a16
+	{   clock_cycle:0, machine_cycle:0, action:ret_nz, action_bit_number:0, action_parameter:0 }, //0xc0
+	{   clock_cycle:12, machine_cycle:3, action:pop_bc, action_bit_number:0, action_parameter:0 }, //0xc1
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))jp_nz_a16, action_bit_number:16, action_parameter:2}, //0xc2 Ver como pasar parametros jp_nz_a16
+	{   clock_cycle:16, machine_cycle:4, action:(void (*)(unsigned int))jp_a16, action_bit_number:16, action_parameter:2 }, //0xc3 jp_a16
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))call_nz_a16, action_bit_number:16, action_parameter:2 }, //0xc4 call_nz_a16
+	{   clock_cycle:16, machine_cycle:4, action:push_bc, action_bit_number:0, action_parameter:0 }, //0xc5
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))add_a_d8, action_bit_number:8, action_parameter:1 }, //0xc6 add_a_d8
+	{   clock_cycle:16, machine_cycle:4, action:rst_00h, action_bit_number:0, action_parameter:0 }, //0xc7
+	{   clock_cycle:0, machine_cycle:0, action:ret_z, action_bit_number:0, action_parameter:0 }, //0xc8
+	{   clock_cycle:16, machine_cycle:4, action:ret, action_bit_number:0, action_parameter:0 }, //0xc9
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))jp_z_a16, action_bit_number:16, action_parameter:2 }, //0xca jp_z_a16
 	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xcb
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xcc call_z_a16
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xcd call_a16
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xce adc_a_d8
-	{   clock_cycle:4, machine_cycle:1, action:RST_08H, action_bit_number:0, action_parameter:0 }, //0xcf
-	{   clock_cycle:4, machine_cycle:1, action:ret_nc, action_bit_number:0, action_parameter:0 }, //0xd0
-	{   clock_cycle:4, machine_cycle:1, action:pop_de, action_bit_number:0, action_parameter:0 }, //0xd1
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xd2 jp_nc_a16
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xd3
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xd4 call_nc_a16
-	{   clock_cycle:4, machine_cycle:1, action:push_de, action_bit_number:0, action_parameter:0 }, //0xd5
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xd6 sub_d8
-	{   clock_cycle:4, machine_cycle:1, action:rst_10h, action_bit_number:0, action_parameter:0 }, //0xd7
-	{   clock_cycle:4, machine_cycle:1, action:ret_c, action_bit_number:0, action_parameter:0 }, //0xd8
-	{   clock_cycle:4, machine_cycle:1, action:reti, action_bit_number:0, action_parameter:0 }, //0xd9
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xda jp_c_a16
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xdb
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xdc call_c_a16
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xdd
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xde sbc_a_d8
-	{   clock_cycle:4, machine_cycle:1, action:rst_18h, action_bit_number:0, action_parameter:0 }, //0xdf
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xe0 ldh_a8_a
-	{   clock_cycle:4, machine_cycle:1, action:pop_hl, action_bit_number:0, action_parameter:0 }, //0xe1
-	{   clock_cycle:4, machine_cycle:1, action:ld_ca, action_bit_number:0, action_parameter:0 }, //0xe2
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xe3
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xe4
-	{   clock_cycle:4, machine_cycle:1, action:push_hl, action_bit_number:0, action_parameter:0 }, //0xe5
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xe6 and_d8
-	{   clock_cycle:4, machine_cycle:1, action:rst_20h, action_bit_number:0, action_parameter:0 }, //0xe7
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xe8 add_sp_r8
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))call_z_a16, action_bit_number:16, action_parameter:2 }, //0xcc call_z_a16
+	{   clock_cycle:24, machine_cycle:6, action:(void (*)(unsigned int))call_a16, action_bit_number:16, action_parameter:2 }, //0xcd call_a16
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))adc_a_d8, action_bit_number:8, action_parameter:1 }, //0xce adc_a_d8
+	{   clock_cycle:16, machine_cycle:4, action:RST_08H, action_bit_number:0, action_parameter:0 }, //0xcf
+	{   clock_cycle:0, machine_cycle:0, action:ret_nc, action_bit_number:0, action_parameter:0 }, //0xd0
+	{   clock_cycle:12, machine_cycle:3, action:pop_de, action_bit_number:0, action_parameter:0 }, //0xd1
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))jp_nc_a16, action_bit_number:16, action_parameter:2 }, //0xd2 jp_nc_a16
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xd3
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))call_nc_a16, action_bit_number:16, action_parameter:2 }, //0xd4 call_nc_a16
+	{   clock_cycle:12, machine_cycle:3, action:push_de, action_bit_number:0, action_parameter:0 }, //0xd5
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))sub_d8, action_bit_number:8, action_parameter:1 }, //0xd6 sub_d8
+	{   clock_cycle:16, machine_cycle:4, action:rst_10h, action_bit_number:0, action_parameter:0 }, //0xd7
+	{   clock_cycle:0, machine_cycle:0, action:ret_c, action_bit_number:0, action_parameter:0 }, //0xd8
+	{   clock_cycle:16, machine_cycle:4, action:reti, action_bit_number:0, action_parameter:0 }, //0xd9
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))jp_c_a16, action_bit_number:16, action_parameter:2 }, //0xda jp_c_a16
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xdb
+	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))call_c_a16, action_bit_number:16, action_parameter:2 }, //0xdc call_c_a16
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xdd
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))sbc_a_d8, action_bit_number:8, action_parameter:1 }, //0xde sbc_a_d8
+	{   clock_cycle:16, machine_cycle:4, action:rst_18h, action_bit_number:0, action_parameter:0 }, //0xdf
+	{   clock_cycle:12, machine_cycle:3, action:(void (*)(unsigned int))ldh_a8_a, action_bit_number:8, action_parameter:1 }, //0xe0 ldh_a8_a
+	{   clock_cycle:12, machine_cycle:3, action:pop_hl, action_bit_number:0, action_parameter:0 }, //0xe1
+	{   clock_cycle:8, machine_cycle:2, action:ld_ca, action_bit_number:0, action_parameter:0 }, //0xe2
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xe3
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xe4
+	{   clock_cycle:16, machine_cycle:4, action:push_hl, action_bit_number:0, action_parameter:0 }, //0xe5
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))and_d8, action_bit_number:8, action_parameter:1 }, //0xe6 and_d8
+	{   clock_cycle:16, machine_cycle:4, action:rst_20h, action_bit_number:0, action_parameter:0 }, //0xe7
+	{   clock_cycle:16, machine_cycle:4, action:(void (*)(unsigned int))add_sp_r8, action_bit_number:8, action_parameter:1 }, //0xe8 add_sp_r8
 	{   clock_cycle:4, machine_cycle:1, action:jp_hl, action_bit_number:0, action_parameter:0 }, //0xe9
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xea ld_a16_a
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xeb
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xec
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xed
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xee xor_d8
-	{   clock_cycle:4, machine_cycle:1, action:rst_28h, action_bit_number:0, action_parameter:0 }, //0xef
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xf0 ldh_a_a8
-	{   clock_cycle:4, machine_cycle:1, action:pop_af, action_bit_number:0, action_parameter:0 }, //0xf1
-	{   clock_cycle:4, machine_cycle:1, action:la_ac, action_bit_number:0, action_parameter:0 }, //0xf2
+	{   clock_cycle:16, machine_cycle:4, action:(void (*)(unsigned int))ld_a16_a, action_bit_number:16, action_parameter:2 }, //0xea ld_a16_a
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xeb
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xec
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xed
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))xor_d8, action_bit_number:8, action_parameter:1 }, //0xee xor_d8
+	{   clock_cycle:16, machine_cycle:4, action:rst_28h, action_bit_number:0, action_parameter:0 }, //0xef
+	{   clock_cycle:12, machine_cycle:3, action:(void (*)(unsigned int))ldh_a_a8, action_bit_number:8, action_parameter:1 }, //0xf0 ldh_a_a8
+	{   clock_cycle:12, machine_cycle:3, action:pop_af, action_bit_number:0, action_parameter:0 }, //0xf1
+	{   clock_cycle:8, machine_cycle:2, action:la_ac, action_bit_number:0, action_parameter:0 }, //0xf2
 	{   clock_cycle:4, machine_cycle:1, action:di, action_bit_number:0, action_parameter:0 }, //0xf3
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xf4
-	{   clock_cycle:4, machine_cycle:1, action:push_af, action_bit_number:0, action_parameter:0 }, //0xf5
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xf6 or_d8
-	{   clock_cycle:4, machine_cycle:1, action:rst_30h, action_bit_number:0, action_parameter:0 }, //0xf7
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xf8 ld_hl_spr8
-	{   clock_cycle:4, machine_cycle:1, action:ld_sp_hl, action_bit_number:0, action_parameter:0 }, //0xf9
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xfa ld_a_a16
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xf4
+	{   clock_cycle:16, machine_cycle:4, action:push_af, action_bit_number:0, action_parameter:0 }, //0xf5
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))or_d8, action_bit_number:8, action_parameter:1 }, //0xf6 or_d8
+	{   clock_cycle:16, machine_cycle:4, action:rst_30h, action_bit_number:0, action_parameter:0 }, //0xf7
+	{   clock_cycle:12, machine_cycle:3, action:(void (*)(unsigned int))ld_hl_spr8, action_bit_number:8, action_parameter:1 }, //0xf8 ld_hl_spr8
+	{   clock_cycle:8, machine_cycle:2, action:ld_sp_hl, action_bit_number:0, action_parameter:0 }, //0xf9
+	{   clock_cycle:16, machine_cycle:4, action:(void (*)(unsigned int))ld_a_a16, action_bit_number:16, action_parameter:2 }, //0xfa ld_a_a16
 	{   clock_cycle:4, machine_cycle:1, action:ei, action_bit_number:0, action_parameter:0 }, //0xfb
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xfc
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xfd
-	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xfe cp_d8
-	
-	{   clock_cycle:4, machine_cycle:1, action:rst_38h, action_bit_number:0, action_parameter:0 } //0xff
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xfc
+	{   clock_cycle:0, machine_cycle:0, action:nada, action_bit_number:0, action_parameter:0 }, //0xfd
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))cp_d8, action_bit_number:8, action_parameter:1 }, //0xfe cp_d8
+	{   clock_cycle:16, machine_cycle:4, action:rst_38h, action_bit_number:0, action_parameter:0 } //0xff
 
 };
 /*struct registros{
