@@ -8,6 +8,9 @@
 #include <signal.h>
 #include <algorithm>
 #include <string>
+#include <stdexcept>
+#include <fstream>
+#include <sstream>
 #include "registro.h"
 #include "memoria.h"
 #include "cpu.h"
@@ -61,7 +64,7 @@ struct instruction instructions[256]={
 	{   clock_cycle:8, machine_cycle:2, action:dec_de, action_bit_number:0, action_parameter:0 }, //0x1b
 	{   clock_cycle:4, machine_cycle:1, action:inc_e, action_bit_number:0, action_parameter:0 }, //0x1c
 	{   clock_cycle:4, machine_cycle:1, action:dec_e, action_bit_number:0, action_parameter:0 }, //0x1d
-	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))ld_e8, action_bit_number:1, action_parameter:1 }, //0x1e ld_e8
+	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))ld_e8, action_bit_number:8, action_parameter:1 }, //0x1e ld_e8
 	{   clock_cycle:4, machine_cycle:1, action:rra, action_bit_number:0, action_parameter:0 }, //0x1f
 	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))jr_nr8, action_bit_number:8, action_parameter:1 }, //0x20 jr_nr8
 	{   clock_cycle:12, machine_cycle:3, action:(void (*)(unsigned int))ld_hl16, action_bit_number:16, action_parameter:2 }, //0x21 ld_hl16
@@ -318,6 +321,38 @@ void reset () {
 	regist.L = 0x4d;
 	regist.SP = 0xfffe;
 	regist.PC = 0x100;
+
+	writeMEMB(0xFF05, 0);
+	writeMEMB(0xFF06, 0);
+	writeMEMB(0xFF07, 0);
+	writeMEMB(0xFF10, 0x80);
+	writeMEMB(0xFF11, 0xBF);
+	writeMEMB(0xFF12, 0xF3);
+	writeMEMB(0xFF14, 0xBF);
+	writeMEMB(0xFF16, 0x3F);
+	writeMEMB(0xFF17, 0x00);
+	writeMEMB(0xFF19, 0xBF);
+	writeMEMB(0xFF1A, 0x7A);
+	writeMEMB(0xFF1B, 0xFF);
+	writeMEMB(0xFF1C, 0x9F);
+	writeMEMB(0xFF1E, 0xBF);
+	writeMEMB(0xFF20, 0xFF);
+	writeMEMB(0xFF21, 0x00);
+	writeMEMB(0xFF22, 0x00);
+	writeMEMB(0xFF23, 0xBF);
+	writeMEMB(0xFF24, 0x77);
+	writeMEMB(0xFF25, 0xF3);
+	writeMEMB(0xFF26, 0xF1);
+	writeMEMB(0xFF40, 0x91);
+	writeMEMB(0xFF42, 0x00);
+	writeMEMB(0xFF43, 0x00);
+	writeMEMB(0xFF45, 0x00);
+	writeMEMB(0xFF47, 0xFC);
+	writeMEMB(0xFF48, 0xFF);
+	writeMEMB(0xFF49, 0xFF);
+	writeMEMB(0xFF4A, 0x00);
+	writeMEMB(0xFF4B, 0x00);
+	writeMEMB(0xFFFF, 0x00);
 
 	//HL
 	regist.HL=regist.H;
@@ -2126,6 +2161,7 @@ void jp_nz_a16(unsigned short valor){ //creo que tambien hay que comprobar que e
 //0xc3
 void jp_a16(unsigned short valor){
 	regist.PC=valor;
+	printf("INSTRUCCION C3 VALOR: %d\n", valor);
 }
 
 //0xc4
@@ -2535,34 +2571,69 @@ void nada (unsigned int) {
 
 }
 
-
-
 int main(int argc, char **argv){
 
-	char mem[2500];
+	
     // leer file
-    /*long addr, value ;
-	FILE *fd = fopen("file.rom","r") ;
+	
+    long addr, value ;
+	FILE *fd = fopen("Tetris (World) (Rev A).gb","r") ;
 	if (fd == NULL) {
     	perror("horror: ") ;
 		return -1 ;
     }
-	int pc=0;
-	while (!feof(fd))
-	{
-      //fscanf(fd, "%d: %d", &addr, &value);
-	  fscanf(fd, "%d", &value);
-	   mem[pc] = value ;
-	   pc++;
-	   
-    }*/
+	fseek(fd, 0, SEEK_END);
+    unsigned long len = (unsigned long)ftell(fd);
+	rewind(fd);
+	printf("LONGITUD: %d", len);
+	fread(cartucho, len, 1, fd);
+    fclose(fd);
 
-	int i=0;
+	FILE *f = fopen("tile0.bin", "wb");
+	fwrite(cartucho, 16, 1, f);
+	fclose(f);
+	
+
+/*
+	int lineas=0;
+	std::ifstream file("file.rom");
+	if (file.is_open()) {
+		std::string line;
+		while (std::getline(file, line)) {
+			// using printf() in all tests for consistency
+			printf("%s\n", line.c_str());
+			lineas++;
+		}
+		file.close();
+	}
+	unsigned int instrucciones[lineas];
+	int contador3=0;
+	file.open("file.rom");
+	if (file.is_open()) {
+		std::string line;
+		while (std::getline(file, line)) {
+			// using printf() in all tests for consistency
+			std::string iString = line.c_str(), hString;
+			int iTemp = 0;
+			std::stringstream is, hs;
+
+			is << iString; 
+			is >> iTemp; // convert string to int
+			hs << std::hex << iTemp; // push int through hex manipulator
+			hString = hs.str(); // store hex string
+
+			std::cout << "Decimal = " << iTemp << ", Hex = " << hString << std::endl;
+			instrucciones[contador3]=iTemp;
+			contador3++;
+
+		}
+		file.close();
+	}
+
+	*/
 	reset();
 	//inc_b();
 	printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.F));
-	mem[0]=0x00;
-	mem[1]=0x3C;
 	//incrementar B
 	//instructions[0x04].action();
 	//incrementar C
@@ -2593,23 +2664,62 @@ int main(int argc, char **argv){
 	int prueba=0;
 	int instt;
 	int parametro;
-	while(1){
-		//cin>>exit;
+	int patataa=0;
+	
+	while(patataa<20000){
+		
+		unsigned char instruction;
+		unsigned int operand = 0;
+		instruction = loadMEMB(regist.PC++);
+	
+		if(instructions[instruction].action_bit_number == 8){
+			operand = (unsigned int)loadMEMB(regist.PC);
+			printf("\nVALOR DE 8 BITS: %d\n", operand);
+			regist.PC +=1;
+		} 
+		if(instructions[instruction].action_bit_number == 16){
+			operand = (unsigned int)loadMEM16(regist.PC);
+			printf("\nVALOR DE 16 BITS: %d\n", operand);
+			regist.PC +=2;
+		} 
+		printf("EJECUTANDO "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(instruction));
+		switch(instructions[instruction].action_bit_number) {
+		case 0:
+			instructions[instruction].action(operand);
+			printf("\nHE EJECUTADO 0\n");
+			break;
+		
+		case 8:
+			instructions[instruction].action(operand);
+			printf("HE EJECUTADO 1\n");
+			break;
+		
+		case 16:
+			instructions[instruction].action(operand);
+			printf("HE EJECUTADO 2\n");
+			break;
+		}
+
+		
+		/*
 		cin>> hex >> instt;
 		cout<<"has puesto: "<<instt<<"\n";
-		/*if(instructions[instt].action_bit_number==0){
-			instructions[instt].action(prueba);
-		}else{
-			cin>> hex >> parametro;
-			instructions[instt].action_parameter=parametro;
-			instructions[instt].action(instructions[instt].action_parameter);
-		}*/
-		
+	
 		if(instructions[instt].action_bit_number!=0){
 			cin>> hex >> parametro;
 			instructions[instt].action_parameter=parametro;
 		}
 		instructions[instt].action(instructions[instt].action_parameter);
+		*/
+
+	/*
+		if(instructions[instrucciones[patataa]].action_bit_number!=0){
+			patataa++;
+			parametro=instrucciones[patataa];
+			instructions[instrucciones[patataa]].action_parameter=parametro;
+		}
+		instructions[instrucciones[patataa]].action(instructions[instrucciones[patataa]].action_parameter);
+	*/
 
 		//ld_b8(ojo);
 		cout<< "\nRegistro B: " <<endl;
@@ -2629,28 +2739,10 @@ int main(int argc, char **argv){
 		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.H));
 		cout<< "\nRegistro L: " <<endl;
 		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.L));
+		cout<< "\nRegistro PC: "<< regist.PC <<endl;
+		patataa++;
 	}
 	
-
-	//printf(" Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
-	/*cout<< "Registro A: " <<regist.A << "\n" << "Registro B: " <<regist.B <<"\n" << "Registro F: " << regist.F <<"\n" << "Registro C: " << regist.C <<"\n" << "Registro D: " << regist.D
-		<<"\n" << "Registro E: " << regist.E  <<"\n" << "Registro H: " << regist.H  <<"\n" << "Registro L: " << regist.L  <<"\n" << "Registro HL: " << regist.HL  <<"\n" << "Registro SP: " << regist.SP
-		<<"\n" << "Registro DE: " << regist.DE <<"\n" << "Registro PC: " << regist.PC  <<"\n" << "Registro BC: " << regist.BC << "\n" << endl;   
-	*/
-    // ejecutar
-	/*while(1){
-		i=mem[pc];//Sera un array mem[]??¿?¿?¿?
-		if (instructions[i].valid_instruction) {
-		    instructions[i].action();//Se escribe asi la sentencia en una funcion lambda¿?¿
-		}
-		cout<< "Registro A: " <<regist.A << "\n" << "Registro B: " <<regist.B <<"\n" << "Registro F: " << regist.F <<"\n" << "Registro C: " << regist.C <<"\n" << "Registro D: " << regist.D
-		<<"\n" << "Registro E: " << regist.E  <<"\n" << "Registro H: " << regist.H  <<"\n" << "Registro L: " << regist.L  <<"\n" << "Registro HL: " << regist.HL  <<"\n" << "Registro SP: " << regist.SP
-		<<"\n" << "Registro DE: " << regist.DE <<"\n" << "Registro PC: " << regist.PC  <<"\n" << "Registro BC: " << regist.BC << "\n" << endl;   
-		cout<< "Siguiente instruccion: "<< mem[pc] <<endl;
-		machine_cycle+=instructions[i].machine_cycle;
-		clock_cycle+=instructions[i].clock_cycle;
-		pc++;
-	}*/
 
     return 0;
 

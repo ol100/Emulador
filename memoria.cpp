@@ -51,8 +51,9 @@ void writeMEM16(char16_t dir, char16_t a){
 
 }
 
-unsigned char loadMEMB(char16_t dir){
+unsigned char loadMEMB(unsigned short dir){
     if(dir <=0x7fff){
+        printf("\n Direciion memoria: %d\n", cartucho[dir]);
         return cartucho[dir];
     }
     else if(dir >= 0x8000 && dir<=0x9fff){
@@ -70,11 +71,12 @@ unsigned char loadMEMB(char16_t dir){
     //return SRAM[dir-0xfe00];
 }
 
-char16_t loadMEM16(char16_t dir){ //porque llamaria a estas variables patata, ahora el javi del futuro no sabe que hacia la funcion
-    char16_t patata= loadMEMB(dir);
-    patata= patata<<8;
-    patata= loadMEMB(dir + 1)<<8 | patata; //es little endian
+unsigned short loadMEM16(unsigned short dir){ //porque llamaria a estas variables patata, ahora el javi del futuro no sabe que hacia la funcion
+    unsigned short patata= loadMEMB(dir);
+    patata= patata;
+    patata= loadMEMB(dir + 1)<<8 | patata; 
     return patata;
+    //return loadMEMB(dir) | (loadMEMB(dir + 1) << 8);
 }
 
 char16_t loadMEM16pila(unsigned short *puntero){
