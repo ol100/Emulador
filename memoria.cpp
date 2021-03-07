@@ -79,6 +79,7 @@ unsigned char loadMEMB(unsigned short dir){
 		return IO[dir-0xff00];
 	}
     //return SRAM[dir-0xfe00];
+	else if(dir == 0xff04) return (unsigned char)rand();// esto es un hack para ahorrarse implementar el timer y que funcione el tetris
 	else if(dir == 0xff0f){return flags;}
 	else if(dir == 0xffff){return activado;}
 }

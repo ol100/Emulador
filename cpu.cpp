@@ -2722,6 +2722,8 @@ void ejecutarCICLO(){
 			break;
 		}
 		
+		clock_cycle+=instructions[instruction].clock_cycle;
+		
 		if(regist.PC == 0x282a) {
 			FILE *fi = fopen("tile0.bin", "wb");
 			fwrite(VRAM, 16, 1, fi);

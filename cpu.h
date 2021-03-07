@@ -11,6 +11,9 @@ struct instruction {
 };
 extern struct instruction instructions[256];
 
+extern int machine_cycle;
+extern int clock_cycle;
+
 void reconstruirHL () ;
 void deconstruirHL () ;
 void reconstruirDE () ;

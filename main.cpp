@@ -6,6 +6,24 @@
 #include <SDL2/SDL_ttf.h>
 #include "cpu.h"
 #include "registro.h"
+#include "interrupciones.h"
+
+
+void ejecucion()
+{
+	const int MAXCYCLES=69905; //4194305/60
+	int cyclesthisupdate=0;
+	
+	while(cyclesthisupdate < MAXCYCLES)
+	{
+		ejecutarCICLO();
+		cyclesthisupdate = clock_cycle;
+		//actualizar timers
+		//actualizar graficos
+		vectorInterrupcion();
+	}
+	//render frame
+}
 
 int main(int argc, char* argv[])
 {
@@ -44,77 +62,90 @@ int main(int argc, char* argv[])
     bool isRunning = true;
     SDL_Event ev;
 	cargarROM();
-	int paso=0;
+	int paso=0; //para debuggear instrucciones sirve
+	//como se puede ejecutar en pantallas que no son de 60 Hz (dispongo de un 144Hz y otra de 75Hz) hay que ajustar los frames a 60 manualmente
+	uint32_t tickInteval = 1000/60;
+	uint32_t lastUpdateTime = 0;
+	int32_t deltaTime = 0;
+	
     while (isRunning)
     {
+		uint32_t currentTime = SDL_GetTicks();
+		deltaTime = currentTime - lastUpdateTime;
+		int32_t timeToSleep = tickInteval - deltaTime;
+		if(timeToSleep > 0)
+		{
+			SDL_Delay(timeToSleep); // energy saving
+		}
         if (SDL_PollEvent(&ev) != 0)
         {
             if (ev.type == SDL_QUIT) isRunning = false;
 			else if(ev.type == SDL_KEYDOWN)
 			{
 				ejecutarCICLO();
+				vectorInterrupcion();
 				
-		//MOSTRAR REGISTROS PC Y SP
-		std::stringstream ss;
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.PC);
-		std::string PC="Registro PC: ";
-		PC+=ss.str();
-		ss.str("");
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.SP);
-		std::string SP=" Registro SP: ";
-		SP+=ss.str();
-		PC+=SP;
-		ss.str("");
-		textSurface = TTF_RenderText_Solid(font, PC.c_str(), color);
-		text = SDL_CreateTextureFromSurface(renderTarget, textSurface);
-		SDL_QueryTexture(text, NULL, NULL, &textRect.w, &textRect.h);
-		SDL_FreeSurface(textSurface);
-		textSurface =nullptr;
-		
-		//MOSTRAR REGISTROS DE Y BC
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.BC);
-		std::string BC="Registro BC: ";
-		BC+=ss.str();
-		ss.str("");
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.DE);
-		std::string DE=" Registro DE: ";
-		DE+=ss.str();
-		BC+=DE;
-		ss.str("");
-		SDL_Surface *textSurface2 = TTF_RenderText_Solid(font, BC.c_str(), color);
-		text2 = SDL_CreateTextureFromSurface(renderTarget, textSurface2);
-		SDL_QueryTexture(text2, NULL, NULL, &textRect2.w, &textRect2.h);
-		SDL_FreeSurface(textSurface2);
-		textSurface2 =nullptr;
-		
-		//MOSTRAR REGISTROS HL Y AF
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.HL);
-		std::string HL="Registro HL: ";
-		HL+=ss.str();
-		ss.str("");
-		//conseguir A
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.A);
-		std::string A=" Registro AF: ";
-		A+=ss.str();
-		ss.str("");
-		//conseguir F
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.F);
-		A+=ss.str();
-		HL+=A;
-		ss.str("");
-		SDL_Surface *textSurface3 = TTF_RenderText_Solid(font, HL.c_str(), color);
-		text3 = SDL_CreateTextureFromSurface(renderTarget, textSurface3);
-		SDL_QueryTexture(text3, NULL, NULL, &textRect3.w, &textRect3.h);
-		SDL_FreeSurface(textSurface3);
-		textSurface3 =nullptr;
+				//MOSTRAR REGISTROS PC Y SP
+				std::stringstream ss;
+				ss << std::hex << std::setfill('0');
+				ss << std::setw(2) << static_cast<unsigned>(regist.PC);
+				std::string PC="Registro PC: ";
+				PC+=ss.str();
+				ss.str("");
+				ss << std::hex << std::setfill('0');
+				ss << std::setw(2) << static_cast<unsigned>(regist.SP);
+				std::string SP=" Registro SP: ";
+				SP+=ss.str();
+				PC+=SP;
+				ss.str("");
+				textSurface = TTF_RenderText_Solid(font, PC.c_str(), color);
+				text = SDL_CreateTextureFromSurface(renderTarget, textSurface);
+				SDL_QueryTexture(text, NULL, NULL, &textRect.w, &textRect.h);
+				SDL_FreeSurface(textSurface);
+				textSurface =nullptr;
 				
+				//MOSTRAR REGISTROS DE Y BC
+				ss << std::hex << std::setfill('0');
+				ss << std::setw(2) << static_cast<unsigned>(regist.BC);
+				std::string BC="Registro BC: ";
+				BC+=ss.str();
+				ss.str("");
+				ss << std::hex << std::setfill('0');
+				ss << std::setw(2) << static_cast<unsigned>(regist.DE);
+				std::string DE=" Registro DE: ";
+				DE+=ss.str();
+				BC+=DE;
+				ss.str("");
+				SDL_Surface *textSurface2 = TTF_RenderText_Solid(font, BC.c_str(), color);
+				text2 = SDL_CreateTextureFromSurface(renderTarget, textSurface2);
+				SDL_QueryTexture(text2, NULL, NULL, &textRect2.w, &textRect2.h);
+				SDL_FreeSurface(textSurface2);
+				textSurface2 =nullptr;
+				
+				//MOSTRAR REGISTROS HL Y AF
+				ss << std::hex << std::setfill('0');
+				ss << std::setw(2) << static_cast<unsigned>(regist.HL);
+				std::string HL="Registro HL: ";
+				HL+=ss.str();
+				ss.str("");
+				//conseguir A
+				ss << std::hex << std::setfill('0');
+				ss << std::setw(2) << static_cast<unsigned>(regist.A);
+				std::string A=" Registro AF: ";
+				A+=ss.str();
+				ss.str("");
+				//conseguir F
+				ss << std::hex << std::setfill('0');
+				ss << std::setw(2) << static_cast<unsigned>(regist.F);
+				A+=ss.str();
+				HL+=A;
+				ss.str("");
+				SDL_Surface *textSurface3 = TTF_RenderText_Solid(font, HL.c_str(), color);
+				text3 = SDL_CreateTextureFromSurface(renderTarget, textSurface3);
+				SDL_QueryTexture(text3, NULL, NULL, &textRect3.w, &textRect3.h);
+				SDL_FreeSurface(textSurface3);
+				textSurface3 =nullptr;
+						
 				
 			}
 
@@ -126,68 +157,68 @@ int main(int argc, char* argv[])
 		
 		if(paso==0)
 		{
-			ejecutarCICLO();
+			ejecucion();
 			
-		//MOSTRAR REGISTROS PC Y SP
-		std::stringstream ss;
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.PC);
-		std::string PC="Registro PC: ";
-		PC+=ss.str();
-		ss.str("");
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.SP);
-		std::string SP=" Registro SP: ";
-		SP+=ss.str();
-		PC+=SP;
-		ss.str("");
-		textSurface = TTF_RenderText_Solid(font, PC.c_str(), color);
-		text = SDL_CreateTextureFromSurface(renderTarget, textSurface);
-		SDL_QueryTexture(text, NULL, NULL, &textRect.w, &textRect.h);
-		SDL_FreeSurface(textSurface);
-		textSurface =nullptr;
-		
-		//MOSTRAR REGISTROS DE Y BC
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.BC);
-		std::string BC="Registro BC: ";
-		BC+=ss.str();
-		ss.str("");
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.DE);
-		std::string DE=" Registro DE: ";
-		DE+=ss.str();
-		BC+=DE;
-		ss.str("");
-		SDL_Surface *textSurface2 = TTF_RenderText_Solid(font, BC.c_str(), color);
-		text2 = SDL_CreateTextureFromSurface(renderTarget, textSurface2);
-		SDL_QueryTexture(text2, NULL, NULL, &textRect2.w, &textRect2.h);
-		SDL_FreeSurface(textSurface2);
-		textSurface2 =nullptr;
-		
-		//MOSTRAR REGISTROS HL Y AF
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.HL);
-		std::string HL="Registro HL: ";
-		HL+=ss.str();
-		ss.str("");
-		//conseguir A
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.A);
-		std::string A=" Registro AF: ";
-		A+=ss.str();
-		ss.str("");
-		//conseguir F
-		ss << std::hex << std::setfill('0');
-		ss << std::setw(2) << static_cast<unsigned>(regist.F);
-		A+=ss.str();
-		HL+=A;
-		ss.str("");
-		SDL_Surface *textSurface3 = TTF_RenderText_Solid(font, HL.c_str(), color);
-		text3 = SDL_CreateTextureFromSurface(renderTarget, textSurface3);
-		SDL_QueryTexture(text3, NULL, NULL, &textRect3.w, &textRect3.h);
-		SDL_FreeSurface(textSurface3);
-		textSurface3 =nullptr;
+			//MOSTRAR REGISTROS PC Y SP
+			std::stringstream ss;
+			ss << std::hex << std::setfill('0');
+			ss << std::setw(2) << static_cast<unsigned>(regist.PC);
+			std::string PC="Registro PC: ";
+			PC+=ss.str();
+			ss.str("");
+			ss << std::hex << std::setfill('0');
+			ss << std::setw(2) << static_cast<unsigned>(regist.SP);
+			std::string SP=" Registro SP: ";
+			SP+=ss.str();
+			PC+=SP;
+			ss.str("");
+			textSurface = TTF_RenderText_Solid(font, PC.c_str(), color);
+			text = SDL_CreateTextureFromSurface(renderTarget, textSurface);
+			SDL_QueryTexture(text, NULL, NULL, &textRect.w, &textRect.h);
+			SDL_FreeSurface(textSurface);
+			textSurface =nullptr;
+			
+			//MOSTRAR REGISTROS DE Y BC
+			ss << std::hex << std::setfill('0');
+			ss << std::setw(2) << static_cast<unsigned>(regist.BC);
+			std::string BC="Registro BC: ";
+			BC+=ss.str();
+			ss.str("");
+			ss << std::hex << std::setfill('0');
+			ss << std::setw(2) << static_cast<unsigned>(regist.DE);
+			std::string DE=" Registro DE: ";
+			DE+=ss.str();
+			BC+=DE;
+			ss.str("");
+			SDL_Surface *textSurface2 = TTF_RenderText_Solid(font, BC.c_str(), color);
+			text2 = SDL_CreateTextureFromSurface(renderTarget, textSurface2);
+			SDL_QueryTexture(text2, NULL, NULL, &textRect2.w, &textRect2.h);
+			SDL_FreeSurface(textSurface2);
+			textSurface2 =nullptr;
+			
+			//MOSTRAR REGISTROS HL Y AF
+			ss << std::hex << std::setfill('0');
+			ss << std::setw(2) << static_cast<unsigned>(regist.HL);
+			std::string HL="Registro HL: ";
+			HL+=ss.str();
+			ss.str("");
+			//conseguir A
+			ss << std::hex << std::setfill('0');
+			ss << std::setw(2) << static_cast<unsigned>(regist.A);
+			std::string A=" Registro AF: ";
+			A+=ss.str();
+			ss.str("");
+			//conseguir F
+			ss << std::hex << std::setfill('0');
+			ss << std::setw(2) << static_cast<unsigned>(regist.F);
+			A+=ss.str();
+			HL+=A;
+			ss.str("");
+			SDL_Surface *textSurface3 = TTF_RenderText_Solid(font, HL.c_str(), color);
+			text3 = SDL_CreateTextureFromSurface(renderTarget, textSurface3);
+			SDL_QueryTexture(text3, NULL, NULL, &textRect3.w, &textRect3.h);
+			SDL_FreeSurface(textSurface3);
+			textSurface3 =nullptr;
 		}
 
 		SDL_RenderClear(renderTarget);
@@ -195,6 +226,7 @@ int main(int argc, char* argv[])
 		SDL_RenderCopy(renderTarget, text2, NULL, &textRect2);
 		SDL_RenderCopy(renderTarget, text3, NULL, &textRect3);
 		SDL_RenderPresent(renderTarget);
+		lastUpdateTime = currentTime;
     }
 
     SDL_DestroyWindow(window);
