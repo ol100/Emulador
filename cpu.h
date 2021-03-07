@@ -1,7 +1,7 @@
 #pragma once
 
 struct instruction {
-	
+
 	int clock_cycle;
 	int machine_cycle;
 	void (*action)(unsigned int);
@@ -25,17 +25,18 @@ static void acarreo ( ) ;
 
 void nada (unsigned int) ;
 //void inc_b (unsigned int) ;
-
+void cargarROM();
+void ejecutarCICLO();
 
 void nop (unsigned int) ;
-void ld_bc16(char16_t valor);
+void ld_bc16(unsigned short  valor);
 void ld_bca (unsigned int) ;
 void inc_bc (unsigned int) ;
 void inc_b (unsigned int) ;
 void dec_b (unsigned int) ;
 void ld_b8(unsigned char valor);
 void rlca (unsigned int) ;
-void LD_a16_sp(char16_t direccion);
+void LD_a16_sp(unsigned short  direccion);
 void add_hl_bc (unsigned int) ;
 void ld_a_bc (unsigned int) ;
 void dec_bc (unsigned int) ;
@@ -44,7 +45,7 @@ void dec_c (unsigned int) ;
 void ld_c8(unsigned char valor);
 void rrca (unsigned int) ;
 void stop (unsigned int) ;
-void ld_de16(char16_t valor);
+void ld_de16(unsigned short  valor);
 void ld_dea (unsigned int) ;
 void inc_de (unsigned int) ;
 void inc_d (unsigned int) ;
@@ -60,7 +61,7 @@ void dec_e (unsigned int) ;
 void ld_e8(unsigned char valor);
 void rra (unsigned int) ;
 void jr_nr8(char valor);
-void ld_hl16(char16_t valor);
+void ld_hl16(unsigned short  valor);
 void ld_hla (unsigned int) ;
 void inc_hl (unsigned int) ;
 void inc_h (unsigned int) ;
@@ -76,7 +77,7 @@ void dec_l (unsigned int) ;
 void ld_l8(unsigned char valor);
 void cpl (unsigned int) ;
 void jr_ncr8(char valor);
-void ld_sp16(char16_t valor);
+void ld_sp16(unsigned short  valor);
 void ld_hlma (unsigned int) ;
 void inc_sp (unsigned int) ;
 void inc_hlm (unsigned int) ;
