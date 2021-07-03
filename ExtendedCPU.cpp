@@ -361,10 +361,10 @@ static unsigned char rl(unsigned char registro){
 
 static unsigned char rr(unsigned char registro){
 	//cogemos el valor del bit de carry
-	unsigned char bit=regist.F & 0x10;
+	/*unsigned char bit=regist.F & 0x10;
 	bit= bit <<3;
 	bit= bit & 0x80;// para poder sumar el bit, que sera 0 o 1, como vaya la cosa
-
+	unsigned char C= (regist.F >>4) & 0x01;
 	//coges el bit menos significativo y lo dejas a la derecha, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
 	unsigned char u = registro & 0x01;
 	
@@ -375,10 +375,10 @@ static unsigned char rr(unsigned char registro){
 		regist.F= regist.F & 0xEF;
 	}
 
-	registro = registro >> 1;
+	//registro = registro >> 1;
 
 	//como es una rotacion, se le mete al final lo que "salio"
-	registro += bit;
+	registro >>=1;
 
 	regist.F= regist.F & 0xDF;//desactiva el half
 	regist.F= regist.F & 0xBF;//desactiva el flag N
@@ -387,8 +387,30 @@ static unsigned char rr(unsigned char registro){
     }else{
         regist.F= regist.F & 0x7F;//desactiva el flag 0
     }
-
-    return registro;
+	
+    return registro;*/
+	//(regist.F >>4) & 0x01
+	unsigned char bit=registro & 0x01;
+	registro >>= 1;
+	if((regist.F >>4) & 0x01) registro |= 0x80;
+	
+	if(bit & 0x01){
+		regist.F = regist.F | 0x10;
+	}
+	else{
+		regist.F= regist.F & 0xEF;
+	}
+	
+	if(registro==0){
+        regist.F = regist.F | 0x80;
+    }else{
+        regist.F= regist.F & 0x7F;//desactiva el flag 0
+    }
+	
+	regist.F= regist.F & 0xDF;//desactiva el half
+	regist.F= regist.F & 0xBF;//desactiva el flag N
+	
+	return registro;
 
 }
 
@@ -661,6 +683,7 @@ void rr_c(void){
 //0x1a RR D 
 void rr_d(void){
 	regist.D=rr(regist.D);
+	reconstruirDE();
 }
 
 //0x1b RR E 
