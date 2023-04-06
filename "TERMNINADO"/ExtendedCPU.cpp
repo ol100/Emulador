@@ -361,10 +361,10 @@ static unsigned char rl(unsigned char registro){
 
 static unsigned char rr(unsigned char registro){
 	//cogemos el valor del bit de carry
-	/*unsigned char bit=regist.F & 0x10;
+	unsigned char bit=regist.F & 0x10;
 	bit= bit <<3;
 	bit= bit & 0x80;// para poder sumar el bit, que sera 0 o 1, como vaya la cosa
-	unsigned char C= (regist.F >>4) & 0x01;
+
 	//coges el bit menos significativo y lo dejas a la derecha, asi sirve para evaluar si se activa el flag y ademas se mete al final como buena rotacion que es
 	unsigned char u = registro & 0x01;
 	
@@ -375,10 +375,10 @@ static unsigned char rr(unsigned char registro){
 		regist.F= regist.F & 0xEF;
 	}
 
-	//registro = registro >> 1;
+	registro = registro >> 1;
 
 	//como es una rotacion, se le mete al final lo que "salio"
-	registro >>=1;
+	registro += bit;
 
 	regist.F= regist.F & 0xDF;//desactiva el half
 	regist.F= regist.F & 0xBF;//desactiva el flag N
@@ -387,30 +387,8 @@ static unsigned char rr(unsigned char registro){
     }else{
         regist.F= regist.F & 0x7F;//desactiva el flag 0
     }
-	
-    return registro;*/
-	//(regist.F >>4) & 0x01
-	unsigned char bit=registro & 0x01;
-	registro >>= 1;
-	if((regist.F >>4) & 0x01) registro |= 0x80;
-	
-	if(bit & 0x01){
-		regist.F = regist.F | 0x10;
-	}
-	else{
-		regist.F= regist.F & 0xEF;
-	}
-	
-	if(registro==0){
-        regist.F = regist.F | 0x80;
-    }else{
-        regist.F= regist.F & 0x7F;//desactiva el flag 0
-    }
-	
-	regist.F= regist.F & 0xDF;//desactiva el half
-	regist.F= regist.F & 0xBF;//desactiva el flag N
-	
-	return registro;
+
+    return registro;
 
 }
 
@@ -541,25 +519,21 @@ static void bit(unsigned char bit, unsigned char registro){
 //0x00 RLC B
 void rlc_b(void){
 	regist.B=rlc(regist.B);
-	reconstruirBC();
 }
 
 //0x01 RLC C
 void rlc_c(void){
 	regist.C=rlc(regist.C);
-	reconstruirBC();
 }
 
 //0x02 RLC D
 void rlc_d(void){
 	regist.D=rlc(regist.D);
-	reconstruirDE();
 }
 
 //0x03 RLC E
 void rlc_e(void){
 	regist.E=rlc(regist.E);
-	reconstruirDE();
 }
 
 //0x04 RLC H
@@ -584,31 +558,26 @@ void rlc_hl(void){
 //0x07 RLC A
 void rlc_a(void){
 	regist.A=rlc(regist.A);
-	reconstruirAF();
 }
 
 //0x08 RRC B
 void rrc_b(void){
 	regist.B=rrc(regist.B);
-	reconstruirBC();
 }
 
 //0x09 RRC C
 void rrc_c(void){
 	regist.C=rrc(regist.C);
-	reconstruirBC();
 }
 
 //0x0a RRC D
 void rrc_d(void){
 	regist.D=rrc(regist.D);
-	reconstruirDE();
 }
 
 //0x0b RRC E
 void rrc_e(void){
 	regist.E=rrc(regist.E);
-	reconstruirDE();
 }
 
 //0x0c RRC H
@@ -633,31 +602,26 @@ void rrc_hl(void){
 //0x0f RRC A
 void rrc_a(void){
 	regist.A=rrc(regist.A);
-	reconstruirAF();
 }
 
 //0x10 RL B
 void rl_b(void){
 	regist.B=rl(regist.B);
-	reconstruirBC();
 }
 
 //0x11 RL C
 void rl_c(void){
 	regist.C=rl(regist.C);
-	reconstruirBC();
 }
 
 //0x12 RL D
 void rl_d(void){
 	regist.D=rl(regist.D);
-	reconstruirDE();
 }
 
 //0x13 RL E
 void rl_e(void){
 	regist.E=rl(regist.E);
-	reconstruirDE();
 }
 
 //0x14 RL H
@@ -682,31 +646,26 @@ void rl_hl(void){
 //0x17 RL A 
 void rl_a(void){
 	regist.A=rl(regist.A);
-	reconstruirAF();
 }
 
 //0x18 RR B 
 void rr_b(void){
 	regist.B=rr(regist.B);
-	reconstruirBC();
 }
 
 //0x19 RR C 
 void rr_c(void){
 	regist.C=rr(regist.C);
-	reconstruirBC();
 }
 
 //0x1a RR D 
 void rr_d(void){
 	regist.D=rr(regist.D);
-	reconstruirDE();
 }
 
 //0x1b RR E 
 void rr_e(void){
 	regist.E=rr(regist.E);
-	reconstruirDE();
 }
 
 //0x1c RR H 
@@ -731,43 +690,38 @@ void rr_hl(void){
 //0x1f RR A 
 void rr_a(void){
 	regist.A=rr(regist.A);
-	reconstruirAF();
 }
 
 //0x20 SLA B 
 void sla_b(void){
 	regist.B=sla(regist.B);
-	reconstruirBC();
 }
 
 //0x21 SLA C 
 void sla_c(void){
 	regist.C=sla(regist.C);
-	reconstruirBC();
 }
 
 //0x22 SLA D 
 void sla_d(void){
 	regist.D=sla(regist.D);
-	reconstruirDE();
 }
 
 //0x23 SLA E 
 void sla_e(void){
 	regist.E=sla(regist.E);
-	reconstruirDE();
 }
 
 //0x24 SLA H 
 void sla_h(void){
 	regist.H=sla(regist.H);
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x25 SLA L 
 void sla_l(void){
 	regist.L=sla(regist.L);
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x26 SLA (HL)
@@ -780,43 +734,38 @@ void sla_hl(void){
 //0x27 SLA A 
 void sla_a(void){
 	regist.A=sla(regist.A);
-	reconstruirAF();
 }
 
 //0x28 SRA B 
 void sra_b(void){
 	regist.B=sra(regist.B);
-	reconstruirBC();
 }
 
 //0x29 SRA C 
 void sra_c(void){
 	regist.C=sra(regist.C);
-	reconstruirBC();
 }
 
 //0x2a SRA D 
 void sra_d(void){
 	regist.D=sra(regist.D);
-	reconstruirDE();
 }
 
 //0x2b SRA E 
 void sra_e(void){
 	regist.E=sra(regist.E);
-	reconstruirDE();
 }
 
 //0x2c SRA H 
 void sra_h(void){
 	regist.H=sra(regist.H);
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x2d SRA L 
 void sra_l(void){
 	regist.L=sra(regist.L);
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x2e SRA (HL)
@@ -829,43 +778,38 @@ void sra_hl(void){
 //0x2f SRA A 
 void sra_a(void){
 	regist.A=sra(regist.A);
-	reconstruirAF();
 }
 
 //0x30 SWAP B 
 void swap_b(void){
 	regist.B=swap(regist.B);
-	reconstruirBC();
 }
 
 //0x31 SWAP C 
 void swap_c(void){
 	regist.C=swap(regist.C);
-	reconstruirBC();
 }
 
 //0x32 SWAP D 
 void swap_d(void){
 	regist.D=swap(regist.D);
-	reconstruirDE();
 }
 
 //0x33 SWAP E 
 void swap_e(void){
 	regist.E=swap(regist.E);
-	reconstruirDE();
 }
 
 //0x34 SWAP H 
 void swap_h(void){
 	regist.H=swap(regist.H);
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x35 SWAP L 
 void swap_l(void){
 	regist.L=swap(regist.L);
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x36 SWAP (HL)
@@ -878,43 +822,38 @@ void swap_hl(void){
 //0x37 SWAP A 
 void swap_a(void){
 	regist.A=swap(regist.A);
-	reconstruirAF();
 }
 
 //0x38 SRL B 
 void srl_b(void){
 	regist.B=srl(regist.B);
-	reconstruirBC();
 }
 
 //0x39 SRL C 
 void srl_c(void){
 	regist.C=srl(regist.C);
-	reconstruirBC();
 }
 
 //0x3a SRL D 
 void srl_d(void){
 	regist.D=srl(regist.D);
-	reconstruirDE();
 }
 
 //0x3b SRL E 
 void srl_e(void){
 	regist.E=srl(regist.E);
-	reconstruirDE();
 }
 
 //0x3c SRL H 
 void srl_h(void){
 	regist.H=srl(regist.H);
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x3d SRL L 
 void srl_l(void){
 	regist.L=srl(regist.L);
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x3e SRL (HL)
@@ -927,7 +866,6 @@ void srl_hl(void){
 //0x3f SRL A 
 void srl_a(void){
 	regist.A=srl(regist.A);
-	reconstruirAF();
 }
 
 //0x40 BIT 0,B
@@ -1261,37 +1199,33 @@ void bit_7_a(void){
 //0x80 RES 0,B
 void res_0_b(void){
 	regist.B=regist.B & 0xFE;
-	reconstruirBC();
 }
 
 //0x81 RES 0,C
 void res_0_c(void){
 	regist.C=regist.C & 0xFE;
-	reconstruirBC();
 }
 
 //0x82 RES 0,D
 void res_0_d(void){
 	regist.D=regist.D & 0xFE;
-	reconstruirDE();
 }
 
 //0x83 RES 0,E
 void res_0_e(void){
 	regist.E=regist.E & 0xFE;
-	reconstruirDE();
 }
 
 //0x84 RES 0,H
 void res_0_h(void){
 	regist.H=regist.H & 0xFE;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x85 RES 0,L
 void res_0_l(void){
 	regist.L=regist.L & 0xFE;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x86 RES 0,(HL)
@@ -1309,25 +1243,21 @@ void res_0_a(void){
 //0x88 RES 1,B
 void res_1_b(void){
 	regist.B=regist.B & 0xFD;
-	reconstruirBC();
 }
 
 //0x89 RES 1,C
 void res_1_c(void){
 	regist.C=regist.C & 0xFD;
-	reconstruirBC();
 }
 
 //0x8a RES 1,D
 void res_1_d(void){
 	regist.D=regist.D & 0xFD;
-	reconstruirDE();
 }
 
 //0x8b RES 1,E
 void res_1_e(void){
 	regist.E=regist.E & 0xFD;
-	reconstruirDE();
 }
 
 //0x8c RES 1,H
@@ -1357,37 +1287,33 @@ void res_1_a(void){
 //0x90 RES 2,B
 void res_2_b(void){
 	regist.B=regist.B & 0xFB;
-	reconstruirBC();
 }
 
 //0x91 RES 2,C
 void res_2_c(void){
 	regist.C=regist.C & 0xFB;
-	reconstruirBC();
 }
 
 //0x92 RES 2,D
 void res_2_d(void){
 	regist.D=regist.D & 0xFB;
-	reconstruirDE();
 }
 
 //0x93 RES 2,E
 void res_2_e(void){
 	regist.E=regist.E & 0xFB;
-	reconstruirDE();
 }
 
 //0x94 RES 2,H
 void res_2_h(void){
 	regist.H=regist.H & 0xFB;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x95 RES 2,L
 void res_2_l(void){
 	regist.L=regist.L & 0xFB;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x96 RES 2,(HL)
@@ -1405,37 +1331,33 @@ void res_2_a(void){
 //0x98 RES 3,B
 void res_3_b(void){
 	regist.B=regist.B & 0xF7;
-	reconstruirBC();
 }
 
 //0x99 RES 3,C
 void res_3_c(void){
 	regist.C=regist.C & 0xF7;
-	reconstruirBC();
 }
 
 //0x9a RES 3,D
 void res_3_d(void){
 	regist.D=regist.D & 0xF7;
-	reconstruirDE();
 }
 
 //0x9b RES 3,E
 void res_3_e(void){
 	regist.E=regist.E & 0xF7;
-	reconstruirDE();
 }
 
 //0x9c RES 3,H
 void res_3_h(void){
 	regist.H=regist.H & 0xF7;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x9d RES 3,L
 void res_3_l(void){
 	regist.L=regist.L & 0xF7;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0x9e RES 3,(HL)
@@ -1453,37 +1375,33 @@ void res_3_a(void){
 //0xa0 RES 4,B
 void res_4_b(void){
 	regist.B=regist.B & 0xEF;
-	reconstruirBC();
 }
 
 //0xa1 RES 4,C
 void res_4_c(void){
 	regist.C=regist.C & 0xEF;
-	reconstruirBC();
 }
 
 //0xa2 RES 4,D
 void res_4_d(void){
 	regist.D=regist.D & 0xEF;
-	reconstruirDE();
 }
 
 //0xa3 RES 4,E
 void res_4_e(void){
 	regist.E=regist.E & 0xEF;
-	reconstruirDE();
 }
 
 //0xa4 RES 4,H
 void res_4_h(void){
 	regist.H=regist.H & 0xEF;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xa5 RES 4,L
 void res_4_l(void){
 	regist.L=regist.L & 0xEF;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xa6 RES 4,(HL)
@@ -1501,37 +1419,33 @@ void res_4_a(void){
 //0xa8 RES 5,B
 void res_5_b(void){
 	regist.B=regist.B & 0xDF;
-	reconstruirBC();
 }
 
 //0xa9 RES 5,C
 void res_5_c(void){
 	regist.C=regist.C & 0xDF;
-	reconstruirBC();
 }
 
 //0xaa RES 5,D
 void res_5_d(void){
 	regist.D=regist.D & 0xDF;
-	reconstruirDE();
 }
 
 //0xab RES 5,E
 void res_5_e(void){
 	regist.E=regist.E & 0xDF;
-	reconstruirDE();
 }
 
 //0xac RES 5,H
 void res_5_h(void){
 	regist.H=regist.H & 0xDF;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xad RES 5,L
 void res_5_l(void){
 	regist.L=regist.L & 0xDF;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xae RES 5,(HL)
@@ -1549,37 +1463,33 @@ void res_5_a(void){
 //0xb0 RES 6,B
 void res_6_b(void){
 	regist.B=regist.B & 0xBF;
-	reconstruirBC();
 }
 
 //0xb1 RES 6,C
 void res_6_c(void){
 	regist.C=regist.C & 0xBF;
-	reconstruirBC();
 }
 
 //0xb2 RES 6,D
 void res_6_d(void){
 	regist.D=regist.D & 0xBF;
-	reconstruirDE();
 }
 
 //0xb3 RES 6,E
 void res_6_e(void){
 	regist.E=regist.E & 0xBF;
-	reconstruirDE();
 }
 
 //0xb4 RES 6,H
 void res_6_h(void){
 	regist.H=regist.H & 0xBF;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xb5 RES 6,L
 void res_6_l(void){
 	regist.L=regist.L & 0xBF;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xb6 RES 6,(HL)
@@ -1597,37 +1507,33 @@ void res_6_a(void){
 //0xb8 RES 7,B
 void res_7_b(void){
 	regist.B=regist.B & 0x7F;
-	reconstruirBC();
 }
 
 //0xb9 RES 7,C
 void res_7_c(void){
 	regist.C=regist.C & 0x7F;
-	reconstruirBC();
 }
 
 //0xba RES 7,D
 void res_7_d(void){
 	regist.D=regist.D & 0x7F;
-	reconstruirDE();
 }
 
 //0xbb RES 7,E
 void res_7_e(void){
 	regist.E=regist.E & 0x7F;
-	reconstruirDE();
 }
 
 //0xbc RES 7,H
 void res_7_h(void){
 	regist.H=regist.H & 0x7F;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xbd RES 7,L
 void res_7_l(void){
 	regist.L=regist.L & 0x7F;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xbe RES 7,(HL)
@@ -1645,37 +1551,33 @@ void res_7_a(void){
 //0xc0 SET 0,B
 void set_0_b(void){
 	regist.B=regist.B | 0x01;
-	reconstruirBC();
 }
 
 //0xc1 SET 0,C
 void set_0_c(void){
 	regist.C=regist.C | 0x01;
-	reconstruirBC();
 }
 
 //0xc2 SET 0,D
 void set_0_d(void){
 	regist.D=regist.D | 0x01;
-	reconstruirDE();
 }
 
 //0xc3 SET 0,E
 void set_0_e(void){
 	regist.E=regist.E | 0x01;
-	reconstruirDE();
 }
 
 //0xc4 SET 0,H
 void set_0_h(void){
 	regist.H=regist.H | 0x01;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xc5 SET 0,L
 void set_0_l(void){
 	regist.L=regist.L | 0x01;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xc6 SET 0,(HL)
@@ -1693,37 +1595,33 @@ void set_0_a(void){
 //0xc8 SET 1,B
 void set_1_b(void){
 	regist.B=regist.B | 0x02;
-	reconstruirBC();
 }
 
 //0xc9 SET 1,C
 void set_1_c(void){
 	regist.C=regist.C | 0x02;
-	reconstruirBC();
 }
 
 //0xca SET 1,D
 void set_1_d(void){
 	regist.D=regist.D | 0x02;
-	reconstruirDE();
 }
 
 //0xcb SET 1,E
 void set_1_e(void){
 	regist.E=regist.E | 0x02;
-	reconstruirDE();
 }
 
 //0xcc SET 1,H
 void set_1_h(void){
 	regist.H=regist.H | 0x02;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xcd SET 1,L
 void set_1_l(void){
 	regist.L=regist.L | 0x02;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xce SET 1,(HL)
@@ -1741,37 +1639,33 @@ void set_1_a(void){
 //0xd0 SET 2,B
 void set_2_b(void){
 	regist.B=regist.B | 0x04;
-	reconstruirBC();
 }
 
 //0xd1 SET 2,C
 void set_2_c(void){
 	regist.C=regist.C | 0x04;
-	reconstruirBC();
 }
 
 //0xd2 SET 2,D
 void set_2_d(void){
 	regist.D=regist.D | 0x04;
-	reconstruirDE();
 }
 
 //0xd3 SET 2,E
 void set_2_e(void){
 	regist.E=regist.E | 0x04;
-	reconstruirDE();
 }
 
 //0xd4 SET 2,H
 void set_2_h(void){
 	regist.H=regist.H | 0x04;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xd5 SET 2,L
 void set_2_l(void){
 	regist.L=regist.L | 0x04;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xd6 SET 2,(HL)
@@ -1789,37 +1683,33 @@ void set_2_a(void){
 //0xd8 SET 3,B
 void set_3_b(void){
 	regist.B=regist.B | 0x08;
-	reconstruirBC();
 }
 
 //0xd9 SET 3,C
 void set_3_c(void){
 	regist.C=regist.C | 0x08;
-	reconstruirBC();
 }
 
 //0xda SET 3,D
 void set_3_d(void){
 	regist.D=regist.D | 0x08;
-	reconstruirDE();
 }
 
 //0xdb SET 3,E
 void set_3_e(void){
 	regist.E=regist.E | 0x08;
-	reconstruirDE();
 }
 
 //0xdc SET 3,H
 void set_3_h(void){
 	regist.H=regist.H | 0x08;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xdd SET 3,L
 void set_3_l(void){
 	regist.L=regist.L | 0x08;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xde SET 3,(HL)
@@ -1837,37 +1727,33 @@ void set_3_a(void){
 //0xe0 SET 4,B
 void set_4_b(void){
 	regist.B=regist.B | 0x10;
-	reconstruirBC();
 }
 
 //0xe1 SET 4,C
 void set_4_c(void){
 	regist.C=regist.C | 0x10;
-	reconstruirBC();
 }
 
 //0xe2 SET 4,D
 void set_4_d(void){
 	regist.D=regist.D | 0x10;
-	reconstruirDE();
 }
 
 //0xe3 SET 4,E
 void set_4_e(void){
 	regist.E=regist.E | 0x10;
-	reconstruirDE();
 }
 
 //0xe4 SET 4,H
 void set_4_h(void){
 	regist.H=regist.H | 0x10;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xe5 SET 4,L
 void set_4_l(void){
 	regist.L=regist.L | 0x10;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xe6 SET 4,(HL)
@@ -1885,37 +1771,33 @@ void set_4_a(void){
 //0xe8 SET 5,B
 void set_5_b(void){
 	regist.B=regist.B | 0x20;
-	reconstruirBC();
 }
 
 //0xe9 SET 5,C
 void set_5_c(void){
 	regist.C=regist.C | 0x20;
-	reconstruirBC();
 }
 
 //0xea SET 5,D
 void set_5_d(void){
 	regist.D=regist.D | 0x20;
-	reconstruirDE();
 }
 
 //0xeb SET 5,E
 void set_5_e(void){
 	regist.E=regist.E | 0x20;
-	reconstruirDE();
 }
 
 //0xec SET 5,H
 void set_5_h(void){
 	regist.H=regist.H | 0x20;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xed SET 5,L
 void set_5_l(void){
 	regist.L=regist.L | 0x20;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xee SET 5,(HL)
@@ -1933,37 +1815,33 @@ void set_5_a(void){
 //0xf0 SET 6,B
 void set_6_b(void){
 	regist.B=regist.B | 0x40;
-	reconstruirBC();
 }
 
 //0xf1 SET 6,C
 void set_6_c(void){
 	regist.C=regist.C | 0x40;
-	reconstruirBC();
 }
 
 //0xf2 SET 6,D
 void set_6_d(void){
 	regist.D=regist.D | 0x40;
-	reconstruirDE();
 }
 
 //0xf3 SET 6,E
 void set_6_e(void){
 	regist.E=regist.E | 0x40;
-	reconstruirDE();
 }
 
 //0xf4 SET 6,H
 void set_6_h(void){
 	regist.H=regist.H | 0x40;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xf5 SET 6,L
 void set_6_l(void){
 	regist.L=regist.L | 0x40;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xf6 SET 6,(HL)
@@ -1981,37 +1859,33 @@ void set_6_a(void){
 //0xf8 SET 7,B
 void set_7_b(void){
 	regist.B=regist.B | 0x80;
-	reconstruirBC();
 }
 
 //0xf9 SET 7,C
 void set_7_c(void){
 	regist.C=regist.C | 0x80;
-	reconstruirBC();
 }
 
 //0xfa SET 7,D
 void set_7_d(void){
 	regist.D=regist.D | 0x80;
-	reconstruirDE();
 }
 
 //0xfb SET 7,E
 void set_7_e(void){
 	regist.E=regist.E | 0x80;
-	reconstruirDE();
 }
 
 //0xfc SET 7,H
 void set_7_h(void){
 	regist.H=regist.H | 0x80;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xfd SET 7,L
 void set_7_l(void){
 	regist.L=regist.L | 0x80;
-	reconstruirHL();
+	deconstruirHL();
 }
 
 //0xfe SET 7,(HL)

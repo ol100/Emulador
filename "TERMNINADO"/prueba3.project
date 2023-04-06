@@ -19,10 +19,6 @@
     <File Name="ppu.cpp"/>
     <File Name="graphics.h"/>
     <File Name="graphics.cpp"/>
-    <File Name="gfx.h"/>
-    <File Name="gfx.cpp"/>
-    <File Name="keys.h"/>
-    <File Name="keys.cpp"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -43,9 +39,6 @@
         <Library Value="SDL2"/>
         <Library Value="SDL2main"/>
         <Library Value="SDL2_ttf"/>
-        <Library Value="glut"/>
-        <Library Value="GL"/>
-        <Library Value="GLU"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>

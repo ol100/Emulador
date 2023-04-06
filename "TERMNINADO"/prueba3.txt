@@ -1,0 +1,1 @@
+./Debug/main.cpp.o ./Debug/cpu.cpp.o ./Debug/ExtendedCPU.cpp.o ./Debug/memoria.cpp.o ./Debug/interruciones.cpp.o ./Debug/ppu.cpp.o ./Debug/graphics.cpp.o

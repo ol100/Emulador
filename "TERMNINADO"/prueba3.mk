@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=javi
-Date                   :=04/04/22
+Date                   :=11/03/21
 CodeLitePath           :=/home/javi/.codelite
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -shared -fPIC
@@ -39,8 +39,8 @@ LinkOptions            :=
 IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). 
 IncludePCH             := 
 RcIncludePath          := 
-Libs                   := $(LibrarySwitch)SDL2 $(LibrarySwitch)SDL2main $(LibrarySwitch)SDL2_ttf $(LibrarySwitch)glut $(LibrarySwitch)GL $(LibrarySwitch)GLU 
-ArLibs                 :=  "SDL2" "SDL2main" "SDL2_ttf" "glut" "GL" "GLU" 
+Libs                   := $(LibrarySwitch)SDL2 $(LibrarySwitch)SDL2main $(LibrarySwitch)SDL2_ttf 
+ArLibs                 :=  "SDL2" "SDL2main" "SDL2_ttf" 
 LibPath                := $(LibraryPathSwitch). $(LibraryPathSwitch)/usr/lib/x86_64-linux-gnu 
 
 ##
@@ -60,7 +60,7 @@ AS       := /usr/bin/as
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects0=$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/cpu.cpp$(ObjectSuffix) $(IntermediateDirectory)/ExtendedCPU.cpp$(ObjectSuffix) $(IntermediateDirectory)/memoria.cpp$(ObjectSuffix) $(IntermediateDirectory)/interruciones.cpp$(ObjectSuffix) $(IntermediateDirectory)/ppu.cpp$(ObjectSuffix) $(IntermediateDirectory)/graphics.cpp$(ObjectSuffix) $(IntermediateDirectory)/gfx.cpp$(ObjectSuffix) $(IntermediateDirectory)/keys.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/cpu.cpp$(ObjectSuffix) $(IntermediateDirectory)/ExtendedCPU.cpp$(ObjectSuffix) $(IntermediateDirectory)/memoria.cpp$(ObjectSuffix) $(IntermediateDirectory)/interruciones.cpp$(ObjectSuffix) $(IntermediateDirectory)/ppu.cpp$(ObjectSuffix) $(IntermediateDirectory)/graphics.cpp$(ObjectSuffix) 
 
 
 
@@ -146,22 +146,6 @@ $(IntermediateDirectory)/graphics.cpp$(DependSuffix): graphics.cpp
 
 $(IntermediateDirectory)/graphics.cpp$(PreprocessSuffix): graphics.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/graphics.cpp$(PreprocessSuffix) graphics.cpp
-
-$(IntermediateDirectory)/gfx.cpp$(ObjectSuffix): gfx.cpp $(IntermediateDirectory)/gfx.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/javi/proyectos/prueba3/gfx.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/gfx.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/gfx.cpp$(DependSuffix): gfx.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/gfx.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/gfx.cpp$(DependSuffix) -MM gfx.cpp
-
-$(IntermediateDirectory)/gfx.cpp$(PreprocessSuffix): gfx.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/gfx.cpp$(PreprocessSuffix) gfx.cpp
-
-$(IntermediateDirectory)/keys.cpp$(ObjectSuffix): keys.cpp $(IntermediateDirectory)/keys.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/javi/proyectos/prueba3/keys.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/keys.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/keys.cpp$(DependSuffix): keys.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/keys.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/keys.cpp$(DependSuffix) -MM keys.cpp
-
-$(IntermediateDirectory)/keys.cpp$(PreprocessSuffix): keys.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/keys.cpp$(PreprocessSuffix) keys.cpp
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)

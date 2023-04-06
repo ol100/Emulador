@@ -31,9 +31,6 @@
 
 using namespace std;
 
-int ciclado=0;
-int ajustarhalt=0;
-
 struct registros regist;
 struct instruction instructions[256]={
 	{   clock_cycle:4, machine_cycle:1, action:nop, action_bit_number:0, action_parameter:0}, //0x00
@@ -241,7 +238,7 @@ struct instruction instructions[256]={
 	{   clock_cycle:0, machine_cycle:0, action:ret_z, action_bit_number:0, action_parameter:0 }, //0xc8
 	{   clock_cycle:16, machine_cycle:4, action:ret, action_bit_number:0, action_parameter:0 }, //0xc9
 	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))jp_z_a16, action_bit_number:16, action_parameter:2 }, //0xca jp_z_a16
-	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))cb, action_bit_number:8, action_parameter:1 }, //0xcb
+	{   clock_cycle:4, machine_cycle:1, action:nada, action_bit_number:0, action_parameter:0 }, //0xcb
 	{   clock_cycle:0, machine_cycle:0, action:(void (*)(unsigned int))call_z_a16, action_bit_number:16, action_parameter:2 }, //0xcc call_z_a16
 	{   clock_cycle:24, machine_cycle:6, action:(void (*)(unsigned int))call_a16, action_bit_number:16, action_parameter:2 }, //0xcd call_a16
 	{   clock_cycle:8, machine_cycle:2, action:(void (*)(unsigned int))adc_a_d8, action_bit_number:8, action_parameter:1 }, //0xce adc_a_d8
@@ -325,11 +322,10 @@ void reset () {
 	regist.L = 0x4d;
 	regist.SP = 0xfffe;
 	regist.PC = 0x100;
-	
-	IO[0]=0xFF;
+
 	writeMEMB(0xFF05, 0);
 	writeMEMB(0xFF06, 0);
-	escrituradirecta(0xFF07, 0);
+	writeMEMB(0xFF07, 0);
 	writeMEMB(0xFF10, 0x80);
 	writeMEMB(0xFF11, 0xBF);
 	writeMEMB(0xFF12, 0xF3);
@@ -357,10 +353,8 @@ void reset () {
 	writeMEMB(0xFF49, 0xFF);
 	writeMEMB(0xFF4A, 0x00);
 	writeMEMB(0xFF4B, 0x00);
-	writeMEMB(0xFF0F, 0xE0);
 	writeMEMB(0xFFFF, 0x00);
-	writeMEMB(0xFF41, 0x00);
-	
+
 	//HL
 	regist.HL=regist.H;
 	regist.HL=regist.HL<<8;
@@ -404,12 +398,6 @@ void reconstruirBC () {
 	regist.BC=regist.B;
 	regist.BC=regist.BC<<8;
 	regist.BC=regist.BC|regist.C;
-}
-
-void reconstruirAF () {
-	regist.AF=regist.A;
-	regist.AF=regist.AF<<8;
-	regist.AF=regist.AF|regist.F;
 }
 
 void deconstruirBC () {
@@ -479,7 +467,7 @@ static void zero () {
 //incrementar
 static void inc(unsigned char *A) {
 	unsigned char t=*A;
-	//printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(t));
+	printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(t));
 	if((*A & (unsigned char )0x0F) == 0x0F){ //Flag half carry
 		regist.F= regist.F | 0x20;
 	}else{
@@ -490,7 +478,7 @@ static void inc(unsigned char *A) {
 	*A=*A + 0x01;
 	t=*A;
 
-	//printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(t));
+	printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(t));
 
 	if(*A==0){ //Flag zero
 		regist.F= regist.F | 0x80;
@@ -573,24 +561,18 @@ static unsigned char dec2(unsigned char A) {
 static void suma(unsigned char *A, unsigned char B){
 	unsigned short carry= *A + B;
     unsigned short temp2= *A + B;
-	cout<< "\nVARIABLE CARRY MIENTRAS SUMA NORMAL "<<(int)carry;
+	cout<< "\nVARIABLE CARRY MIENTRAS SUMA NORMAL";
 	unsigned char t=(unsigned char)(temp2 & 0xFF);
-//	printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(t));
+	printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(t));
 	unsigned char half1=*A & 0x0F;
 	unsigned char half2=B & 0x0F;
 	unsigned char half3=half1 + half2;
-    //carry= carry >> 8;
+    carry= carry >> 8;
 	t=(unsigned char)(carry & 0xFF);
-//	cout<< "\n EL  CARRY DESPLAZADO"<< carry;
-//	printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(t));
+	cout<< "\n EL  CARRY DESPLAZADO"<< carry;
+	printf("\n Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(t));
 
-    /*if(carry > 0x01){
-        regist.F= regist.F | 0x10;
-	}else{
-		regist.F= regist.F & 0xEF;//desactivar carry
-	}*/
-	
-	if(carry & 0xff00){
+    if(carry > 0x01){
         regist.F= regist.F | 0x10;
 	}else{
 		regist.F= regist.F & 0xEF;//desactivar carry
@@ -604,7 +586,7 @@ static void suma(unsigned char *A, unsigned char B){
 	else{
 		regist.F= regist.F & 0x7F;//desactivar ZERO
 	}
-	if(((*A & 0x0f) + (B & 0x0f)) > 0x0f){ //comprobar half
+	if((half3>>4) >=0x01){ //comprobar half
 		regist.F= regist.F | 0x20;
 	}else{
 		regist.F= regist.F & 0xDF;
@@ -615,44 +597,34 @@ static void suma(unsigned char *A, unsigned char B){
 
 //suma para registros de 16bits, ahora electric boogaloo
 static void suma2(unsigned short *A, unsigned short B){
-	/*unsigned long carry= *A + B;
+	char32_t carry= *A + B;
+
+	//para comprobar el half
+	unsigned short half1=*A & 0xFF;
+	unsigned short half2=B & 0xFF;
+	unsigned short half3=half1 + half2;
 
 	*A=(unsigned short ) (carry & 0xFFFF);
 
-	if(carry & 0xffff0000){
+	if((carry >> 16) > 0x01){
 		regist.F= regist.F | 0x10;
 	}else{
 		regist.F= regist.F & 0xEF;//desactivar carry
 	}
 
-	unsigned short a= *A & 0x0F;
-	unsigned short b= B & 0x0F;
-	
-	if(a + b> 0x0F){
+	//MUY POTENTE FALLO AQUI
+	if((half3>>8) >=0x01){ //comprobar half
 		regist.F= regist.F | 0x20;
 	}else{
 		regist.F= regist.F & 0xDF;
 	}
 
-	regist.F= regist.F &  0xBF; //desactivar el flag N*/
-	unsigned long result = *A + B;
-	
-	if(result & 0xffff0000) regist.F= regist.F | 0x10;
-	else regist.F= regist.F & 0xEF;
-	
-	*A = (unsigned short)(result & 0xffff);
-	
-	if(((*A & 0x0f) + (B & 0x0f)) > 0x0f) regist.F= regist.F | 0x20;
-	else regist.F= regist.F & 0xDF;
-	
-	// zero flag left alone
-	
-	regist.F= regist.F &  0xBF;
+	regist.F= regist.F &  0xBF; //desactivar el flag N
 }
 
 //funcion normalita de add suma, ahora con acarreo
 static void sumaC(unsigned char *A, unsigned char B){
-	/*unsigned char bit=regist.F & 0x10;
+	unsigned char bit=regist.F & 0x10;
 	bit= bit >>4;
 	bit= bit & 0x01;// para poder sumar el bit, que sera 0 o 1, como vaya la cosa
 
@@ -683,47 +655,12 @@ static void sumaC(unsigned char *A, unsigned char B){
 	else{
 		regist.F= regist.F & 0x7F;//desactivar ZERO
 	}
-	if(((B & 0x0f) + (regist.A & 0x0f)) > 0x0f){ //comprobar half
+	if((half3>>4) >=0x01){ //comprobar half
 		regist.F= regist.F | 0x20;
 	}else{
 		regist.F= regist.F & 0xDF;
 	}
-	regist.F= regist.F & 0xBF;*/
-	unsigned char bit=regist.F & 0x10;
-	if(bit==16){
-		bit=1;
-	}else{
-		bit=0;
-	}
-	B += bit;
-	
-	int result = regist.A + B;
-	
-	if(result & 0xff00){
-		regist.F= regist.F | 0x10;
-	}
-	else{
-		regist.F= regist.F & 0xEF;
-	}
-	
-	if(B == regist.A){
-		regist.F= regist.F | 0x80;
-	}
-	else{
-		regist.F= regist.F & 0x7F;
-	}
-	
-	if(((B & 0x0f) + (regist.A & 0x0f)) > 0x0f){
-		regist.F= regist.F | 0x20;
-	}
-	else{
-		regist.F= regist.F & 0xDF;
-	}
-	
-	regist.F= regist.F | 0x40;
-	//regist.F= regist.F & 0xBF;
-	
-	regist.A = (unsigned char)(result & 0xff);
+	regist.F= regist.F & 0xBF;
 
 }
 
@@ -738,27 +675,20 @@ static void resta(unsigned char *A, unsigned char B){
 	}else{
 		regist.F= regist.F & 0xEF;//desactivar carry
 	}
-	
-	if((B & 0x0f) > (*A & 0x0f)){
-		regist.F= regist.F | 0x20;
-	}
-	else{
-		regist.F= regist.F & 0xDF;
-	}
 
 	*A=temp2;
 
-	if(*A){
+	if(*A==0x00){
 		regist.F= regist.F | 0x80;//flag ZERO
 	}
 	else{
 		regist.F= regist.F & 0x7F;//desactivar ZERO
 	}
-	/*if(half2 > half1){ //comprobar half
+	if(half2 > half1){ //comprobar half
 		regist.F= regist.F | 0x20;
 	}else{
 		regist.F= regist.F & 0xDF;
-	}*/
+	}
 	regist.F= regist.F | 0x40;
 
 }
@@ -870,13 +800,13 @@ static void cp(unsigned char A){
 		regist.F= regist.F & 0xDF;
 	}
 	
-	regist.F= regist.F | 0x40;
+	regist.F= regist.F | 0x80;
 
 }
 
 //NOP 0x00
 void nop (unsigned int) {
-	ciclado=4;
+	clock_cycle+=4;
 	machine_cycle++;
 }
 
@@ -1022,7 +952,7 @@ void rrca (unsigned int) {
 
 //STOP 0x10 para la CPU y la pantalla hasta que se presione un boton
 void stop (unsigned int) {
-	//ciclado=4;
+	//clock_cycle+=4;
 	//machine_cycle++;
 	//STOPGPU();
 	while(!interrrupt_enable){
@@ -1101,9 +1031,7 @@ void rla (unsigned int) {
 }
 
 //JR r8 0x18 incrementa en un byte signed inmediato PC
-void jr_r8(unsigned char valor){
-	cout<<"VALOR EN 0x18 de PC "<<(int)regist.PC<<endl;
-	cout<<"VALOR DE LA VARIABLE"<<(int)valor<<endl;
+void jr_r8(char valor){
 	regist.PC += (signed char) valor;
 }
 
@@ -1144,7 +1072,7 @@ void inc_e (unsigned int) {
 // 0x1d
 void dec_e (unsigned int) {
 	dec(&regist.E);
-	reconstruirDE();
+	reconstruirHL();
 }
 
 //LD E, d8, 0x1e
@@ -1189,11 +1117,11 @@ void rra (unsigned int) {
 void jr_nr8(char valor){
 	unsigned char u = regist.F >> 7;
 	if(u== 1){
-		ciclado=8;
+		machine_cycle+=8;
 	}else{
 		regist.PC+= (signed char) valor;
 
-		ciclado=12;
+		machine_cycle=+12;
 	}
 }
 
@@ -1205,10 +1133,8 @@ void ld_hl16(unsigned short valor){
 
 //LD (HL+), A, 0x22
 void ld_hla (unsigned int) {
-	reconstruirHL();
-	writeMEMB(regist.HL,regist.A);
-	regist.HL=regist.HL + 1;
-	deconstruirHL();
+	reconstruirDE();
+	writeMEMB((regist.DE + 0x01),regist.A);
 }
 
 // 0x23
@@ -1284,10 +1210,10 @@ void jr_zr8( char valor){
 	if(u== 1){
 		regist.PC+= (signed char) valor;
 
-		ciclado=12;
+		machine_cycle=+12;
 	}else{
 
-		ciclado=8;
+		machine_cycle+=8;
 	}
 }
 
@@ -1306,10 +1232,8 @@ void ld_a_hll (unsigned int) {
 	//unsigned unsigned short temp= regist.HL << 8;
 	//unsigned unsigned short temp2=0x0;
 	//temp= temp | temp2;
-	
-	regist.A = loadMEMB(regist.HL);
-	regist.HL= regist.HL + 1;
-	deconstruirHL();
+
+	regist.A = loadMEMB((regist.HL+ 0x01));
 
 }
 
@@ -1348,13 +1272,13 @@ void cpl (unsigned int) {
 
 //JR NC, r8, 0x30 branch si el flag de carry es 0
 void jr_ncr8(char valor){
-	unsigned char u = (regist.F >> 4) & 0x01;
+	unsigned char u = regist.F >> 4 & 0x01;
 	if(u== 1){
-		ciclado=8;
+		machine_cycle+=8;
 	}else{
 		regist.PC+= (signed char) valor;
 
-		ciclado=12;
+		machine_cycle=+12;
 	}
 }
 
@@ -1407,13 +1331,13 @@ void scf (unsigned int) {
 
 //JR C,r8, 0x38
 void jr_cr8( char valor){
-	unsigned char u = (regist.F >> 4) & 0x01;
+	unsigned char u = regist.F >> 4;
 	if(u== 0){
-		ciclado=8;
+		machine_cycle+=8;
 	}else{
 		regist.PC+= (signed char) valor;
 
-		ciclado=12;
+		machine_cycle=+12;
 	}
 }
 
@@ -1433,9 +1357,7 @@ void ld_a_hlm (unsigned int) {
 	//unsigned unsigned short temp2=0x0;
 	//temp= temp | temp2;
 
-	regist.A = loadMEMB(regist.HL);
-	regist.HL-= 0x01;
-	deconstruirHL();
+	regist.A = loadMEMB((regist.HL - 0x01));
 }
 
 // 0x3b
@@ -1853,20 +1775,12 @@ void ld_hl_l (unsigned int) {
 
 //HALT 0x76 Se para la CPU hasta que cualquier interrupcion llegue
 void halt (unsigned int) {
-	/*ciclado=4;
-	//machine_cycle++;
-	if(halt==1){
-		//te quedas aqui quietecito sumando +4
+	clock_cycle+=4;
+	machine_cycle++;
+	while(!interrrupt_enable){
+		pause();
+
 	}
-	else{regist.PC= regist.PC +1;}*/
-	if(ajustarhalt==0){
-		halto=1;
-	}else{
-		printf("\n \n AJUSTARAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHALTO A 0 \n \n");
-		//regist.PC= regist.PC +1;
-		ajustarhalt=0;
-	}
-	
 
 }
 
@@ -2222,10 +2136,10 @@ void cp_a (unsigned int) {cp(regist.A); }
 void ret_nz (unsigned int) {
 	unsigned char u = regist.F >> 7;
 	if(u == 1){
-		ciclado=8;
+		machine_cycle+=8;
 	}else{
 		regist.PC= loadMEM16pila(&regist.SP);
-		ciclado=20;
+		machine_cycle=+20;
 	}
 }
 
@@ -2241,16 +2155,16 @@ void jp_nz_a16(unsigned short valor){ //creo que tambien hay que comprobar que e
 	unsigned char u = regist.F >> 7;
 	if(u==0){
 		regist.PC=valor;
-		ciclado=16;//REVISAAAAAAAAR
+		clock_cycle+=16;//REVISAAAAAAAAR
 	}else{
-		ciclado=12;
+		clock_cycle+=12;
 	}
 }
 
 //0xc3
 void jp_a16(unsigned short valor){
 	regist.PC=valor;
-	//printf("INSTRUCCION C3 VALOR: %d\n", valor);
+	printf("INSTRUCCION C3 VALOR: %d\n", valor);
 }
 
 //0xc4
@@ -2259,9 +2173,9 @@ void call_nz_a16(unsigned short valor){
 	if(u==0){
 		writeMEM16pila((unsigned short ) regist.PC,&regist.SP);
 		regist.PC=valor;
-		ciclado=24;//REVISAAAAAAAAR
+		clock_cycle+=24;//REVISAAAAAAAAR
 	}else{
-		ciclado=12;
+		clock_cycle+=12;
 	}
 }
 
@@ -2288,9 +2202,9 @@ void ret_z (unsigned int) {
 	unsigned char u = regist.F >> 7;
 	if(u==1){
 		regist.PC = loadMEM16pila(&regist.SP);
-		ciclado=20;
+		clock_cycle+=20;
 	}else{
-		ciclado=8;
+		clock_cycle+=8;
 	}
 }
 
@@ -2304,17 +2218,13 @@ void jp_z_a16(unsigned short valor){
 	unsigned char u = regist.F >> 7;
 	if(u==1){
 		regist.PC=valor;
-		ciclado=16;//REVISAAAAAAAAR
+		clock_cycle+=16;//REVISAAAAAAAAR
 	}else{
-		ciclado=12;
+		clock_cycle+=12;
 	}
 }
 
-//0xcb PREFIX CB
-void cb(unsigned short valor){
-	CBinstructions[valor].action();
-	ciclado=CBinstructions[valor].clock_cycle;
-}
+//0xcb PREFIX CB, aqui, mira socio, ni puta idea, hay como otra 256 instrucciones dentro de esta, pendiente de investigar, continuo con las que se hacer
 
 //0xcc
 void call_z_a16(unsigned short valor){
@@ -2322,17 +2232,15 @@ void call_z_a16(unsigned short valor){
 	if(u==1){
 		writeMEM16pila((unsigned short ) regist.PC,&regist.SP);
 		regist.PC=valor;
-		ciclado=24;//REVISAAAAAAAAR
+		clock_cycle+=24;//REVISAAAAAAAAR
 	}else{
-		ciclado=12;
+		clock_cycle+=12;
 	}
 }
 
 //0xcd
 void call_a16(unsigned short valor){
-	//cout<<"VALOR SP"<<(int)regist.SP<<endl;
-	writeMEM16pila(regist.PC,&regist.SP);
-	//cout<<"VALOR SP TRAS VOLVER"<<(int)regist.SP<<endl;
+	writeMEM16pila((unsigned short ) regist.PC,&regist.SP);
 	regist.PC=valor;
 }
 
@@ -2351,10 +2259,10 @@ void RST_08H (unsigned int) {
 void ret_nc (unsigned int) {
 	unsigned char u = regist.F >> 4 & 0x01;
 	if(u == 1){
-		ciclado=8;
+		machine_cycle+=8;
 	}else{
 		regist.PC= loadMEM16pila(&regist.SP);
-		ciclado=20;
+		machine_cycle=+20;
 	}
 }
 
@@ -2370,9 +2278,9 @@ void jp_nc_a16(unsigned short valor){
 	unsigned char u = regist.F >> 4 & 0x01;
 	if(u==0){
 		regist.PC=valor;
-		ciclado=16;//REVISAAAAAAAAR
+		clock_cycle+=16;//REVISAAAAAAAAR
 	}else{
-		ciclado=12;
+		clock_cycle+=12;
 	}
 }
 
@@ -2382,9 +2290,9 @@ void call_nc_a16(unsigned short valor){
 	if(u==0){
 		writeMEM16pila((unsigned short ) regist.PC,&regist.SP);
 		regist.PC=valor;
-		ciclado=24;//REVISAAAAAAAAR
+		clock_cycle+=24;//REVISAAAAAAAAR
 	}else{
-		ciclado=12;
+		clock_cycle+=12;
 	}
 }
 
@@ -2411,9 +2319,9 @@ void ret_c (unsigned int) {
 	unsigned char u = regist.F >> 4 & 0x01;
 	if(u==1){
 		regist.PC = loadMEM16pila(&regist.SP);
-		ciclado=20;
+		clock_cycle+=20;
 	}else{
-		ciclado=8;
+		clock_cycle+=8;
 	}
 }
 
@@ -2427,9 +2335,9 @@ void jp_c_a16(unsigned short valor){
 	unsigned char u = regist.F >> 4 & 0x01;
 	if(u==1){
 		regist.PC=valor;
-		ciclado=16;//REVISAAAAAAAAR
+		clock_cycle+=16;//REVISAAAAAAAAR
 	}else{
-		ciclado=12;
+		clock_cycle+=12;
 	}
 }
 
@@ -2439,9 +2347,9 @@ void call_c_a16(unsigned short valor){
 	if(u==1){
 		writeMEM16pila((unsigned short ) regist.PC,&regist.SP);
 		regist.PC=valor;
-		ciclado=24;//REVISAAAAAAAAR
+		clock_cycle+=24;//REVISAAAAAAAAR
 	}else{
-		ciclado=12;
+		clock_cycle+=12;
 	}
 }
 
@@ -2503,23 +2411,28 @@ void rst_20h (unsigned int) {
 }
 
 //0xe8 Esta va a petar fuertemente, he copiado la suma de dos registros de 16 bits y tru;eado uno para que sea de 8 bits, seguro que los calculos no encajan, no he revisado flags ni nada en el manual
-void add_sp_r8(unsigned int valor){
-	int carry= regist.SP + (char)valor;
+void add_sp_r8(char valor){
+	char32_t carry= regist.SP + valor;
 
-	if(carry & 0xffff0000){
+	//para comprobar el half
+	unsigned short half1=regist.SP & 0xFF;
+	unsigned short half2=valor & 0xF;
+	unsigned short half3=half1 + half2;
+
+	regist.SP=(unsigned short ) (carry & 0xFFFF);
+
+	if((carry >> 16) > 0x01){
 		regist.F= regist.F | 0x10;
 	}else{
 		regist.F= regist.F & 0xEF;//desactivar carry
 	}
 
 	//MUY POTENTE FALLO AQUI
-	if((regist.SP&0x0F)+((char)valor&0x0F) > 0x0F){ //comprobar half
+	if((half3>>8) >=0x01){ //comprobar half
 		regist.F= regist.F | 0x20;
 	}else{
 		regist.F= regist.F & 0xDF;
 	}
-
-	regist.SP=(unsigned short ) (carry & 0xFFFF);
 
 	regist.F= regist.F & 0x7F; //desactivar el flag Z
 	regist.F= regist.F &  0xBF; //desactivar el flag N
@@ -2548,8 +2461,7 @@ void rst_28h (unsigned int) {
 }
 
 //0xf0
-void ldh_a_a8(int valor){
-	//printf("VALOR DEL F0:%d\n",valor);
+void ldh_a_a8(unsigned char valor){
 	regist.A= loadMEMB(0xff00+valor);
 }
 
@@ -2613,7 +2525,6 @@ void ld_hl_spr8(char valor){
 	unsigned short half3=half1 + half2;
 
 	regist.HL=(unsigned short ) (carry & 0xFFFF);
-	deconstruirHL();
 
 	if((carry >> 16) > 0x01){
 		regist.F= regist.F | 0x10;
@@ -2622,7 +2533,7 @@ void ld_hl_spr8(char valor){
 	}
 
 	//MUY POTENTE FALLO AQUI
-	if(((regist.SP & 0x0f) + (valor & 0x0f)) > 0x0f){ //comprobar half
+	if((half3>>8) >=0x01){ //comprobar half
 		regist.F= regist.F | 0x20;
 	}else{
 		regist.F= regist.F & 0xDF;
@@ -2648,30 +2559,29 @@ void ei (unsigned int) {
 }
 
 //0xfe revisar que no he mirado la documentacion
-void cp_d8(int valor){
+void cp_d8(unsigned char valor){
 	//cp(valor);
-	//cout<<"VALOR"<<valor<<endl;
-	regist.F= regist.F | 0x70;
-	if(regist.A== (unsigned char)valor)
+	if(regist.A== valor)
 	{
 		regist.F= regist.F | 0x80;
 	}else{
 		regist.F= regist.F & 0x7F;
 	}
 	
-	if((unsigned char)valor> regist.A)
+	if(valor> regist.A)
 	{
 		regist.F= regist.F | 0x10;
 	}else{
 		regist.F= regist.F & 0xEF;
 	}
 	
-	if(((unsigned char)valor & 0x0F) > (regist.A & 0x0F)){
+	if((valor & 0x0F) > (regist.A & 0x0F)){
 		regist.F= regist.F | 0x20;
 	}else{
 		regist.F= regist.F & 0xDF;
 	}
 	
+	regist.F= regist.F | 0x80;
 }
 
 //0xff
@@ -2688,7 +2598,7 @@ void cargarROM()
 {
 	// leer file
     long addr, value ;
-	FILE *fd = fopen("rom.gb","r") ;
+	FILE *fd = fopen("Tetris (World) (Rev A).gb","r") ;
 	if (fd == NULL) {
     	perror("horror: ") ;
 		//return -1 ;
@@ -2703,7 +2613,7 @@ void cargarROM()
 }
 
 
-int ejecutarCICLO(){
+void ejecutarCICLO(){
 
 /*
 	int lineas=0;
@@ -2779,63 +2689,46 @@ int ejecutarCICLO(){
 	int patataa=0;
 	*/
 	//while(patataa<10000){
-		
-	if(halto==0){
+
 		unsigned char instruction;
 		unsigned int operand = 0;
 		instruction = loadMEMB(regist.PC++);
-		//printf("INTRUCCION EJECUTADA: %d \n",instruction);
 
 		if(instructions[instruction].action_bit_number == 8){
 			operand = (unsigned int)loadMEMB(regist.PC);
-			if(instruction==0xE0 && operand==0x07){
-				printf("SE ACCEDE A FF07 en la INSTRUCCION: %d\n",regist.PC);
-			}
-			//printf("\nVALOR DE 8 BITS: %d\n", operand);
+			printf("\nVALOR DE 8 BITS: %d\n", operand);
 			regist.PC +=1;
 		}
 		if(instructions[instruction].action_bit_number == 16){
 			operand = (unsigned int)loadMEM16(regist.PC);
-			//printf("\nVALOR DE 16 BITS: %d\n", operand);
+			printf("\nVALOR DE 16 BITS: %d\n", operand);
 			regist.PC +=2;
 		}
-		ciclado=0;
-		//printf("EJECUTANDO "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(instruction));
+		printf("EJECUTANDO "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(instruction));
 		switch(instructions[instruction].action_bit_number) {
 		case 0:
 			instructions[instruction].action(operand);
-			if(instruction==0x76){
-				printf("HE LLAMADO A HALT");
-			}
+			printf("\nHE EJECUTADO 0\n");
 			break;
 
 		case 8:
 			instructions[instruction].action(operand);
-			//printf("HE EJECUTADO 1\n");
+			printf("HE EJECUTADO 1\n");
 			break;
 
 		case 16:
 			instructions[instruction].action(operand);
-			//printf("HE EJECUTADO 2\n");
+			printf("HE EJECUTADO 2\n");
 			break;
 		}
-		if(ciclado==0){
-			clock_cycle+=instructions[instruction].clock_cycle;
-			return instructions[instruction].clock_cycle;
-		}else{
-			clock_cycle+=ciclado;
-			return ciclado;
-		}
 		
-	}else{
-		clock_cycle+=4;
-		return 4;
-	}	
-		/*if(regist.PC == 0x282a) {
+		clock_cycle+=instructions[instruction].clock_cycle;
+		
+		if(regist.PC == 0x282a) {
 			FILE *fi = fopen("tile0.bin", "wb");
 			fwrite(VRAM, 16, 1, fi);
 			fclose(fi);
-		}*/
+		}
 
 		/*
 		cin>> hex >> instt;
@@ -2858,24 +2751,24 @@ int ejecutarCICLO(){
 	*/
 
 		//ld_b8(ojo);
-		//cout<< "\nRegistro B: " <<endl;
-		//printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
-		//cout<< "\nRegistro C: " <<endl;
-		//printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.C));
+		cout<< "\nRegistro B: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.B));
+		cout<< "\nRegistro C: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.C));
 
-		//cout<< "\nRegistro A: " <<endl;
-		//printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.A));
-		//cout<< "\nRegistro F: " <<endl;
-		//printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.F));
-		//cout<< "\nRegistro D " <<endl;
-		//printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.D));
-		//cout<< "\nRegistro E: " <<endl;
-		//printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.E));
-		//cout<< "\nRegistro H: " <<endl;
-		//printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.H));
-		//cout<< "\nRegistro L: " <<endl;
-		//printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.L));
-		//cout<< "\nRegistro PC: "<< regist.PC <<endl;
+		cout<< "\nRegistro A: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.A));
+		cout<< "\nRegistro F: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.F));
+		cout<< "\nRegistro D " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.D));
+		cout<< "\nRegistro E: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.E));
+		cout<< "\nRegistro H: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.H));
+		cout<< "\nRegistro L: " <<endl;
+		printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(regist.L));
+		cout<< "\nRegistro PC: "<< regist.PC <<endl;
 		//patataa++;
 	//}
 
